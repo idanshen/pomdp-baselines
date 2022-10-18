@@ -1,0 +1,303 @@
+Logging to /data/scratch/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/sacd_lstm/alpha-0.1/gamma-0.9/len--1/bs-32/freq-1000/oar/10-11:15-54:58.98 
+preload cost 27.25s 
+--cfg=/data/scratch/idanshen/pomdp-baselines/configs/gridworld/tiger_door/rnn.yml
+
+--algo=sacd
+
+
+
+
+
+--nooracle
+--nodebug
+ 
+pid 117446 improbablex009.csail.mit.edu 
+obs_dim (30,) act_dim 4 
+<class 'policies.models.policy_rnn.ModelFreeOffPolicy_Separate_RNN'> memory 
+ModelFreeOffPolicy_Separate_RNN(
+  (critic): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (critic_target): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor_target): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+) 
+<class 'buffers.seq_replay_buffer_vanilla.SeqReplayBuffer'> 
+*** total rollouts 12530 total env steps 1253000 
+total RAM usage: 4.38 GB
+ 
+Collecting initial pool of data.. 
+Done! env steps 3044 rollouts 45 
+env steps 4893 
+----2022-10-11 15:57:39.332598 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0825   |
+| rl_loss/pi_rnn_grad_norm | 0.24     |
+| rl_loss/policy_entropy   | 1.09     |
+| rl_loss/policy_loss      | 3.34     |
+| rl_loss/q_grad_norm      | 4.06     |
+| rl_loss/q_rnn_grad_norm  | 13.6     |
+| rl_loss/qf1_loss         | 14.1     |
+| rl_loss/qf2_loss         | 14.1     |
+---------------------------------------
+env steps 6580 
+----2022-10-11 15:58:29.690665 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0359   |
+| rl_loss/pi_rnn_grad_norm | 0.0921   |
+| rl_loss/policy_entropy   | 0.863    |
+| rl_loss/policy_loss      | 7.42     |
+| rl_loss/q_grad_norm      | 10.6     |
+| rl_loss/q_rnn_grad_norm  | 29.5     |
+| rl_loss/qf1_loss         | 2.66     |
+| rl_loss/qf2_loss         | 2.68     |
+---------------------------------------
+env steps 7118 
+----2022-10-11 15:59:18.721906 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0336   |
+| rl_loss/pi_rnn_grad_norm | 0.0636   |
+| rl_loss/policy_entropy   | 0.386    |
+| rl_loss/policy_loss      | 8.63     |
+| rl_loss/q_grad_norm      | 11.5     |
+| rl_loss/q_rnn_grad_norm  | 33.3     |
+| rl_loss/qf1_loss         | 7.26     |
+| rl_loss/qf2_loss         | 7.59     |
+---------------------------------------
+env steps 7401 
+----2022-10-11 16:00:07.374350 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0204   |
+| rl_loss/pi_rnn_grad_norm | 0.0489   |
+| rl_loss/policy_entropy   | 0.0413   |
+| rl_loss/policy_loss      | 5.19     |
+| rl_loss/q_grad_norm      | 14.8     |
+| rl_loss/q_rnn_grad_norm  | 44.3     |
+| rl_loss/qf1_loss         | 14.5     |
+| rl_loss/qf2_loss         | 15       |
+---------------------------------------
+env steps 9901 
+----2022-10-11 16:00:59.050015 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0071   |
+| rl_loss/pi_rnn_grad_norm | 0.0193   |
+| rl_loss/policy_entropy   | 0.0139   |
+| rl_loss/policy_loss      | 1.36     |
+| rl_loss/q_grad_norm      | 8.47     |
+| rl_loss/q_rnn_grad_norm  | 25       |
+| rl_loss/qf1_loss         | 9.72     |
+| rl_loss/qf2_loss         | 9.87     |
+---------------------------------------
+env steps 12401 
+----2022-10-11 16:01:50.612671 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0537   |
+| rl_loss/pi_rnn_grad_norm | 0.155    |
+| rl_loss/policy_entropy   | 0.0455   |
+| rl_loss/policy_loss      | 3.31     |
+| rl_loss/q_grad_norm      | 14.8     |
+| rl_loss/q_rnn_grad_norm  | 43.6     |
+| rl_loss/qf1_loss         | 7.36     |
+| rl_loss/qf2_loss         | 7.44     |
+---------------------------------------
+env steps 12958 
+----2022-10-11 16:02:39.877829 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0334   |
+| rl_loss/pi_rnn_grad_norm | 0.0975   |
+| rl_loss/policy_entropy   | 0.0153   |
+| rl_loss/policy_loss      | 4.03     |
+| rl_loss/q_grad_norm      | 26.8     |
+| rl_loss/q_rnn_grad_norm  | 112      |
+| rl_loss/qf1_loss         | 12.4     |
+| rl_loss/qf2_loss         | 12.4     |
+---------------------------------------
+------2022-10-11 16:02:40.124161 EDT-------
+| metrics/return_eval_avg      | 0.5      |
+| metrics/total_steps_eval_avg | 9.75     |
+| z/env_steps                  | 12958    |
+| z/fps                        | 36.7     |
+| z/rl_steps                   | 7000     |
+| z/rollouts                   | 220      |
+| z/time_cost                  | 353      |
+-------------------------------------------
+env steps 13217 
+----2022-10-11 16:03:29.020345 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0141   |
+| rl_loss/pi_rnn_grad_norm | 0.0271   |
+| rl_loss/policy_entropy   | 0.0127   |
+| rl_loss/policy_loss      | 3.81     |
+| rl_loss/q_grad_norm      | 10.5     |
+| rl_loss/q_rnn_grad_norm  | 31.7     |
+| rl_loss/qf1_loss         | 9.8      |
+| rl_loss/qf2_loss         | 9.84     |
+---------------------------------------
+env steps 13442 
+----2022-10-11 16:04:17.779359 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0126   |
+| rl_loss/pi_rnn_grad_norm | 0.0331   |
+| rl_loss/policy_entropy   | 0.0083   |
+| rl_loss/policy_loss      | 3.53     |
+| rl_loss/q_grad_norm      | 16.7     |
+| rl_loss/q_rnn_grad_norm  | 67       |
+| rl_loss/qf1_loss         | 8.78     |
+| rl_loss/qf2_loss         | 8.8      |
+---------------------------------------
+env steps 13667 
+----2022-10-11 16:06:13.674881 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0019   |
+| rl_loss/pi_rnn_grad_norm | 0.004    |
+| rl_loss/policy_entropy   | 0.0124   |
+| rl_loss/policy_loss      | 3.36     |
+| rl_loss/q_grad_norm      | 18.5     |
+| rl_loss/q_rnn_grad_norm  | 63.9     |
+| rl_loss/qf1_loss         | 9.25     |
+| rl_loss/qf2_loss         | 9.26     |
+---------------------------------------
+env steps 13892 
+----2022-10-11 16:07:02.440237 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0164   |
+| rl_loss/pi_rnn_grad_norm | 0.0386   |
+| rl_loss/policy_entropy   | 0.0096   |
+| rl_loss/policy_loss      | 3.41     |
+| rl_loss/q_grad_norm      | 41       |
+| rl_loss/q_rnn_grad_norm  | 139      |
+| rl_loss/qf1_loss         | 8.38     |
+| rl_loss/qf2_loss         | 8.39     |
+---------------------------------------
+env steps 14117 
+----2022-10-11 16:07:51.277549 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0082   |
+| rl_loss/pi_rnn_grad_norm | 0.0206   |
+| rl_loss/policy_entropy   | 0.0048   |
+| rl_loss/policy_loss      | 3.36     |
+| rl_loss/q_grad_norm      | 28.3     |
+| rl_loss/q_rnn_grad_norm  | 112      |
+| rl_loss/qf1_loss         | 7.82     |
+| rl_loss/qf2_loss         | 7.82     |
+---------------------------------------
+env steps 14342 
+----2022-10-11 16:08:39.948287 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0017   |
+| rl_loss/pi_rnn_grad_norm | 0.0045   |
+| rl_loss/policy_entropy   | 0.0058   |
+| rl_loss/policy_loss      | 3.38     |
+| rl_loss/q_grad_norm      | 8.39     |
+| rl_loss/q_rnn_grad_norm  | 20.5     |
+| rl_loss/qf1_loss         | 8.27     |
+| rl_loss/qf2_loss         | 8.27     |
+---------------------------------------
+env steps 14567 
+----2022-10-11 16:09:28.814261 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0021   |
+| rl_loss/pi_rnn_grad_norm | 0.0051   |
+| rl_loss/policy_entropy   | 0.0033   |
+| rl_loss/policy_loss      | 3.15     |
+| rl_loss/q_grad_norm      | 3.27     |
+| rl_loss/q_rnn_grad_norm  | 4.89     |
+| rl_loss/qf1_loss         | 7.73     |
+| rl_loss/qf2_loss         | 7.72     |
+---------------------------------------
+env steps 14792 
+----2022-10-11 16:10:17.590682 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0084   |
+| rl_loss/pi_rnn_grad_norm | 0.0132   |
+| rl_loss/policy_entropy   | 0.0058   |
+| rl_loss/policy_loss      | 3.11     |
+| rl_loss/q_grad_norm      | 3.23     |
+| rl_loss/q_rnn_grad_norm  | 3.98     |
+| rl_loss/qf1_loss         | 7.35     |
+| rl_loss/qf2_loss         | 7.35     |
+---------------------------------------

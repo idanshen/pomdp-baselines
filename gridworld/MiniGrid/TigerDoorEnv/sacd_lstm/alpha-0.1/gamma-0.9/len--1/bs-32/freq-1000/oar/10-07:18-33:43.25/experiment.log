@@ -1,0 +1,14 @@
+Logging to /data/scratch/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/sacd_lstm/alpha-0.1/gamma-0.9/len--1/bs-32/freq-1000/oar/10-07:18-33:43.25 
+preload cost 7.92s 
+--cfg=/data/scratch/idanshen/pomdp-baselines/configs/gridworld/tiger_door/rnn.yml
+
+--algo=sacd
+
+
+
+
+
+--nooracle
+--nodebug
+ 
+pid 84639 improbablex001 

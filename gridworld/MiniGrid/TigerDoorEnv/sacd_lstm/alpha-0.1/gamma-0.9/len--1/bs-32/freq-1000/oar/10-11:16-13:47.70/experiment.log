@@ -1,0 +1,126 @@
+Logging to /data/scratch/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/sacd_lstm/alpha-0.1/gamma-0.9/len--1/bs-32/freq-1000/oar/10-11:16-13:47.70 
+preload cost 8.00s 
+--cfg=/data/scratch/idanshen/pomdp-baselines/configs/gridworld/tiger_door/rnn.yml
+
+--algo=sacd
+
+
+
+
+
+--nooracle
+--nodebug
+ 
+pid 118526 improbablex009.csail.mit.edu 
+obs_dim (30,) act_dim 4 
+<class 'policies.models.policy_rnn.ModelFreeOffPolicy_Separate_RNN'> memory 
+ModelFreeOffPolicy_Separate_RNN(
+  (critic): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (critic_target): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor_target): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+) 
+<class 'buffers.seq_replay_buffer_vanilla.SeqReplayBuffer'> 
+*** total rollouts 12530 total env steps 1253000 
+total RAM usage: 4.39 GB
+ 
+Collecting initial pool of data.. 
+Done! env steps 3044 rollouts 45 
+env steps 4893 
+----2022-10-11 16:14:46.720052 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0825   |
+| rl_loss/pi_rnn_grad_norm | 0.24     |
+| rl_loss/policy_entropy   | 1.09     |
+| rl_loss/policy_loss      | 3.34     |
+| rl_loss/q_grad_norm      | 4.06     |
+| rl_loss/q_rnn_grad_norm  | 13.6     |
+| rl_loss/qf1_loss         | 14.1     |
+| rl_loss/qf2_loss         | 14.1     |
+---------------------------------------

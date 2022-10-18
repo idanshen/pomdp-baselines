@@ -1,0 +1,109 @@
+Logging to /data/scratch/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/sacd_lstm/alpha-0.1/gamma-0.9/len--1/bs-32/freq-1000/oar/10-11:16-28:28.51 
+preload cost 8.38s 
+--cfg=/data/scratch/idanshen/pomdp-baselines/configs/gridworld/tiger_door/rnn.yml
+
+--algo=sacd
+
+
+
+
+
+--nooracle
+--nodebug
+ 
+pid 119394 improbablex009.csail.mit.edu 
+obs_dim (30,) act_dim 4 
+<class 'policies.models.policy_rnn.ModelFreeOffPolicy_Separate_RNN'> memory 
+ModelFreeOffPolicy_Separate_RNN(
+  (critic): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (critic_target): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor_target): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+) 
+<class 'buffers.seq_replay_buffer_vanilla.SeqReplayBuffer'> 

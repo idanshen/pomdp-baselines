@@ -8,7 +8,8 @@ import torch
 from torch.nn import functional as F
 import gym
 
-from .models import AGENT_CLASSES, AGENT_ARCHS
+from envs.gridworld.env_wrap import EnvWrapper
+from .models import AGENT_CLASSES, AGENT_ARCHS, TRAIN_TYPES
 from torchkit.networks import ImageEncoder
 
 # Markov policy
@@ -48,6 +49,8 @@ class Learner:
         num_eval_tasks=None,
         eval_envs=None,
         worst_percentile=None,
+        save_states=False,
+        obseravibility="full",
         **kwargs
     ):
 
@@ -59,8 +62,10 @@ class Learner:
             "rmdp",
             "generalize",
             "atari",
+            "gridworld"
         ]
         self.env_type = env_type
+        self.save_states = save_states
 
         if self.env_type == "meta":  # meta tasks: using varibad wrapper
             from envs.meta.make_env import make_env
@@ -156,7 +161,7 @@ class Learner:
             self.eval_tasks = num_eval_tasks * [None]
 
             self.max_rollouts_per_task = 1
-            self.max_trajectory_len = self.train_env._max_episode_steps
+            self.max_trajectory_len = self.train_env.max_steps
 
         elif self.env_type == "generalize":
             sys.path.append("envs/rl-generalization")
@@ -192,6 +197,34 @@ class Learner:
             self.max_rollouts_per_task = 1
             self.max_trajectory_len = self.train_env._max_episode_steps
 
+        elif self.env_type == "gridworld":
+            import envs.gridworld
+
+            assert num_eval_tasks > 0
+            assert obseravibility in ["full", "partial"]
+
+            # all from https://github.com/plai-group/a2d/blob/368aaf5e0e425c2d48d25925c772a0d9a4f3823b/a2d_gridworld/tests/A2D/A2Dagger_arguments.py
+            env_params = {"render_type": "partial_state" if obseravibility == "partial" else "state",
+                          "return_type": "partial_state" if obseravibility == "partial" else "state",
+                          "frame_stack": 1,
+                          "env_name": env_name,
+                          "env_tag": 'minigrid',
+                          "resize": 42,
+                          }
+
+            self.train_env = EnvWrapper(gym.make(env_name), env_params)
+            self.train_env.seed(self.seed)
+            self.train_env.action_space.np_random.seed(self.seed)  # crucial
+
+            self.eval_env = self.train_env
+            self.eval_env.seed(self.seed + 1)
+
+            self.train_tasks = []
+            self.eval_tasks = num_eval_tasks * [None]
+
+            self.max_rollouts_per_task = 1
+            self.max_trajectory_len = self.train_env._max_episode_steps
+
         else:
             raise ValueError
 
@@ -204,13 +237,18 @@ class Learner:
             assert self.train_env.action_space.__class__.__name__ == "Discrete"
             self.act_dim = self.train_env.action_space.n
             self.act_continuous = False
-        self.obs_dim = self.train_env.observation_space.shape[0]  # include 1-dim done
+        self.obs_dim = self.train_env.observation_space.shape  # include 1-dim done
+        if self.save_states:
+            self.state_dim = self.train_env.state_space.shape
+        else:
+            self.state_dim = None
         logger.log("obs_dim", self.obs_dim, "act_dim", self.act_dim)
 
     def init_agent(
         self,
         seq_model,
         separate: bool = True,
+        on_policy: bool = False,
         image_encoder=None,
         reward_clip=False,
         **kwargs
@@ -220,16 +258,22 @@ class Learner:
             agent_class = AGENT_CLASSES["Policy_MLP"]
             rnn_encoder_type = None
             assert separate == True
+            assert on_policy == False
         elif "-mlp" in seq_model:
             agent_class = AGENT_CLASSES["Policy_RNN_MLP"]
             rnn_encoder_type = seq_model.split("-")[0]
             assert separate == True
+            assert on_policy == False
         else:
             rnn_encoder_type = seq_model
             if separate == True:
-                agent_class = AGENT_CLASSES["Policy_Separate_RNN"]
+                if on_policy == True:
+                    agent_class = AGENT_CLASSES["On_Policy_Separate_RNN"]
+                else:
+                    agent_class = AGENT_CLASSES["Off_Policy_Separate_RNN"]
             else:
                 agent_class = AGENT_CLASSES["Policy_Shared_RNN"]
+                assert on_policy == False
 
         self.agent_arch = agent_class.ARCH
         logger.log(agent_class, self.agent_arch)
@@ -243,7 +287,7 @@ class Learner:
 
         self.agent = agent_class(
             encoder=rnn_encoder_type,
-            obs_dim=self.obs_dim,
+            obs_dim=self.obs_dim[0],
             action_dim=self.act_dim,
             image_encoder_fn=image_encoder_fn,
             **kwargs,
@@ -263,8 +307,14 @@ class Learner:
         sampled_seq_len=None,
         sample_weight_baseline=None,
         buffer_type=None,
+        train_type="off-policy",
         **kwargs
     ):
+        assert train_type in ["off-policy", "on-policy"]
+        self.training_type = TRAIN_TYPES.OFF_POLICY if train_type == "off-policy" else TRAIN_TYPES.ON_POLICY
+        if self.training_type == TRAIN_TYPES.ON_POLICY:
+            buffer_size = num_rollouts_per_iter * self.max_trajectory_len
+            assert num_init_rollouts_pool == 0
 
         if num_updates_per_iter is None:
             num_updates_per_iter = 1.0
@@ -300,6 +350,10 @@ class Learner:
                 sampled_seq_len=sampled_seq_len,
                 sample_weight_baseline=sample_weight_baseline,
                 observation_type=self.train_env.observation_space.dtype,
+                state_dim=self.state_dim if self.save_states else None,
+                state_type=self.train_env.observation_space.dtype,  # TODO: fix later
+                save_values=True if self.training_type == TRAIN_TYPES.ON_POLICY else False,
+                save_log_probs=True if self.training_type == TRAIN_TYPES.ON_POLICY else False,
             )
 
         self.batch_size = batch_size
@@ -421,7 +475,7 @@ class Learner:
             else:
                 obs = ptu.from_numpy(self.train_env.reset())  # reset
 
-            obs = obs.reshape(1, obs.shape[-1])
+            obs = obs.reshape(1, *obs.shape)
             done_rollout = False
 
             if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
@@ -434,10 +488,20 @@ class Learner:
                     [],
                 )
 
+                if self.save_states:
+                    state_list, next_state_list = [], []
+                else:
+                    state_list, next_state_list = None, None
+
+                if self.training_type == TRAIN_TYPES.ON_POLICY:
+                    log_prob_list, value_list = [], []
+                else:
+                    log_prob_list, value_list = None, None
+
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
-                action, reward, internal_state = self.agent.get_initial_info()
+                (action, reward, internal_state), value_internal_state = self.agent.get_initial_info()
 
             while not done_rollout:
                 if random_actions:
@@ -452,7 +516,7 @@ class Learner:
                     # policy takes hidden state as input for memory-based actor,
                     # while takes obs for markov actor
                     if self.agent_arch == AGENT_ARCHS.Memory:
-                        (action, _, _, _), internal_state = self.agent.act(
+                        (action, _, log_prob, _), internal_state = self.agent.act(
                             prev_internal_state=internal_state,
                             prev_action=action,
                             reward=reward,
@@ -462,10 +526,21 @@ class Learner:
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
 
+                if self.training_type == TRAIN_TYPES.ON_POLICY:
+                    value, value_internal_state = self.agent.predict_value(
+                        prev_internal_state=value_internal_state,
+                        prev_action=action,
+                        reward=reward,
+                        obs=obs,)
+
                 # observe reward and next obs (B=1, dim)
                 next_obs, reward, done, info = utl.env_step(
                     self.train_env, action.squeeze(dim=0)
                 )
+                if self.save_states:
+                    state = info["state"]
+                    next_state = info["next_state"]
+
                 if self.reward_clip and self.env_type == "atari":
                     reward = torch.tanh(reward)
 
@@ -493,6 +568,9 @@ class Learner:
                     )
 
                 # add data to policy buffer
+                if self.training_type == TRAIN_TYPES.ON_POLICY:
+                    self.policy_storage.clear()
+
                 if self.agent_arch == AGENT_ARCHS.Markov:
                     self.policy_storage.add_sample(
                         observation=ptu.get_numpy(obs.squeeze(dim=0)),
@@ -513,7 +591,12 @@ class Learner:
                     rew_list.append(reward)  # (1, dim)
                     term_list.append(term)  # bool
                     next_obs_list.append(next_obs)  # (1, dim)
-
+                    if self.save_states:
+                        state_list.append(state)
+                        next_state_list.append(next_state)
+                    if self.training_type == TRAIN_TYPES.ON_POLICY:
+                        log_prob_list.append(log_prob)
+                        value_list.append(value)
                 # set: obs <- next_obs
                 obs = next_obs.clone()
 
@@ -530,9 +613,11 @@ class Learner:
                     actions=ptu.get_numpy(act_buffer),  # (L, dim)
                     rewards=ptu.get_numpy(torch.cat(rew_list, dim=0)),  # (L, dim)
                     terminals=np.array(term_list).reshape(-1, 1),  # (L, 1)
-                    next_observations=ptu.get_numpy(
-                        torch.cat(next_obs_list, dim=0)
-                    ),  # (L, dim)
+                    next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
+                    # states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
+                    # next_state=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
+                    log_probs=ptu.get_numpy(torch.cat(log_prob_list, dim=0)) if log_prob_list is not None else None,  # (L, dim)
+                    values=ptu.get_numpy(torch.cat(value_list, dim=0)) if value_list is not None else None,  # (L, dim)
                 )
                 print(
                     f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
@@ -585,6 +670,9 @@ class Learner:
                 0
             ]  # original size
             observations = np.zeros((len(tasks), self.max_trajectory_len + 1, obs_size))
+        elif self.env_type == "gridworld":
+            num_steps_per_episode = self.eval_env.unwrapped._max_episode_steps  # H
+            observations = None
         else:  # pomdp, rmdp, generalize
             num_steps_per_episode = self.eval_env._max_episode_steps
             observations = None
@@ -879,6 +967,30 @@ class Learner:
                 logger.record_tabular(
                     "metrics/success_rate_eval_sto", np.mean(success_rate_eval_sto)
                 )
+
+        elif self.env_type == "gridworld":
+            returns_eval, _, _, total_steps_eval = self.evaluate(self.eval_tasks)
+            returns_eval = returns_eval.squeeze(-1)
+            # np.quantile is introduced in np v1.15, so we have to use np.percentile
+            # cutoff = np.percentile(returns_eval, 100 * self.worst_percentile)
+            # worst_indices = np.where(
+            #     returns_eval <= cutoff
+            # )  # must be "<=" to avoid empty set
+            # returns_eval_worst, total_steps_eval_worst = (
+            #     returns_eval[worst_indices],
+            #     total_steps_eval[worst_indices],
+            # )
+
+            logger.record_tabular("metrics/return_eval_avg", returns_eval.mean())
+            # logger.record_tabular(
+            #     "metrics/return_eval_worst", returns_eval_worst.mean()
+            # )
+            logger.record_tabular(
+                "metrics/total_steps_eval_avg", total_steps_eval.mean()
+            )
+            # logger.record_tabular(
+            #     "metrics/total_steps_eval_worst", total_steps_eval_worst.mean()
+            # )
 
         else:
             raise ValueError

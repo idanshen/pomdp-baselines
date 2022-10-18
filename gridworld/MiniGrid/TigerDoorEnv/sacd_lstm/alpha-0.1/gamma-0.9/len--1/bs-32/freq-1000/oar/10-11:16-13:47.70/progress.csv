@@ -1,0 +1,2 @@
+rl_loss/qf1_loss,rl_loss/qf2_loss,rl_loss/policy_loss,rl_loss/policy_entropy,rl_loss/alpha,rl_loss/q_grad_norm,rl_loss/q_rnn_grad_norm,rl_loss/pi_grad_norm,rl_loss/pi_rnn_grad_norm
+14.0787,14.1085,3.3436,1.0935,0.1,4.062,13.5631,0.0825,0.2402

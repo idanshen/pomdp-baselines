@@ -12,6 +12,8 @@ class RAMEfficient_SeqReplayBuffer:
         sampled_seq_len: int,
         sample_weight_baseline: float,
         observation_type,
+        state_dim=None,
+        state_type=None,
         **kwargs
     ):
         """
@@ -30,6 +32,7 @@ class RAMEfficient_SeqReplayBuffer:
         self._max_replay_buffer_size = max_replay_buffer_size
         self._observation_dim = observation_dim
         self._action_dim = action_dim
+        self._save_states = False if state_dim is None else True
 
         if observation_type == np.uint8:  # pixel
             observation_type = np.uint8
@@ -38,6 +41,15 @@ class RAMEfficient_SeqReplayBuffer:
         self._observations = np.zeros(
             (max_replay_buffer_size, observation_dim), dtype=observation_type
         )
+        if state_dim is not None:
+            self._state_dim = state_dim
+            if state_type == np.uint8:  # pixel
+                state_type = np.uint8
+            else:  # treat all as float32
+                state_type = np.float32
+            self._states = np.zeros(
+                (max_replay_buffer_size, state_dim), dtype=state_type
+            )
 
         self._actions = np.zeros((max_replay_buffer_size, action_dim), dtype=np.float32)
         self._rewards = np.zeros((max_replay_buffer_size, 1), dtype=np.float32)
@@ -80,7 +92,7 @@ class RAMEfficient_SeqReplayBuffer:
         self._top = 0  # trajectory level (first dim in 3D buffer)
         self._size = 0  # trajectory level (first dim in 3D buffer)
 
-    def add_episode(self, observations, actions, rewards, terminals, next_observations):
+    def add_episode(self, observations, actions, rewards, terminals, next_observations, states=None, next_states=None):
         """
         NOTE: must add one whole episode/sequence/trajectory,
                         not some partial transitions
@@ -97,6 +109,11 @@ class RAMEfficient_SeqReplayBuffer:
             == next_observations.shape[0]
             >= 2
         )
+
+        if self._save_states:
+            assert states is not None
+            assert next_states is not None
+            assert (observations.shape[0] == states.shape[0] == next_states.shape[0])
 
         seq_len = observations.shape[0]  # L
         indices = list(
@@ -122,6 +139,10 @@ class RAMEfficient_SeqReplayBuffer:
 
         self._top = (self._top + 1) % self._max_replay_buffer_size
         self._size = min(self._size + seq_len + 1, self._max_replay_buffer_size)
+
+        if self._save_states:
+            self._states[indices] = states
+            self._states[self._top] = next_states[-1]  # final state
 
     def _compute_valid_starts(self, seq_len):
         valid_starts = np.ones((seq_len), dtype=float)
@@ -184,13 +205,17 @@ class RAMEfficient_SeqReplayBuffer:
         return np.random.choice(valid_starts_indices, size=batch_size, p=sample_weights)
 
     def _sample_data(self, indices, next_indices):
-        return dict(
+        return_dict = dict(
             obs=self._observations[indices],
             act=self._actions[indices],
             rew=self._rewards[indices],
             term=self._terminals[indices],
             obs2=self._observations[next_indices],
         )
+        if self._save_states:
+            return_dict["states"] = self._states[indices]
+            return_dict["states2"] = self._states[next_indices]
+        return return_dict
 
     def _generate_masks(self, indices, batch_size):
         """

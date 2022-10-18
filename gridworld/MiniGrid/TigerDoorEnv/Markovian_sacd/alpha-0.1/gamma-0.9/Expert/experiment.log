@@ -1,0 +1,4432 @@
+Logging to /data/scratch/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/10-12:15-21:39.45 
+preload cost 5.50s 
+--cfg=/data/scratch/idanshen/pomdp-baselines/configs/gridworld/tiger_door/mlp.yml
+
+--algo=sacd
+
+
+
+
+
+--nooracle
+--nodebug
+ 
+pid 72204 improbablex009.csail.mit.edu 
+obs_dim (30,) act_dim 4 
+<class 'policies.models.policy_mlp.ModelFreeOffPolicy_MLP'> markov 
+ModelFreeOffPolicy_MLP(
+  (qf1): FlattenMlp(
+    (fc0): Linear(in_features=30, out_features=128, bias=True)
+    (fc1): Linear(in_features=128, out_features=128, bias=True)
+    (last_fc): Linear(in_features=128, out_features=4, bias=True)
+  )
+  (qf2): FlattenMlp(
+    (fc0): Linear(in_features=30, out_features=128, bias=True)
+    (fc1): Linear(in_features=128, out_features=128, bias=True)
+    (last_fc): Linear(in_features=128, out_features=4, bias=True)
+  )
+  (qf1_target): FlattenMlp(
+    (fc0): Linear(in_features=30, out_features=128, bias=True)
+    (fc1): Linear(in_features=128, out_features=128, bias=True)
+    (last_fc): Linear(in_features=128, out_features=4, bias=True)
+  )
+  (qf2_target): FlattenMlp(
+    (fc0): Linear(in_features=30, out_features=128, bias=True)
+    (fc1): Linear(in_features=128, out_features=128, bias=True)
+    (last_fc): Linear(in_features=128, out_features=4, bias=True)
+  )
+  (policy): CategoricalPolicy(
+    (fc0): Linear(in_features=30, out_features=128, bias=True)
+    (fc1): Linear(in_features=128, out_features=128, bias=True)
+    (last_fc): Linear(in_features=128, out_features=4, bias=True)
+  )
+  (policy_target): CategoricalPolicy(
+    (fc0): Linear(in_features=30, out_features=128, bias=True)
+    (fc1): Linear(in_features=128, out_features=128, bias=True)
+    (last_fc): Linear(in_features=128, out_features=4, bias=True)
+  )
+) 
+*** total rollouts 1280 total env steps 128000 
+total RAM usage: 3.65 GB
+ 
+Collecting initial pool of data.. 
+Done! env steps 3044 rollouts 45 
+env steps 4893 
+---2022-10-12 15:21:58.643533 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.918    |
+| rl_loss/policy_loss    | 4.09     |
+| rl_loss/qf1_loss       | 39.3     |
+| rl_loss/qf2_loss       | 39.2     |
+-------------------------------------
+------2022-10-12 15:22:00.776125 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 4893     |
+| z/fps                        | 283      |
+| z/rl_steps                   | 1000     |
+| z/rollouts                   | 70       |
+| z/time_cost                  | 17       |
+-------------------------------------------
+env steps 7393 
+---2022-10-12 15:22:12.684305 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.703    |
+| rl_loss/policy_loss    | 8.94     |
+| rl_loss/qf1_loss       | 22.4     |
+| rl_loss/qf2_loss       | 22.5     |
+-------------------------------------
+------2022-10-12 15:22:14.779695 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 7393     |
+| z/fps                        | 179      |
+| z/rl_steps                   | 2000     |
+| z/rollouts                   | 95       |
+| z/time_cost                  | 31       |
+-------------------------------------------
+env steps 9893 
+---2022-10-12 15:22:26.112013 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.904    |
+| rl_loss/policy_loss    | 12.4     |
+| rl_loss/qf1_loss       | 12.8     |
+| rl_loss/qf2_loss       | 12.9     |
+-------------------------------------
+------2022-10-12 15:22:28.198654 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 9893     |
+| z/fps                        | 186      |
+| z/rl_steps                   | 3000     |
+| z/rollouts                   | 120      |
+| z/time_cost                  | 44       |
+-------------------------------------------
+env steps 12393 
+---2022-10-12 15:22:39.303414 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.907    |
+| rl_loss/policy_loss    | 14.9     |
+| rl_loss/qf1_loss       | 10.6     |
+| rl_loss/qf2_loss       | 10.8     |
+-------------------------------------
+------2022-10-12 15:22:41.401721 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 12393    |
+| z/fps                        | 189      |
+| z/rl_steps                   | 4000     |
+| z/rollouts                   | 145      |
+| z/time_cost                  | 57       |
+-------------------------------------------
+env steps 14893 
+---2022-10-12 15:22:52.672396 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 1.05     |
+| rl_loss/policy_loss    | 16.5     |
+| rl_loss/qf1_loss       | 8.65     |
+| rl_loss/qf2_loss       | 8.83     |
+-------------------------------------
+------2022-10-12 15:22:54.752969 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 14893    |
+| z/fps                        | 187      |
+| z/rl_steps                   | 5000     |
+| z/rollouts                   | 170      |
+| z/time_cost                  | 71       |
+-------------------------------------------
+env steps 17393 
+---2022-10-12 15:23:05.859287 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 1.07     |
+| rl_loss/policy_loss    | 17.4     |
+| rl_loss/qf1_loss       | 6.39     |
+| rl_loss/qf2_loss       | 6.49     |
+-------------------------------------
+------2022-10-12 15:23:07.944022 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 17393    |
+| z/fps                        | 190      |
+| z/rl_steps                   | 6000     |
+| z/rollouts                   | 195      |
+| z/time_cost                  | 84       |
+-------------------------------------------
+env steps 19893 
+---2022-10-12 15:23:19.246571 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 1.1      |
+| rl_loss/policy_loss    | 18       |
+| rl_loss/qf1_loss       | 7.43     |
+| rl_loss/qf2_loss       | 7.53     |
+-------------------------------------
+------2022-10-12 15:23:21.149786 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 19893    |
+| z/fps                        | 189      |
+| z/rl_steps                   | 7000     |
+| z/rollouts                   | 220      |
+| z/time_cost                  | 97       |
+-------------------------------------------
+env steps 22393 
+---2022-10-12 15:23:32.458922 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 1.05     |
+| rl_loss/policy_loss    | 18.3     |
+| rl_loss/qf1_loss       | 5.65     |
+| rl_loss/qf2_loss       | 5.74     |
+-------------------------------------
+------2022-10-12 15:23:34.546269 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 22393    |
+| z/fps                        | 187      |
+| z/rl_steps                   | 8000     |
+| z/rollouts                   | 245      |
+| z/time_cost                  | 111      |
+-------------------------------------------
+env steps 24893 
+---2022-10-12 15:23:45.908504 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 1.08     |
+| rl_loss/policy_loss    | 18.5     |
+| rl_loss/qf1_loss       | 4.82     |
+| rl_loss/qf2_loss       | 4.8      |
+-------------------------------------
+------2022-10-12 15:23:48.058344 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 24893    |
+| z/fps                        | 185      |
+| z/rl_steps                   | 9000     |
+| z/rollouts                   | 270      |
+| z/time_cost                  | 124      |
+-------------------------------------------
+env steps 27393 
+---2022-10-12 15:23:59.460026 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 1.17     |
+| rl_loss/policy_loss    | 18.7     |
+| rl_loss/qf1_loss       | 3.36     |
+| rl_loss/qf2_loss       | 3.33     |
+-------------------------------------
+------2022-10-12 15:24:01.620762 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 27393    |
+| z/fps                        | 184      |
+| z/rl_steps                   | 10000    |
+| z/rollouts                   | 295      |
+| z/time_cost                  | 138      |
+-------------------------------------------
+env steps 29893 
+---2022-10-12 15:24:12.955449 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 1.12     |
+| rl_loss/policy_loss    | 18.6     |
+| rl_loss/qf1_loss       | 3.03     |
+| rl_loss/qf2_loss       | 2.91     |
+-------------------------------------
+------2022-10-12 15:24:15.121548 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 29893    |
+| z/fps                        | 185      |
+| z/rl_steps                   | 11000    |
+| z/rollouts                   | 320      |
+| z/time_cost                  | 151      |
+-------------------------------------------
+env steps 32297 
+---2022-10-12 15:24:26.359118 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.934    |
+| rl_loss/policy_loss    | 18.2     |
+| rl_loss/qf1_loss       | 2.14     |
+| rl_loss/qf2_loss       | 1.83     |
+-------------------------------------
+------2022-10-12 15:24:28.508013 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 32297    |
+| z/fps                        | 180      |
+| z/rl_steps                   | 12000    |
+| z/rollouts                   | 345      |
+| z/time_cost                  | 165      |
+-------------------------------------------
+env steps 34586 
+---2022-10-12 15:24:39.611467 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.747    |
+| rl_loss/policy_loss    | 17.2     |
+| rl_loss/qf1_loss       | 2.05     |
+| rl_loss/qf2_loss       | 1.69     |
+-------------------------------------
+------2022-10-12 15:24:41.795575 EDT-------
+| metrics/return_eval_avg      | -200     |
+| metrics/total_steps_eval_avg | 100      |
+| z/env_steps                  | 34586    |
+| z/fps                        | 172      |
+| z/rl_steps                   | 13000    |
+| z/rollouts                   | 370      |
+| z/time_cost                  | 178      |
+-------------------------------------------
+env steps 36317 
+---2022-10-12 15:24:52.176449 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.446    |
+| rl_loss/policy_loss    | 16       |
+| rl_loss/qf1_loss       | 2.54     |
+| rl_loss/qf2_loss       | 1.99     |
+-------------------------------------
+------2022-10-12 15:24:52.917300 EDT-------
+| metrics/return_eval_avg      | -55.8    |
+| metrics/total_steps_eval_avg | 34.9     |
+| z/env_steps                  | 36317    |
+| z/fps                        | 156      |
+| z/rl_steps                   | 14000    |
+| z/rollouts                   | 395      |
+| z/time_cost                  | 189      |
+-------------------------------------------
+env steps 37701 
+---2022-10-12 15:25:02.843315 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.213    |
+| rl_loss/policy_loss    | 14.8     |
+| rl_loss/qf1_loss       | 2.55     |
+| rl_loss/qf2_loss       | 1.74     |
+-------------------------------------
+------2022-10-12 15:25:03.999905 EDT-------
+| metrics/return_eval_avg      | -97      |
+| metrics/total_steps_eval_avg | 53.5     |
+| z/env_steps                  | 37701    |
+| z/fps                        | 125      |
+| z/rl_steps                   | 15000    |
+| z/rollouts                   | 420      |
+| z/time_cost                  | 200      |
+-------------------------------------------
+env steps 38527 
+---2022-10-12 15:25:13.204311 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.195    |
+| rl_loss/policy_loss    | 14       |
+| rl_loss/qf1_loss       | 1.97     |
+| rl_loss/qf2_loss       | 1.37     |
+-------------------------------------
+env steps 39913 
+---2022-10-12 15:25:23.136906 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.169    |
+| rl_loss/policy_loss    | 13.4     |
+| rl_loss/qf1_loss       | 1.43     |
+| rl_loss/qf2_loss       | 0.91     |
+-------------------------------------
+env steps 40739 
+---2022-10-12 15:25:32.380064 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.298    |
+| rl_loss/policy_loss    | 12.8     |
+| rl_loss/qf1_loss       | 1.38     |
+| rl_loss/qf2_loss       | 0.758    |
+-------------------------------------
+------2022-10-12 15:25:33.834193 EDT-------
+| metrics/return_eval_avg      | -128     |
+| metrics/total_steps_eval_avg | 67.5     |
+| z/env_steps                  | 40739    |
+| z/fps                        | 102      |
+| z/rl_steps                   | 18000    |
+| z/rollouts                   | 495      |
+| z/time_cost                  | 230      |
+-------------------------------------------
+env steps 42030 
+---2022-10-12 15:25:43.658450 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.359    |
+| rl_loss/policy_loss    | 12.2     |
+| rl_loss/qf1_loss       | 0.831    |
+| rl_loss/qf2_loss       | 0.642    |
+-------------------------------------
+env steps 43600 
+---2022-10-12 15:25:53.660771 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.499    |
+| rl_loss/policy_loss    | 12.2     |
+| rl_loss/qf1_loss       | 0.988    |
+| rl_loss/qf2_loss       | 0.703    |
+-------------------------------------
+------2022-10-12 15:25:54.811588 EDT-------
+| metrics/return_eval_avg      | -97      |
+| metrics/total_steps_eval_avg | 53.5     |
+| z/env_steps                  | 43600    |
+| z/fps                        | 136      |
+| z/rl_steps                   | 20000    |
+| z/rollouts                   | 545      |
+| z/time_cost                  | 251      |
+-------------------------------------------
+env steps 45170 
+---2022-10-12 15:26:04.988134 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.566    |
+| rl_loss/policy_loss    | 12.2     |
+| rl_loss/qf1_loss       | 0.972    |
+| rl_loss/qf2_loss       | 1.1      |
+-------------------------------------
+------2022-10-12 15:26:06.632016 EDT-------
+| metrics/return_eval_avg      | -148     |
+| metrics/total_steps_eval_avg | 76.8     |
+| z/env_steps                  | 45170    |
+| z/fps                        | 133      |
+| z/rl_steps                   | 21000    |
+| z/rollouts                   | 570      |
+| z/time_cost                  | 263      |
+-------------------------------------------
+env steps 46182 
+---2022-10-12 15:26:15.999880 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.27     |
+| rl_loss/policy_loss    | 9.81     |
+| rl_loss/qf1_loss       | 0.749    |
+| rl_loss/qf2_loss       | 1.07     |
+-------------------------------------
+env steps 46358 
+---2022-10-12 15:26:24.367911 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0056   |
+| rl_loss/policy_loss    | 6.36     |
+| rl_loss/qf1_loss       | 0.432    |
+| rl_loss/qf2_loss       | 0.849    |
+-------------------------------------
+env steps 46533 
+---2022-10-12 15:26:32.723961 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0007   |
+| rl_loss/policy_loss    | 3.46     |
+| rl_loss/qf1_loss       | 0.294    |
+| rl_loss/qf2_loss       | 0.645    |
+-------------------------------------
+env steps 46708 
+---2022-10-12 15:26:41.144661 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0004   |
+| rl_loss/policy_loss    | 0.271    |
+| rl_loss/qf1_loss       | 0.108    |
+| rl_loss/qf2_loss       | 0.0545   |
+-------------------------------------
+env steps 46883 
+---2022-10-12 15:26:49.664959 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0002   |
+| rl_loss/policy_loss    | -3.27    |
+| rl_loss/qf1_loss       | 0.0145   |
+| rl_loss/qf2_loss       | 0.0191   |
+-------------------------------------
+env steps 47058 
+---2022-10-12 15:26:58.004494 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0001   |
+| rl_loss/policy_loss    | -4.91    |
+| rl_loss/qf1_loss       | 0.0089   |
+| rl_loss/qf2_loss       | 0.0124   |
+-------------------------------------
+env steps 47233 
+---2022-10-12 15:27:06.336416 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0001   |
+| rl_loss/policy_loss    | -5.21    |
+| rl_loss/qf1_loss       | 0.0044   |
+| rl_loss/qf2_loss       | 0.0054   |
+-------------------------------------
+env steps 47408 
+---2022-10-12 15:27:14.684096 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.28    |
+| rl_loss/qf1_loss       | 0.0106   |
+| rl_loss/qf2_loss       | 0.0125   |
+-------------------------------------
+env steps 47583 
+---2022-10-12 15:27:23.028370 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.29    |
+| rl_loss/qf1_loss       | 0.007    |
+| rl_loss/qf2_loss       | 0.0081   |
+-------------------------------------
+------2022-10-12 15:27:23.180377 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 47583    |
+| z/fps                        | 31.5     |
+| z/rl_steps                   | 30000    |
+| z/rollouts                   | 795      |
+| z/time_cost                  | 339      |
+-------------------------------------------
+env steps 47758 
+---2022-10-12 15:27:31.552936 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0001   |
+| rl_loss/policy_loss    | -5.34    |
+| rl_loss/qf1_loss       | 0.0115   |
+| rl_loss/qf2_loss       | 0.0153   |
+-------------------------------------
+env steps 47933 
+---2022-10-12 15:27:39.908417 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.35    |
+| rl_loss/qf1_loss       | 0.0111   |
+| rl_loss/qf2_loss       | 0.0172   |
+-------------------------------------
+env steps 48108 
+---2022-10-12 15:27:48.237017 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.32    |
+| rl_loss/qf1_loss       | 0.0061   |
+| rl_loss/qf2_loss       | 0.0127   |
+-------------------------------------
+env steps 48283 
+---2022-10-12 15:27:56.571207 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.34    |
+| rl_loss/qf1_loss       | 0.0053   |
+| rl_loss/qf2_loss       | 0.0047   |
+-------------------------------------
+env steps 48458 
+---2022-10-12 15:28:04.919051 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.33    |
+| rl_loss/qf1_loss       | 0.0094   |
+| rl_loss/qf2_loss       | 0.0086   |
+-------------------------------------
+env steps 48633 
+---2022-10-12 15:28:13.262502 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.38    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.005    |
+-------------------------------------
+env steps 48808 
+---2022-10-12 15:28:21.612314 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.48    |
+| rl_loss/qf1_loss       | 0.0061   |
+| rl_loss/qf2_loss       | 0.0064   |
+-------------------------------------
+env steps 48983 
+---2022-10-12 15:28:30.008266 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.45    |
+| rl_loss/qf1_loss       | 0.0057   |
+| rl_loss/qf2_loss       | 0.0069   |
+-------------------------------------
+env steps 49158 
+---2022-10-12 15:28:38.360309 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.45    |
+| rl_loss/qf1_loss       | 0.0047   |
+| rl_loss/qf2_loss       | 0.0079   |
+-------------------------------------
+env steps 49333 
+---2022-10-12 15:28:46.704469 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.44    |
+| rl_loss/qf1_loss       | 0.0045   |
+| rl_loss/qf2_loss       | 0.008    |
+-------------------------------------
+env steps 49508 
+---2022-10-12 15:28:55.068541 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.46    |
+| rl_loss/qf1_loss       | 0.0045   |
+| rl_loss/qf2_loss       | 0.0049   |
+-------------------------------------
+env steps 49683 
+---2022-10-12 15:29:03.444489 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.47    |
+| rl_loss/qf1_loss       | 0.0053   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 49858 
+---2022-10-12 15:29:11.826671 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.46    |
+| rl_loss/qf1_loss       | 0.0052   |
+| rl_loss/qf2_loss       | 0.0093   |
+-------------------------------------
+env steps 50033 
+---2022-10-12 15:29:20.206905 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.47    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0013   |
+-------------------------------------
+------2022-10-12 15:29:20.352956 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 50033    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 44000    |
+| z/rollouts                   | 1145     |
+| z/time_cost                  | 456      |
+-------------------------------------------
+env steps 50208 
+---2022-10-12 15:29:28.731942 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.49    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0052   |
+-------------------------------------
+env steps 50383 
+---2022-10-12 15:29:37.598209 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.45    |
+| rl_loss/qf1_loss       | 0.0065   |
+| rl_loss/qf2_loss       | 0.0091   |
+-------------------------------------
+env steps 50558 
+---2022-10-12 15:29:45.871828 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.45    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 50733 
+---2022-10-12 15:29:54.199659 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.49    |
+| rl_loss/qf1_loss       | 0.0057   |
+| rl_loss/qf2_loss       | 0.0067   |
+-------------------------------------
+env steps 50908 
+---2022-10-12 15:30:02.462437 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.55    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0038   |
+-------------------------------------
+env steps 51083 
+---2022-10-12 15:30:10.779266 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.46    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0047   |
+-------------------------------------
+env steps 51258 
+---2022-10-12 15:30:19.103381 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.47    |
+| rl_loss/qf1_loss       | 0.008    |
+| rl_loss/qf2_loss       | 0.0059   |
+-------------------------------------
+env steps 51433 
+---2022-10-12 15:30:27.459448 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.55    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0026   |
+-------------------------------------
+env steps 51608 
+---2022-10-12 15:30:35.820676 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.6     |
+| rl_loss/qf1_loss       | 0.0066   |
+| rl_loss/qf2_loss       | 0.0068   |
+-------------------------------------
+env steps 51783 
+---2022-10-12 15:30:44.204676 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.57    |
+| rl_loss/qf1_loss       | 0.0046   |
+| rl_loss/qf2_loss       | 0.0054   |
+-------------------------------------
+env steps 51958 
+---2022-10-12 15:30:52.612661 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.55    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.0049   |
+-------------------------------------
+env steps 52133 
+---2022-10-12 15:31:00.908454 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.6     |
+| rl_loss/qf1_loss       | 0.0038   |
+| rl_loss/qf2_loss       | 0.0057   |
+-------------------------------------
+env steps 52308 
+---2022-10-12 15:31:09.228974 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.59    |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0041   |
+-------------------------------------
+env steps 52483 
+---2022-10-12 15:31:17.629620 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.65    |
+| rl_loss/qf1_loss       | 0.0054   |
+| rl_loss/qf2_loss       | 0.0067   |
+-------------------------------------
+env steps 52658 
+---2022-10-12 15:31:26.010814 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.62    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0048   |
+-------------------------------------
+------2022-10-12 15:31:26.159288 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 52658    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 59000    |
+| z/rollouts                   | 1520     |
+| z/time_cost                  | 582      |
+-------------------------------------------
+env steps 52833 
+---2022-10-12 15:31:34.511595 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.61    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+env steps 53008 
+---2022-10-12 15:31:42.867074 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.62    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.0052   |
+-------------------------------------
+env steps 53183 
+---2022-10-12 15:31:51.203067 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.59    |
+| rl_loss/qf1_loss       | 0.0054   |
+| rl_loss/qf2_loss       | 0.0067   |
+-------------------------------------
+env steps 53358 
+---2022-10-12 15:31:59.564681 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.66    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.0046   |
+-------------------------------------
+env steps 53533 
+---2022-10-12 15:32:07.935957 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0001   |
+| rl_loss/policy_loss    | -5.67    |
+| rl_loss/qf1_loss       | 0.0065   |
+| rl_loss/qf2_loss       | 0.0058   |
+-------------------------------------
+env steps 53708 
+---2022-10-12 15:32:16.248976 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.66    |
+| rl_loss/qf1_loss       | 0.0046   |
+| rl_loss/qf2_loss       | 0.0074   |
+-------------------------------------
+env steps 53883 
+---2022-10-12 15:32:24.612696 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.72    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+env steps 54058 
+---2022-10-12 15:32:32.931114 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.63    |
+| rl_loss/qf1_loss       | 0.0057   |
+| rl_loss/qf2_loss       | 0.0084   |
+-------------------------------------
+env steps 54233 
+---2022-10-12 15:32:41.281194 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.61    |
+| rl_loss/qf1_loss       | 0.0006   |
+| rl_loss/qf2_loss       | 0.0003   |
+-------------------------------------
+env steps 54408 
+---2022-10-12 15:32:49.664222 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.68    |
+| rl_loss/qf1_loss       | 0.0049   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 54583 
+---2022-10-12 15:32:58.012329 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.73    |
+| rl_loss/qf1_loss       | 0.0046   |
+| rl_loss/qf2_loss       | 0.0105   |
+-------------------------------------
+env steps 54758 
+---2022-10-12 15:33:06.424377 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.72    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.004    |
+-------------------------------------
+env steps 54933 
+---2022-10-12 15:33:14.800369 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.66    |
+| rl_loss/qf1_loss       | 0.0033   |
+| rl_loss/qf2_loss       | 0.0036   |
+-------------------------------------
+env steps 55108 
+---2022-10-12 15:33:23.175443 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.73    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0026   |
+-------------------------------------
+------2022-10-12 15:33:23.327900 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 55108    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 73000    |
+| z/rollouts                   | 1870     |
+| z/time_cost                  | 699      |
+-------------------------------------------
+env steps 55283 
+---2022-10-12 15:33:31.651494 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.69    |
+| rl_loss/qf1_loss       | 0.0046   |
+| rl_loss/qf2_loss       | 0.0066   |
+-------------------------------------
+env steps 55458 
+---2022-10-12 15:33:40.004835 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.73    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 55633 
+---2022-10-12 15:33:48.370989 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.77    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 55808 
+---2022-10-12 15:33:56.726959 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.75    |
+| rl_loss/qf1_loss       | 0.0055   |
+| rl_loss/qf2_loss       | 0.0101   |
+-------------------------------------
+env steps 55983 
+---2022-10-12 15:34:05.103136 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.75    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0056   |
+-------------------------------------
+env steps 56158 
+---2022-10-12 15:34:13.477138 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.73    |
+| rl_loss/qf1_loss       | 0.0065   |
+| rl_loss/qf2_loss       | 0.0034   |
+-------------------------------------
+env steps 56333 
+---2022-10-12 15:34:21.840624 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.85    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 56508 
+---2022-10-12 15:34:30.191336 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.79    |
+| rl_loss/qf1_loss       | 0.0081   |
+| rl_loss/qf2_loss       | 0.0087   |
+-------------------------------------
+env steps 56683 
+---2022-10-12 15:34:38.553012 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.88    |
+| rl_loss/qf1_loss       | 0.0006   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 56858 
+---2022-10-12 15:34:46.955142 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.84    |
+| rl_loss/qf1_loss       | 0.0057   |
+| rl_loss/qf2_loss       | 0.0067   |
+-------------------------------------
+env steps 57033 
+---2022-10-12 15:34:55.345475 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.78    |
+| rl_loss/qf1_loss       | 0.0045   |
+| rl_loss/qf2_loss       | 0.004    |
+-------------------------------------
+env steps 57208 
+---2022-10-12 15:35:03.716385 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.84    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 57383 
+---2022-10-12 15:35:12.099153 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.85    |
+| rl_loss/qf1_loss       | 0.0049   |
+| rl_loss/qf2_loss       | 0.0045   |
+-------------------------------------
+env steps 57558 
+---2022-10-12 15:35:20.448258 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.8     |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.005    |
+-------------------------------------
+------2022-10-12 15:35:20.607281 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 57558    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 87000    |
+| z/rollouts                   | 2220     |
+| z/time_cost                  | 817      |
+-------------------------------------------
+env steps 57733 
+---2022-10-12 15:35:28.951481 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0001   |
+| rl_loss/policy_loss    | -5.84    |
+| rl_loss/qf1_loss       | 0.074    |
+| rl_loss/qf2_loss       | 0.0773   |
+-------------------------------------
+env steps 57908 
+---2022-10-12 15:35:37.267942 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.82    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 58083 
+---2022-10-12 15:35:45.619186 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.83    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0002   |
+-------------------------------------
+env steps 58258 
+---2022-10-12 15:35:53.895873 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.83    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.009    |
+-------------------------------------
+env steps 58433 
+---2022-10-12 15:36:02.336285 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.92    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 58608 
+---2022-10-12 15:36:10.755494 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.91    |
+| rl_loss/qf1_loss       | 0.005    |
+| rl_loss/qf2_loss       | 0.0068   |
+-------------------------------------
+env steps 58783 
+---2022-10-12 15:36:19.148220 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.87    |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 58958 
+---2022-10-12 15:36:27.563894 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.89    |
+| rl_loss/qf1_loss       | 0.0073   |
+| rl_loss/qf2_loss       | 0.0065   |
+-------------------------------------
+env steps 59133 
+---2022-10-12 15:36:35.956940 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.93    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0044   |
+-------------------------------------
+env steps 59308 
+---2022-10-12 15:36:44.348571 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.88    |
+| rl_loss/qf1_loss       | 0.0039   |
+| rl_loss/qf2_loss       | 0.0038   |
+-------------------------------------
+env steps 59483 
+---2022-10-12 15:36:52.787517 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.87    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 59658 
+---2022-10-12 15:37:01.116604 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.88    |
+| rl_loss/qf1_loss       | 0.0048   |
+| rl_loss/qf2_loss       | 0.0065   |
+-------------------------------------
+env steps 59833 
+---2022-10-12 15:37:09.507112 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.88    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0054   |
+-------------------------------------
+env steps 60008 
+---2022-10-12 15:37:17.882930 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.91    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+------2022-10-12 15:37:18.044215 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 60008    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 101000   |
+| z/rollouts                   | 2570     |
+| z/time_cost                  | 934      |
+-------------------------------------------
+env steps 60183 
+---2022-10-12 15:37:26.459385 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.92    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 60358 
+---2022-10-12 15:37:34.880338 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.95    |
+| rl_loss/qf1_loss       | 0.0049   |
+| rl_loss/qf2_loss       | 0.0076   |
+-------------------------------------
+env steps 60533 
+---2022-10-12 15:37:43.304785 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.98    |
+| rl_loss/qf1_loss       | 0.0052   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 60708 
+---2022-10-12 15:37:51.731513 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.92    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0085   |
+-------------------------------------
+env steps 60883 
+---2022-10-12 15:38:00.115894 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.93    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 61058 
+---2022-10-12 15:38:08.516401 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.94    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.005    |
+-------------------------------------
+env steps 61233 
+---2022-10-12 15:38:16.947872 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.02    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.005    |
+-------------------------------------
+env steps 61408 
+---2022-10-12 15:38:25.335060 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.02    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0035   |
+-------------------------------------
+env steps 61583 
+---2022-10-12 15:38:33.731345 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.99    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.0049   |
+-------------------------------------
+env steps 61758 
+---2022-10-12 15:38:41.974625 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.96    |
+| rl_loss/qf1_loss       | 0.004    |
+| rl_loss/qf2_loss       | 0.0003   |
+-------------------------------------
+env steps 61933 
+---2022-10-12 15:38:50.101937 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.03    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0069   |
+-------------------------------------
+env steps 62108 
+---2022-10-12 15:38:57.584895 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.97    |
+| rl_loss/qf1_loss       | 0.0043   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 62283 
+---2022-10-12 15:39:05.049373 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.01    |
+| rl_loss/qf1_loss       | 0.0033   |
+| rl_loss/qf2_loss       | 0.0078   |
+-------------------------------------
+env steps 62458 
+---2022-10-12 15:39:12.247334 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.99    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 62633 
+---2022-10-12 15:39:18.031959 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.04    |
+| rl_loss/qf1_loss       | 0.0059   |
+| rl_loss/qf2_loss       | 0.0045   |
+-------------------------------------
+------2022-10-12 15:39:18.096577 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 62633    |
+| z/fps                        | 21.9     |
+| z/rl_steps                   | 116000   |
+| z/rollouts                   | 2945     |
+| z/time_cost                  | 1054     |
+-------------------------------------------
+env steps 62808 
+---2022-10-12 15:39:25.566050 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.07    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0042   |
+-------------------------------------
+env steps 62983 
+---2022-10-12 15:39:33.008336 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.06    |
+| rl_loss/qf1_loss       | 0.0038   |
+| rl_loss/qf2_loss       | 0.0026   |
+-------------------------------------
+env steps 63158 
+---2022-10-12 15:39:40.260357 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -5.99    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0068   |
+-------------------------------------
+env steps 63333 
+---2022-10-12 15:39:46.885733 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.13    |
+| rl_loss/qf1_loss       | 0.0062   |
+| rl_loss/qf2_loss       | 0.0066   |
+-------------------------------------
+env steps 63508 
+---2022-10-12 15:39:55.204928 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.07    |
+| rl_loss/qf1_loss       | 0.0012   |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 63683 
+---2022-10-12 15:40:03.511956 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.02    |
+| rl_loss/qf1_loss       | 0.0049   |
+| rl_loss/qf2_loss       | 0.0041   |
+-------------------------------------
+env steps 63858 
+---2022-10-12 15:40:11.743779 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.03    |
+| rl_loss/qf1_loss       | 0.0042   |
+| rl_loss/qf2_loss       | 0.0057   |
+-------------------------------------
+env steps 64033 
+---2022-10-12 15:40:20.039365 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.11    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0043   |
+-------------------------------------
+env steps 64208 
+---2022-10-12 15:40:28.339860 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.07    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 64383 
+---2022-10-12 15:40:36.679236 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.1     |
+| rl_loss/qf1_loss       | 0.0044   |
+| rl_loss/qf2_loss       | 0.0048   |
+-------------------------------------
+env steps 64558 
+---2022-10-12 15:40:45.108923 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.13    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 64733 
+---2022-10-12 15:40:53.607844 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.09    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0038   |
+-------------------------------------
+env steps 64908 
+---2022-10-12 15:41:01.995381 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.07    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0055   |
+-------------------------------------
+env steps 65083 
+---2022-10-12 15:41:10.271963 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.11    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0062   |
+-------------------------------------
+------2022-10-12 15:41:10.426800 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 65083    |
+| z/fps                        | 21.8     |
+| z/rl_steps                   | 130000   |
+| z/rollouts                   | 3295     |
+| z/time_cost                  | 1166     |
+-------------------------------------------
+env steps 65258 
+---2022-10-12 15:41:18.700362 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.08    |
+| rl_loss/qf1_loss       | 0.0033   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 65433 
+---2022-10-12 15:41:26.955578 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.1     |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 65608 
+---2022-10-12 15:41:35.255311 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.15    |
+| rl_loss/qf1_loss       | 0.0047   |
+| rl_loss/qf2_loss       | 0.006    |
+-------------------------------------
+env steps 65783 
+---2022-10-12 15:41:43.533650 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.16    |
+| rl_loss/qf1_loss       | 0.0012   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 65958 
+---2022-10-12 15:41:51.775015 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.11    |
+| rl_loss/qf1_loss       | 0.0045   |
+| rl_loss/qf2_loss       | 0.0061   |
+-------------------------------------
+env steps 66133 
+---2022-10-12 15:42:00.065347 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.13    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0031   |
+-------------------------------------
+env steps 66308 
+---2022-10-12 15:42:08.378943 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.18    |
+| rl_loss/qf1_loss       | 0.0045   |
+| rl_loss/qf2_loss       | 0.0044   |
+-------------------------------------
+env steps 66483 
+---2022-10-12 15:42:16.619870 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.1     |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0041   |
+-------------------------------------
+env steps 66658 
+---2022-10-12 15:42:24.911017 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.15    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 66833 
+---2022-10-12 15:42:33.231539 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.15    |
+| rl_loss/qf1_loss       | 0.0042   |
+| rl_loss/qf2_loss       | 0.007    |
+-------------------------------------
+env steps 67008 
+---2022-10-12 15:42:41.515683 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.16    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 67183 
+---2022-10-12 15:42:49.838995 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.19    |
+| rl_loss/qf1_loss       | 0.0049   |
+| rl_loss/qf2_loss       | 0.0052   |
+-------------------------------------
+env steps 67358 
+---2022-10-12 15:42:58.144107 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.19    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 67533 
+---2022-10-12 15:43:06.424619 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.19    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0031   |
+-------------------------------------
+------2022-10-12 15:43:06.583260 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 67533    |
+| z/fps                        | 21.1     |
+| z/rl_steps                   | 144000   |
+| z/rollouts                   | 3645     |
+| z/time_cost                  | 1283     |
+-------------------------------------------
+env steps 67708 
+---2022-10-12 15:43:14.865826 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0.0004   |
+| rl_loss/policy_loss    | -6.2     |
+| rl_loss/qf1_loss       | 0.339    |
+| rl_loss/qf2_loss       | 0.339    |
+-------------------------------------
+env steps 67883 
+---2022-10-12 15:43:23.154566 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.11    |
+| rl_loss/qf1_loss       | 0.0046   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 68058 
+---2022-10-12 15:43:31.435956 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.13    |
+| rl_loss/qf1_loss       | 0.0069   |
+| rl_loss/qf2_loss       | 0.0045   |
+-------------------------------------
+env steps 68233 
+---2022-10-12 15:43:39.712333 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.14    |
+| rl_loss/qf1_loss       | 0.0048   |
+| rl_loss/qf2_loss       | 0.0043   |
+-------------------------------------
+env steps 68408 
+---2022-10-12 15:43:48.044267 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.19    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 68583 
+---2022-10-12 15:43:56.392385 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.3     |
+| rl_loss/qf1_loss       | 0.0624   |
+| rl_loss/qf2_loss       | 0.0557   |
+-------------------------------------
+env steps 68758 
+---2022-10-12 15:44:04.750838 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.31    |
+| rl_loss/qf1_loss       | 0.0167   |
+| rl_loss/qf2_loss       | 0.0115   |
+-------------------------------------
+env steps 68933 
+---2022-10-12 15:44:13.108211 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.23    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 69108 
+---2022-10-12 15:44:21.432527 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.18    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 69283 
+---2022-10-12 15:44:29.796378 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.19    |
+| rl_loss/qf1_loss       | 0.0045   |
+| rl_loss/qf2_loss       | 0.0061   |
+-------------------------------------
+env steps 69458 
+---2022-10-12 15:44:38.171742 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.2     |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0029   |
+-------------------------------------
+env steps 69633 
+---2022-10-12 15:44:46.527571 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.26    |
+| rl_loss/qf1_loss       | 0.004    |
+| rl_loss/qf2_loss       | 0.0049   |
+-------------------------------------
+env steps 69808 
+---2022-10-12 15:44:54.872638 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.23    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0053   |
+-------------------------------------
+env steps 69983 
+---2022-10-12 15:45:03.252995 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.29    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0013   |
+-------------------------------------
+env steps 70158 
+---2022-10-12 15:45:11.592067 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.27    |
+| rl_loss/qf1_loss       | 0.0052   |
+| rl_loss/qf2_loss       | 0.0049   |
+-------------------------------------
+------2022-10-12 15:45:11.746131 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 70158    |
+| z/fps                        | 21       |
+| z/rl_steps                   | 159000   |
+| z/rollouts                   | 4020     |
+| z/time_cost                  | 1408     |
+-------------------------------------------
+env steps 70333 
+---2022-10-12 15:45:20.076759 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.32    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.004    |
+-------------------------------------
+env steps 70508 
+---2022-10-12 15:45:28.431173 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.23    |
+| rl_loss/qf1_loss       | 0.0054   |
+| rl_loss/qf2_loss       | 0.0043   |
+-------------------------------------
+env steps 70683 
+---2022-10-12 15:45:36.866936 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.32    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 70858 
+---2022-10-12 15:45:45.239916 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.28    |
+| rl_loss/qf1_loss       | 0.0043   |
+| rl_loss/qf2_loss       | 0.0062   |
+-------------------------------------
+env steps 71033 
+---2022-10-12 15:45:53.568484 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.32    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 71208 
+---2022-10-12 15:46:02.041619 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.31    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0047   |
+-------------------------------------
+env steps 71383 
+---2022-10-12 15:46:10.564128 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.32    |
+| rl_loss/qf1_loss       | 0.0034   |
+| rl_loss/qf2_loss       | 0.0061   |
+-------------------------------------
+env steps 71558 
+---2022-10-12 15:46:19.055318 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.29    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 71733 
+---2022-10-12 15:46:27.584691 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.29    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0035   |
+-------------------------------------
+env steps 71908 
+---2022-10-12 15:46:36.119063 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.3     |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 72083 
+---2022-10-12 15:46:44.592285 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.32    |
+| rl_loss/qf1_loss       | 0.0042   |
+| rl_loss/qf2_loss       | 0.0071   |
+-------------------------------------
+env steps 72258 
+---2022-10-12 15:46:53.131270 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.3     |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 72433 
+---2022-10-12 15:47:01.714519 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.33    |
+| rl_loss/qf1_loss       | 0.0043   |
+| rl_loss/qf2_loss       | 0.0053   |
+-------------------------------------
+env steps 72608 
+---2022-10-12 15:47:10.236540 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.33    |
+| rl_loss/qf1_loss       | 0.004    |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+------2022-10-12 15:47:10.393237 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 72608    |
+| z/fps                        | 20.6     |
+| z/rl_steps                   | 173000   |
+| z/rollouts                   | 4370     |
+| z/time_cost                  | 1526     |
+-------------------------------------------
+env steps 72783 
+---2022-10-12 15:47:18.924028 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.25    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0045   |
+-------------------------------------
+env steps 72958 
+---2022-10-12 15:47:27.433528 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.34    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 73133 
+---2022-10-12 15:47:35.944377 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.34    |
+| rl_loss/qf1_loss       | 0.0042   |
+| rl_loss/qf2_loss       | 0.0026   |
+-------------------------------------
+env steps 73308 
+---2022-10-12 15:47:44.412233 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.4     |
+| rl_loss/qf1_loss       | 0.0009   |
+| rl_loss/qf2_loss       | 0.0057   |
+-------------------------------------
+env steps 73483 
+---2022-10-12 15:47:52.912929 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.34    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.0039   |
+-------------------------------------
+env steps 73658 
+---2022-10-12 15:48:01.441026 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.41    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 73833 
+---2022-10-12 15:48:09.931745 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.4     |
+| rl_loss/qf1_loss       | 0.0056   |
+| rl_loss/qf2_loss       | 0.006    |
+-------------------------------------
+env steps 74008 
+---2022-10-12 15:48:18.433183 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.47    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 74183 
+---2022-10-12 15:48:26.986645 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.39    |
+| rl_loss/qf1_loss       | 0.0047   |
+| rl_loss/qf2_loss       | 0.0057   |
+-------------------------------------
+env steps 74358 
+---2022-10-12 15:48:35.495004 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.42    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0035   |
+-------------------------------------
+env steps 74533 
+---2022-10-12 15:48:43.996382 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.39    |
+| rl_loss/qf1_loss       | 0.005    |
+| rl_loss/qf2_loss       | 0.0067   |
+-------------------------------------
+env steps 74708 
+---2022-10-12 15:48:52.491677 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.42    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 74883 
+---2022-10-12 15:49:00.996173 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.41    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+env steps 75058 
+---2022-10-12 15:49:09.531917 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.41    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+------2022-10-12 15:49:09.695577 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 75058    |
+| z/fps                        | 20.5     |
+| z/rl_steps                   | 187000   |
+| z/rollouts                   | 4720     |
+| z/time_cost                  | 1646     |
+-------------------------------------------
+env steps 75233 
+---2022-10-12 15:49:18.236607 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.45    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0072   |
+-------------------------------------
+env steps 75408 
+---2022-10-12 15:49:26.712631 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.39    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 75583 
+---2022-10-12 15:49:35.201744 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.4     |
+| rl_loss/qf1_loss       | 0.0039   |
+| rl_loss/qf2_loss       | 0.0049   |
+-------------------------------------
+env steps 75758 
+---2022-10-12 15:49:43.675821 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.44    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0035   |
+-------------------------------------
+env steps 75933 
+---2022-10-12 15:49:52.170686 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.49    |
+| rl_loss/qf1_loss       | 0.0034   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 76108 
+---2022-10-12 15:50:00.680330 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.41    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0044   |
+-------------------------------------
+env steps 76283 
+---2022-10-12 15:50:09.088460 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.41    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 76458 
+---2022-10-12 15:50:17.511086 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.44    |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 76633 
+---2022-10-12 15:50:26.436363 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.42    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0052   |
+-------------------------------------
+env steps 76808 
+---2022-10-12 15:50:34.776956 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.38    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0046   |
+-------------------------------------
+env steps 76983 
+---2022-10-12 15:50:43.135417 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.46    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0041   |
+-------------------------------------
+env steps 77158 
+---2022-10-12 15:50:51.527403 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.42    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 77333 
+---2022-10-12 15:50:59.876876 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.47    |
+| rl_loss/qf1_loss       | 0.0053   |
+| rl_loss/qf2_loss       | 0.0038   |
+-------------------------------------
+env steps 77508 
+---2022-10-12 15:51:08.189066 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.47    |
+| rl_loss/qf1_loss       | 0.0015   |
+| rl_loss/qf2_loss       | 0.0054   |
+-------------------------------------
+------2022-10-12 15:51:08.349076 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 77508    |
+| z/fps                        | 20.6     |
+| z/rl_steps                   | 201000   |
+| z/rollouts                   | 5070     |
+| z/time_cost                  | 1764     |
+-------------------------------------------
+env steps 77683 
+---2022-10-12 15:51:16.720049 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.52    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 77858 
+---2022-10-12 15:51:25.088871 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.47    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 78033 
+---2022-10-12 15:51:33.372649 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.51    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.006    |
+-------------------------------------
+env steps 78208 
+---2022-10-12 15:51:41.704677 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.47    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 78383 
+---2022-10-12 15:51:50.050896 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.47    |
+| rl_loss/qf1_loss       | 0.0051   |
+| rl_loss/qf2_loss       | 0.0041   |
+-------------------------------------
+env steps 78558 
+---2022-10-12 15:51:58.409212 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.56    |
+| rl_loss/qf1_loss       | 0.0005   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 78733 
+---2022-10-12 15:52:06.771507 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.46    |
+| rl_loss/qf1_loss       | 0.0043   |
+| rl_loss/qf2_loss       | 0.006    |
+-------------------------------------
+env steps 78908 
+---2022-10-12 15:52:15.128748 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.51    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 79083 
+---2022-10-12 15:52:23.484406 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.48    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0046   |
+-------------------------------------
+env steps 79258 
+---2022-10-12 15:52:31.842286 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.6     |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 79433 
+---2022-10-12 15:52:40.184870 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.53    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0042   |
+-------------------------------------
+env steps 79608 
+---2022-10-12 15:52:48.563226 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.55    |
+| rl_loss/qf1_loss       | 0.0042   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 79783 
+---2022-10-12 15:52:56.923295 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.5     |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0031   |
+-------------------------------------
+env steps 79958 
+---2022-10-12 15:53:05.288182 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.5     |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0057   |
+-------------------------------------
+env steps 80133 
+---2022-10-12 15:53:13.660337 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.53    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0013   |
+-------------------------------------
+------2022-10-12 15:53:13.819962 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 80133    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 216000   |
+| z/rollouts                   | 5445     |
+| z/time_cost                  | 1890     |
+-------------------------------------------
+env steps 80308 
+---2022-10-12 15:53:22.195071 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.51    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 80483 
+---2022-10-12 15:53:30.580643 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.5     |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0051   |
+-------------------------------------
+env steps 80658 
+---2022-10-12 15:53:38.952252 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.55    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+env steps 80833 
+---2022-10-12 15:53:47.364818 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.53    |
+| rl_loss/qf1_loss       | 0.0033   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 81008 
+---2022-10-12 15:53:55.682690 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.49    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 81183 
+---2022-10-12 15:54:04.058663 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.54    |
+| rl_loss/qf1_loss       | 0.0042   |
+| rl_loss/qf2_loss       | 0.0039   |
+-------------------------------------
+env steps 81358 
+---2022-10-12 15:54:12.414636 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.61    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+env steps 81533 
+---2022-10-12 15:54:20.771014 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.58    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 81708 
+---2022-10-12 15:54:29.124063 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.57    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0026   |
+-------------------------------------
+env steps 81883 
+---2022-10-12 15:54:37.463180 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.53    |
+| rl_loss/qf1_loss       | 0.0042   |
+| rl_loss/qf2_loss       | 0.0047   |
+-------------------------------------
+env steps 82058 
+---2022-10-12 15:54:45.804572 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.62    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0037   |
+-------------------------------------
+env steps 82233 
+---2022-10-12 15:54:54.181533 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.59    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+env steps 82408 
+---2022-10-12 15:55:02.528648 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.6     |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 82583 
+---2022-10-12 15:55:10.892562 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.61    |
+| rl_loss/qf1_loss       | 0.0052   |
+| rl_loss/qf2_loss       | 0.0046   |
+-------------------------------------
+------2022-10-12 15:55:11.055577 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 82583    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 230000   |
+| z/rollouts                   | 5795     |
+| z/time_cost                  | 2007     |
+-------------------------------------------
+env steps 82758 
+---2022-10-12 15:55:19.404536 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.66    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0044   |
+-------------------------------------
+env steps 82933 
+---2022-10-12 15:55:27.733650 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.54    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 83108 
+---2022-10-12 15:55:36.066240 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.53    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0036   |
+-------------------------------------
+env steps 83283 
+---2022-10-12 15:55:44.402708 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.63    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0037   |
+-------------------------------------
+env steps 83458 
+---2022-10-12 15:55:52.748718 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.61    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 83633 
+---2022-10-12 15:56:01.120275 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.63    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 83808 
+---2022-10-12 15:56:09.463186 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.59    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0034   |
+-------------------------------------
+env steps 83983 
+---2022-10-12 15:56:17.807304 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.61    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0034   |
+-------------------------------------
+env steps 84158 
+---2022-10-12 15:56:26.159765 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.61    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0037   |
+-------------------------------------
+env steps 84333 
+---2022-10-12 15:56:34.500237 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.6     |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 84508 
+---2022-10-12 15:56:42.803576 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.63    |
+| rl_loss/qf1_loss       | 0.0012   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 84683 
+---2022-10-12 15:56:51.188190 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.58    |
+| rl_loss/qf1_loss       | 0.0061   |
+| rl_loss/qf2_loss       | 0.0079   |
+-------------------------------------
+env steps 84858 
+---2022-10-12 15:56:59.572175 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.65    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 85033 
+---2022-10-12 15:57:07.910277 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.62    |
+| rl_loss/qf1_loss       | 0.0038   |
+| rl_loss/qf2_loss       | 0.0047   |
+-------------------------------------
+------2022-10-12 15:57:08.070171 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 85033    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 244000   |
+| z/rollouts                   | 6145     |
+| z/time_cost                  | 2124     |
+-------------------------------------------
+env steps 85208 
+---2022-10-12 15:57:16.418951 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.66    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0013   |
+-------------------------------------
+env steps 85383 
+---2022-10-12 15:57:24.772363 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.61    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0042   |
+-------------------------------------
+env steps 85558 
+---2022-10-12 15:57:33.072570 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.64    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 85733 
+---2022-10-12 15:57:41.434392 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.63    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 85908 
+---2022-10-12 15:57:49.828186 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.65    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 86083 
+---2022-10-12 15:57:58.191838 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.66    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 86258 
+---2022-10-12 15:58:06.552874 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.57    |
+| rl_loss/qf1_loss       | 0.0033   |
+| rl_loss/qf2_loss       | 0.0055   |
+-------------------------------------
+env steps 86433 
+---2022-10-12 15:58:14.891311 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.65    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 86608 
+---2022-10-12 15:58:23.264041 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.68    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 86783 
+---2022-10-12 15:58:31.667680 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.63    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 86958 
+---2022-10-12 15:58:39.990190 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.71    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0046   |
+-------------------------------------
+env steps 87133 
+---2022-10-12 15:58:48.335977 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.69    |
+| rl_loss/qf1_loss       | 0.0012   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 87308 
+---2022-10-12 15:58:56.702795 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.64    |
+| rl_loss/qf1_loss       | 0.0033   |
+| rl_loss/qf2_loss       | 0.0038   |
+-------------------------------------
+env steps 87483 
+---2022-10-12 15:59:05.036651 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.72    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.0043   |
+-------------------------------------
+env steps 87658 
+---2022-10-12 15:59:13.398581 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.69    |
+| rl_loss/qf1_loss       | 0.0006   |
+| rl_loss/qf2_loss       | 0.0026   |
+-------------------------------------
+------2022-10-12 15:59:13.558086 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 87658    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 259000   |
+| z/rollouts                   | 6520     |
+| z/time_cost                  | 2250     |
+-------------------------------------------
+env steps 87833 
+---2022-10-12 15:59:21.924009 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.67    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 88008 
+---2022-10-12 15:59:30.268186 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.67    |
+| rl_loss/qf1_loss       | 0.0049   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+env steps 88183 
+---2022-10-12 15:59:38.622389 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.68    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0046   |
+-------------------------------------
+env steps 88358 
+---2022-10-12 15:59:46.998972 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.68    |
+| rl_loss/qf1_loss       | 0.0007   |
+| rl_loss/qf2_loss       | 0.0006   |
+-------------------------------------
+env steps 88533 
+---2022-10-12 15:59:55.295234 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.68    |
+| rl_loss/qf1_loss       | 0.004    |
+| rl_loss/qf2_loss       | 0.0052   |
+-------------------------------------
+env steps 88708 
+---2022-10-12 16:00:03.511642 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.7     |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0043   |
+-------------------------------------
+env steps 88883 
+---2022-10-12 16:00:11.756976 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.72    |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 89058 
+---2022-10-12 16:00:20.115294 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.68    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0047   |
+-------------------------------------
+env steps 89233 
+---2022-10-12 16:00:28.466861 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.68    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 89408 
+---2022-10-12 16:00:36.807804 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.71    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.004    |
+-------------------------------------
+env steps 89583 
+---2022-10-12 16:00:45.171273 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.75    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0044   |
+-------------------------------------
+env steps 89758 
+---2022-10-12 16:00:53.596835 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.7     |
+| rl_loss/qf1_loss       | 0.0009   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 89933 
+---2022-10-12 16:01:01.924695 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.71    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 90108 
+---2022-10-12 16:01:10.304308 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.71    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0057   |
+-------------------------------------
+------2022-10-12 16:01:10.468884 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 90108    |
+| z/fps                        | 21       |
+| z/rl_steps                   | 273000   |
+| z/rollouts                   | 6870     |
+| z/time_cost                  | 2367     |
+-------------------------------------------
+env steps 90283 
+---2022-10-12 16:01:18.819600 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.7     |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 90458 
+---2022-10-12 16:01:27.184336 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.78    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 90633 
+---2022-10-12 16:01:35.523437 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.69    |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 90808 
+---2022-10-12 16:01:43.878927 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.79    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 90983 
+---2022-10-12 16:01:52.255408 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.71    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.004    |
+-------------------------------------
+env steps 91158 
+---2022-10-12 16:02:00.607426 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.79    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 91333 
+---2022-10-12 16:02:08.940656 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.79    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 91508 
+---2022-10-12 16:02:17.360453 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.75    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 91683 
+---2022-10-12 16:02:25.734914 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.75    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0055   |
+-------------------------------------
+env steps 91858 
+---2022-10-12 16:02:34.084849 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.74    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 92033 
+---2022-10-12 16:02:42.463682 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.78    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 92208 
+---2022-10-12 16:02:50.810897 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.82    |
+| rl_loss/qf1_loss       | 0.0044   |
+| rl_loss/qf2_loss       | 0.0054   |
+-------------------------------------
+env steps 92383 
+---2022-10-12 16:02:59.122012 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.73    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0009   |
+-------------------------------------
+env steps 92558 
+---2022-10-12 16:03:07.480655 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.75    |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0037   |
+-------------------------------------
+------2022-10-12 16:03:07.637583 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 92558    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 287000   |
+| z/rollouts                   | 7220     |
+| z/time_cost                  | 2484     |
+-------------------------------------------
+env steps 92733 
+---2022-10-12 16:03:16.030664 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.76    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 92908 
+---2022-10-12 16:03:24.383317 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.81    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 93083 
+---2022-10-12 16:03:32.776113 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.76    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.004    |
+-------------------------------------
+env steps 93258 
+---2022-10-12 16:03:41.159609 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.71    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 93433 
+---2022-10-12 16:03:49.504439 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.72    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0043   |
+-------------------------------------
+env steps 93608 
+---2022-10-12 16:03:57.872635 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.82    |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 93783 
+---2022-10-12 16:04:06.231717 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.78    |
+| rl_loss/qf1_loss       | 0.0045   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 93958 
+---2022-10-12 16:04:14.579814 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.86    |
+| rl_loss/qf1_loss       | 0.0007   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 94133 
+---2022-10-12 16:04:22.924684 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.75    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 94308 
+---2022-10-12 16:04:31.299729 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.82    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0034   |
+-------------------------------------
+env steps 94483 
+---2022-10-12 16:04:39.684629 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.84    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 94658 
+---2022-10-12 16:04:48.081341 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.75    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 94833 
+---2022-10-12 16:04:56.435808 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.77    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 95008 
+---2022-10-12 16:05:04.792087 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.77    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+------2022-10-12 16:05:04.948640 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 95008    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 301000   |
+| z/rollouts                   | 7570     |
+| z/time_cost                  | 2601     |
+-------------------------------------------
+env steps 95183 
+---2022-10-12 16:05:13.284977 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.79    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.0037   |
+-------------------------------------
+env steps 95358 
+---2022-10-12 16:05:21.651056 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.83    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 95533 
+---2022-10-12 16:05:30.030887 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.83    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 95708 
+---2022-10-12 16:05:38.355579 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.82    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0039   |
+-------------------------------------
+env steps 95883 
+---2022-10-12 16:05:46.695995 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.83    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 96058 
+---2022-10-12 16:05:55.040463 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.78    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0036   |
+-------------------------------------
+env steps 96233 
+---2022-10-12 16:06:03.388837 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.82    |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 96408 
+---2022-10-12 16:06:11.712234 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.85    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 96583 
+---2022-10-12 16:06:20.063769 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.86    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 96758 
+---2022-10-12 16:06:28.400068 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.88    |
+| rl_loss/qf1_loss       | 0.005    |
+| rl_loss/qf2_loss       | 0.0052   |
+-------------------------------------
+env steps 96933 
+---2022-10-12 16:06:36.759726 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.84    |
+| rl_loss/qf1_loss       | 0.0015   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 97108 
+---2022-10-12 16:06:45.092586 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.84    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 97283 
+---2022-10-12 16:06:53.448312 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.79    |
+| rl_loss/qf1_loss       | 0.0015   |
+| rl_loss/qf2_loss       | 0.0031   |
+-------------------------------------
+env steps 97458 
+---2022-10-12 16:07:01.815931 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.86    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 97633 
+---2022-10-12 16:07:10.186660 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.89    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+------2022-10-12 16:07:10.339113 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 97633    |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 316000   |
+| z/rollouts                   | 7945     |
+| z/time_cost                  | 2726     |
+-------------------------------------------
+env steps 97808 
+---2022-10-12 16:07:18.730664 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.85    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0036   |
+-------------------------------------
+env steps 97983 
+---2022-10-12 16:07:27.115350 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.85    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 98158 
+---2022-10-12 16:07:35.479591 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.82    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0004   |
+-------------------------------------
+env steps 98333 
+---2022-10-12 16:07:43.811635 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.78    |
+| rl_loss/qf1_loss       | 0.0034   |
+| rl_loss/qf2_loss       | 0.0055   |
+-------------------------------------
+env steps 98508 
+---2022-10-12 16:07:52.173881 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.84    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 98683 
+---2022-10-12 16:08:00.620476 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.91    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 98858 
+---2022-10-12 16:08:08.976622 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.83    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 99033 
+---2022-10-12 16:08:17.360442 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.82    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0029   |
+-------------------------------------
+env steps 99208 
+---2022-10-12 16:08:25.728102 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.88    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 99383 
+---2022-10-12 16:08:34.119027 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.83    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 99558 
+---2022-10-12 16:08:42.443995 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.87    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0031   |
+-------------------------------------
+env steps 99733 
+---2022-10-12 16:08:50.812330 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.88    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 99908 
+---2022-10-12 16:08:59.167994 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.89    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 100083 
+---2022-10-12 16:09:07.539561 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.91    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+------2022-10-12 16:09:07.694722 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 100083   |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 330000   |
+| z/rollouts                   | 8295     |
+| z/time_cost                  | 2844     |
+-------------------------------------------
+env steps 100258 
+---2022-10-12 16:09:16.094459 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.88    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+env steps 100433 
+---2022-10-12 16:09:24.511157 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.88    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 100608 
+---2022-10-12 16:09:32.868405 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.87    |
+| rl_loss/qf1_loss       | 0.0041   |
+| rl_loss/qf2_loss       | 0.0036   |
+-------------------------------------
+env steps 100783 
+---2022-10-12 16:09:41.213889 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.87    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 100958 
+---2022-10-12 16:09:49.615278 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.89    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 101133 
+---2022-10-12 16:09:57.955723 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.93    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 101308 
+---2022-10-12 16:10:06.356829 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.92    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 101483 
+---2022-10-12 16:10:14.776499 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.9     |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 101658 
+---2022-10-12 16:10:23.139820 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.93    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 101833 
+---2022-10-12 16:10:31.496177 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.94    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0034   |
+-------------------------------------
+env steps 102008 
+---2022-10-12 16:10:39.888002 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.9     |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 102183 
+---2022-10-12 16:10:48.253984 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.93    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 102358 
+---2022-10-12 16:10:56.617258 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.95    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 102533 
+---2022-10-12 16:11:04.997422 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.94    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+------2022-10-12 16:11:05.158101 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 102533   |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 344000   |
+| z/rollouts                   | 8645     |
+| z/time_cost                  | 2961     |
+-------------------------------------------
+env steps 102708 
+---2022-10-12 16:11:13.544517 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.94    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 102883 
+---2022-10-12 16:11:21.888178 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.96    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 103058 
+---2022-10-12 16:11:30.228456 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.95    |
+| rl_loss/qf1_loss       | 0.0043   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 103233 
+---2022-10-12 16:11:38.587583 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.95    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 103408 
+---2022-10-12 16:11:46.836610 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.89    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 103583 
+---2022-10-12 16:11:55.201004 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.88    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 103758 
+---2022-10-12 16:12:03.539768 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.9     |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 103933 
+---2022-10-12 16:12:11.894068 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.89    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 104108 
+---2022-10-12 16:12:20.230711 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7       |
+| rl_loss/qf1_loss       | 0.0012   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 104283 
+---2022-10-12 16:12:28.580147 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.94    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 104458 
+---2022-10-12 16:12:36.972661 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.96    |
+| rl_loss/qf1_loss       | 0.0033   |
+| rl_loss/qf2_loss       | 0.0039   |
+-------------------------------------
+env steps 104633 
+---2022-10-12 16:12:45.323977 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.01    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 104808 
+---2022-10-12 16:12:53.659666 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.93    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+env steps 104983 
+---2022-10-12 16:13:02.035680 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.95    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 105158 
+---2022-10-12 16:13:10.403567 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.98    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+------2022-10-12 16:13:10.564897 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 105158   |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 359000   |
+| z/rollouts                   | 9020     |
+| z/time_cost                  | 3087     |
+-------------------------------------------
+env steps 105333 
+---2022-10-12 16:13:18.896668 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.96    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 105508 
+---2022-10-12 16:13:27.251735 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.97    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 105683 
+---2022-10-12 16:13:35.619591 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.96    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 105858 
+---2022-10-12 16:13:43.948543 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.95    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 106033 
+---2022-10-12 16:13:52.287601 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.98    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 106208 
+---2022-10-12 16:14:00.644599 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.94    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 106383 
+---2022-10-12 16:14:08.999971 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.99    |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0013   |
+-------------------------------------
+env steps 106558 
+---2022-10-12 16:14:17.340857 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.94    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 106733 
+---2022-10-12 16:14:25.717140 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.95    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0051   |
+-------------------------------------
+env steps 106908 
+---2022-10-12 16:14:34.037151 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.98    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 107083 
+---2022-10-12 16:14:42.383430 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.91    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 107258 
+---2022-10-12 16:14:50.735904 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.97    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 107433 
+---2022-10-12 16:14:59.108338 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.97    |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 107608 
+---2022-10-12 16:15:07.468387 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.93    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+------2022-10-12 16:15:07.629016 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 107608   |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 373000   |
+| z/rollouts                   | 9370     |
+| z/time_cost                  | 3204     |
+-------------------------------------------
+env steps 107783 
+---2022-10-12 16:15:16.008136 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.02    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 107958 
+---2022-10-12 16:15:24.390824 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.01    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 108133 
+---2022-10-12 16:15:32.783061 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7       |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 108308 
+---2022-10-12 16:15:41.128092 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.98    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0039   |
+-------------------------------------
+env steps 108483 
+---2022-10-12 16:15:49.494713 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.97    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 108658 
+---2022-10-12 16:15:57.828234 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.01    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0005   |
+-------------------------------------
+env steps 108833 
+---2022-10-12 16:16:06.188174 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.02    |
+| rl_loss/qf1_loss       | 0.0046   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 109008 
+---2022-10-12 16:16:14.543773 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.01    |
+| rl_loss/qf1_loss       | 0.0007   |
+| rl_loss/qf2_loss       | 0.0038   |
+-------------------------------------
+env steps 109183 
+---2022-10-12 16:16:22.904486 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.05    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0036   |
+-------------------------------------
+env steps 109358 
+---2022-10-12 16:16:31.230176 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7       |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 109533 
+---2022-10-12 16:16:39.570541 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.99    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 109708 
+---2022-10-12 16:16:47.908821 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.06    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0009   |
+-------------------------------------
+env steps 109883 
+---2022-10-12 16:16:56.280192 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.07    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 110058 
+---2022-10-12 16:17:04.644702 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.97    |
+| rl_loss/qf1_loss       | 0.0009   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+------2022-10-12 16:17:04.795327 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 110058   |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 387000   |
+| z/rollouts                   | 9720     |
+| z/time_cost                  | 3321     |
+-------------------------------------------
+env steps 110233 
+---2022-10-12 16:17:13.172553 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.03    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 110408 
+---2022-10-12 16:17:21.563353 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.03    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 110583 
+---2022-10-12 16:17:29.952154 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.98    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 110758 
+---2022-10-12 16:17:38.287992 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.96    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 110933 
+---2022-10-12 16:17:46.564042 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.97    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 111108 
+---2022-10-12 16:17:54.914419 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.07    |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 111283 
+---2022-10-12 16:18:03.250851 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.07    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 111458 
+---2022-10-12 16:18:11.605252 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.04    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 111633 
+---2022-10-12 16:18:19.952740 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.01    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 111808 
+---2022-10-12 16:18:28.293092 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.04    |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0029   |
+-------------------------------------
+env steps 111983 
+---2022-10-12 16:18:36.652742 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7       |
+| rl_loss/qf1_loss       | 0.0015   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+env steps 112158 
+---2022-10-12 16:18:45.032975 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.06    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 112333 
+---2022-10-12 16:18:53.372861 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -6.95    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 112508 
+---2022-10-12 16:19:01.732019 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.06    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+------2022-10-12 16:19:01.882504 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 112508   |
+| z/fps                        | 20.9     |
+| z/rl_steps                   | 401000   |
+| z/rollouts                   | 10070    |
+| z/time_cost                  | 3438     |
+-------------------------------------------
+env steps 112683 
+---2022-10-12 16:19:10.251458 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.09    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 112858 
+---2022-10-12 16:19:18.575777 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.05    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 113033 
+---2022-10-12 16:19:26.953483 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.06    |
+| rl_loss/qf1_loss       | 0.0006   |
+| rl_loss/qf2_loss       | 0.0006   |
+-------------------------------------
+env steps 113208 
+---2022-10-12 16:19:35.339239 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.04    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 113383 
+---2022-10-12 16:19:43.739186 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.08    |
+| rl_loss/qf1_loss       | 0.0034   |
+| rl_loss/qf2_loss       | 0.0037   |
+-------------------------------------
+env steps 113558 
+---2022-10-12 16:19:52.074887 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 113733 
+---2022-10-12 16:20:00.399294 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.09    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 113908 
+---2022-10-12 16:20:08.651917 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.04    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 114083 
+---2022-10-12 16:20:16.788987 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.04    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0022   |
+-------------------------------------
+env steps 114258 
+---2022-10-12 16:20:25.143857 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 114433 
+---2022-10-12 16:20:33.523969 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.1     |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 114608 
+---2022-10-12 16:20:41.887515 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.03    |
+| rl_loss/qf1_loss       | 0.0024   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 114783 
+---2022-10-12 16:20:50.252781 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.06    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 114958 
+---2022-10-12 16:20:58.640499 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.09    |
+| rl_loss/qf1_loss       | 0.0034   |
+| rl_loss/qf2_loss       | 0.0031   |
+-------------------------------------
+env steps 115133 
+---2022-10-12 16:21:06.972989 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.09    |
+| rl_loss/qf1_loss       | 0.0015   |
+| rl_loss/qf2_loss       | 0.0013   |
+-------------------------------------
+------2022-10-12 16:21:07.135425 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 115133   |
+| z/fps                        | 21       |
+| z/rl_steps                   | 416000   |
+| z/rollouts                   | 10445    |
+| z/time_cost                  | 3563     |
+-------------------------------------------
+env steps 115308 
+---2022-10-12 16:21:15.523076 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0027   |
+| rl_loss/qf2_loss       | 0.0034   |
+-------------------------------------
+env steps 115483 
+---2022-10-12 16:21:23.816422 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.1     |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 115658 
+---2022-10-12 16:21:32.129357 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.07    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 115833 
+---2022-10-12 16:21:40.456002 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0015   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 116008 
+---2022-10-12 16:21:48.734773 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.08    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 116183 
+---2022-10-12 16:21:57.039517 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.04    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 116358 
+---2022-10-12 16:22:05.319677 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.07    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 116533 
+---2022-10-12 16:22:13.619094 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0038   |
+-------------------------------------
+env steps 116708 
+---2022-10-12 16:22:21.911284 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.09    |
+| rl_loss/qf1_loss       | 0.0006   |
+| rl_loss/qf2_loss       | 0.0005   |
+-------------------------------------
+env steps 116883 
+---2022-10-12 16:22:30.236343 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.08    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 117058 
+---2022-10-12 16:22:38.587517 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.13    |
+| rl_loss/qf1_loss       | 0.0031   |
+| rl_loss/qf2_loss       | 0.0031   |
+-------------------------------------
+env steps 117233 
+---2022-10-12 16:22:46.862884 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 117408 
+---2022-10-12 16:22:55.160205 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0021   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 117583 
+---2022-10-12 16:23:03.475324 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.13    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+------2022-10-12 16:23:03.624911 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 117583   |
+| z/fps                        | 21       |
+| z/rl_steps                   | 430000   |
+| z/rollouts                   | 10795    |
+| z/time_cost                  | 3680     |
+-------------------------------------------
+env steps 117758 
+---2022-10-12 16:23:11.959812 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 117933 
+---2022-10-12 16:23:20.275033 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.0029   |
+-------------------------------------
+env steps 118108 
+---2022-10-12 16:23:28.616589 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0009   |
+-------------------------------------
+env steps 118283 
+---2022-10-12 16:23:36.952548 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.1     |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0012   |
+-------------------------------------
+env steps 118458 
+---2022-10-12 16:23:45.231673 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.1     |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+env steps 118633 
+---2022-10-12 16:23:53.540425 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.0029   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 118808 
+---2022-10-12 16:24:01.875949 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 118983 
+---2022-10-12 16:24:10.207262 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.18    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0009   |
+-------------------------------------
+env steps 119158 
+---2022-10-12 16:24:18.512876 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.08    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 119333 
+---2022-10-12 16:24:26.828738 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.0009   |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 119508 
+---2022-10-12 16:24:35.146572 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0013   |
+| rl_loss/qf2_loss       | 0.0009   |
+-------------------------------------
+env steps 119683 
+---2022-10-12 16:24:43.456357 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.15    |
+| rl_loss/qf1_loss       | 0.0037   |
+| rl_loss/qf2_loss       | 0.004    |
+-------------------------------------
+env steps 119858 
+---2022-10-12 16:24:51.812177 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.13    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 120033 
+---2022-10-12 16:25:00.175406 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+------2022-10-12 16:25:00.328458 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 120033   |
+| z/fps                        | 21       |
+| z/rl_steps                   | 444000   |
+| z/rollouts                   | 11145    |
+| z/time_cost                  | 3796     |
+-------------------------------------------
+env steps 120208 
+---2022-10-12 16:25:08.667317 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0012   |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 120383 
+---2022-10-12 16:25:16.988862 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 120558 
+---2022-10-12 16:25:25.331262 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+env steps 120733 
+---2022-10-12 16:25:33.620308 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.15    |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 120908 
+---2022-10-12 16:25:41.888518 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.13    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 121083 
+---2022-10-12 16:25:50.191262 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.13    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 121258 
+---2022-10-12 16:25:58.474912 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.2     |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.001    |
+-------------------------------------
+env steps 121433 
+---2022-10-12 16:26:06.779641 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.13    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 121608 
+---2022-10-12 16:26:15.100656 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.15    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 121783 
+---2022-10-12 16:26:23.440713 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.17    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0027   |
+-------------------------------------
+env steps 121958 
+---2022-10-12 16:26:31.772610 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.001    |
+| rl_loss/qf2_loss       | 0.0013   |
+-------------------------------------
+env steps 122133 
+---2022-10-12 16:26:40.038395 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.0032   |
+| rl_loss/qf2_loss       | 0.0025   |
+-------------------------------------
+env steps 122308 
+---2022-10-12 16:26:48.322619 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.16    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0007   |
+-------------------------------------
+env steps 122483 
+---2022-10-12 16:26:56.655349 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.17    |
+| rl_loss/qf1_loss       | 0.0015   |
+| rl_loss/qf2_loss       | 0.0011   |
+-------------------------------------
+env steps 122658 
+---2022-10-12 16:27:04.936547 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.17    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.003    |
+-------------------------------------
+------2022-10-12 16:27:05.097745 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 122658   |
+| z/fps                        | 21       |
+| z/rl_steps                   | 459000   |
+| z/rollouts                   | 11520    |
+| z/time_cost                  | 3921     |
+-------------------------------------------
+env steps 122833 
+---2022-10-12 16:27:13.438505 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.16    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 123008 
+---2022-10-12 16:27:21.772123 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.21    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0023   |
+-------------------------------------
+env steps 123183 
+---2022-10-12 16:27:30.083634 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.19    |
+| rl_loss/qf1_loss       | 0.0007   |
+| rl_loss/qf2_loss       | 0.0005   |
+-------------------------------------
+env steps 123358 
+---2022-10-12 16:27:38.408948 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.13    |
+| rl_loss/qf1_loss       | 0.002    |
+| rl_loss/qf2_loss       | 0.002    |
+-------------------------------------
+env steps 123533 
+---2022-10-12 16:27:46.718520 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.15    |
+| rl_loss/qf1_loss       | 0.0017   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------
+env steps 123708 
+---2022-10-12 16:27:55.000337 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.16    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 123883 
+---2022-10-12 16:28:03.308340 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 124058 
+---2022-10-12 16:28:11.606689 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0019   |
+-------------------------------------
+env steps 124233 
+---2022-10-12 16:28:19.920989 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0016   |
+| rl_loss/qf2_loss       | 0.0014   |
+-------------------------------------
+env steps 124408 
+---2022-10-12 16:28:28.231883 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.16    |
+| rl_loss/qf1_loss       | 0.0011   |
+| rl_loss/qf2_loss       | 0.0005   |
+-------------------------------------
+env steps 124583 
+---2022-10-12 16:28:36.565294 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.14    |
+| rl_loss/qf1_loss       | 0.0025   |
+| rl_loss/qf2_loss       | 0.0017   |
+-------------------------------------
+env steps 124758 
+---2022-10-12 16:28:44.885394 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.16    |
+| rl_loss/qf1_loss       | 0.0036   |
+| rl_loss/qf2_loss       | 0.0034   |
+-------------------------------------
+env steps 124933 
+---2022-10-12 16:28:53.183429 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0012   |
+| rl_loss/qf2_loss       | 0.0009   |
+-------------------------------------
+env steps 125108 
+---2022-10-12 16:29:01.480108 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.17    |
+| rl_loss/qf1_loss       | 0.0022   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+------2022-10-12 16:29:01.642695 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 125108   |
+| z/fps                        | 21       |
+| z/rl_steps                   | 473000   |
+| z/rollouts                   | 11870    |
+| z/time_cost                  | 4038     |
+-------------------------------------------
+env steps 125283 
+---2022-10-12 16:29:09.972865 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.18    |
+| rl_loss/qf1_loss       | 0.0023   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 125458 
+---2022-10-12 16:29:18.281178 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.23    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0008   |
+-------------------------------------
+env steps 125633 
+---2022-10-12 16:29:26.579566 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.19    |
+| rl_loss/qf1_loss       | 0.0039   |
+| rl_loss/qf2_loss       | 0.0036   |
+-------------------------------------
+env steps 125808 
+---2022-10-12 16:29:34.902863 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.24    |
+| rl_loss/qf1_loss       | 0.0006   |
+| rl_loss/qf2_loss       | 0.0003   |
+-------------------------------------
+env steps 125983 
+---2022-10-12 16:29:43.239592 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.11    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 126158 
+---2022-10-12 16:29:51.545311 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.15    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0009   |
+-------------------------------------
+env steps 126333 
+---2022-10-12 16:29:59.910151 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.15    |
+| rl_loss/qf1_loss       | 0.0035   |
+| rl_loss/qf2_loss       | 0.0032   |
+-------------------------------------
+env steps 126508 
+---2022-10-12 16:30:08.295627 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.24    |
+| rl_loss/qf1_loss       | 0.0006   |
+| rl_loss/qf2_loss       | 0.0005   |
+-------------------------------------
+env steps 126683 
+---2022-10-12 16:30:16.615662 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.2     |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0033   |
+-------------------------------------
+env steps 126858 
+---2022-10-12 16:30:24.979518 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.2     |
+| rl_loss/qf1_loss       | 0.0014   |
+| rl_loss/qf2_loss       | 0.0015   |
+-------------------------------------
+env steps 127033 
+---2022-10-12 16:30:33.295089 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.17    |
+| rl_loss/qf1_loss       | 0.0026   |
+| rl_loss/qf2_loss       | 0.0024   |
+-------------------------------------
+env steps 127208 
+---2022-10-12 16:30:41.583470 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.19    |
+| rl_loss/qf1_loss       | 0.0018   |
+| rl_loss/qf2_loss       | 0.0018   |
+-------------------------------------
+env steps 127383 
+---2022-10-12 16:30:49.895830 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.2     |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0005   |
+-------------------------------------
+env steps 127558 
+---2022-10-12 16:30:58.276646 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.12    |
+| rl_loss/qf1_loss       | 0.003    |
+| rl_loss/qf2_loss       | 0.0028   |
+-------------------------------------
+------2022-10-12 16:30:58.437155 EDT-------
+| metrics/return_eval_avg      | 6        |
+| metrics/total_steps_eval_avg | 7        |
+| z/env_steps                  | 127558   |
+| z/fps                        | 21       |
+| z/rl_steps                   | 487000   |
+| z/rollouts                   | 12220    |
+| z/time_cost                  | 4154     |
+-------------------------------------------
+env steps 127733 
+---2022-10-12 16:31:06.731499 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.18    |
+| rl_loss/qf1_loss       | 0.0019   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 127908 
+---2022-10-12 16:31:15.076678 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.15    |
+| rl_loss/qf1_loss       | 0.0008   |
+| rl_loss/qf2_loss       | 0.0016   |
+-------------------------------------
+env steps 128083 
+---2022-10-12 16:31:23.348213 EDT----
+| rl_loss/alpha          | 0.1      |
+| rl_loss/policy_entropy | 0        |
+| rl_loss/policy_loss    | -7.19    |
+| rl_loss/qf1_loss       | 0.0028   |
+| rl_loss/qf2_loss       | 0.0021   |
+-------------------------------------

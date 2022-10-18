@@ -1,0 +1,16 @@
+Logging to /data/scratch/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/sacd_lstm/alpha-0.1/gamma-0.9/len--1/bs-32/freq-1000/oar/10-10:17-48:48.42 
+preload cost 6.35s 
+--cfg=/data/scratch/idanshen/pomdp-baselines/configs/gridworld/tiger_door/rnn.yml
+
+--algo=sacd
+
+
+
+
+
+--nooracle
+--nodebug
+ 
+pid 55566 improbablex009.csail.mit.edu 
+obs_dim (30,) act_dim 4 
+<class 'policies.models.policy_rnn.ModelFreeOffPolicy_Separate_RNN'> memory 

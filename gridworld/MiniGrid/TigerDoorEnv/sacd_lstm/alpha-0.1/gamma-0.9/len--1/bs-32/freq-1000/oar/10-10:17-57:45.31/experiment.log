@@ -1,0 +1,2215 @@
+Logging to /data/scratch/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/sacd_lstm/alpha-0.1/gamma-0.9/len--1/bs-32/freq-1000/oar/10-10:17-57:45.31 
+preload cost 5.85s 
+--cfg=/data/scratch/idanshen/pomdp-baselines/configs/gridworld/tiger_door/rnn.yml
+
+--algo=sacd
+
+
+
+
+
+--nooracle
+--nodebug
+ 
+pid 55898 improbablex009.csail.mit.edu 
+obs_dim (30,) act_dim 4 
+<class 'policies.models.policy_rnn.ModelFreeOffPolicy_Separate_RNN'> memory 
+ModelFreeOffPolicy_Separate_RNN(
+  (critic): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (critic_target): Critic_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_shortcut_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=64, bias=True)
+    )
+    (qf1): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+    (qf2): FlattenMlp(
+      (fc0): Linear(in_features=192, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+  (actor_target): Actor_RNN(
+    (observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (action_embedder): FeatureExtractor(
+      (fc): Linear(in_features=4, out_features=16, bias=True)
+    )
+    (reward_embedder): FeatureExtractor(
+      (fc): Linear(in_features=1, out_features=16, bias=True)
+    )
+    (rnn): LSTM(64, 128)
+    (current_observ_embedder): FeatureExtractor(
+      (fc): Linear(in_features=30, out_features=32, bias=True)
+    )
+    (policy): CategoricalPolicy(
+      (fc0): Linear(in_features=160, out_features=128, bias=True)
+      (fc1): Linear(in_features=128, out_features=128, bias=True)
+      (last_fc): Linear(in_features=128, out_features=4, bias=True)
+    )
+  )
+) 
+<class 'buffers.seq_replay_buffer_vanilla.SeqReplayBuffer'> 
+*** total rollouts 12530 total env steps 1253000 
+total RAM usage: 4.38 GB
+ 
+Collecting initial pool of data.. 
+Done! env steps 3044 rollouts 45 
+env steps 4893 
+----2022-10-10 17:58:50.876207 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0825   |
+| rl_loss/pi_rnn_grad_norm | 0.24     |
+| rl_loss/policy_entropy   | 1.09     |
+| rl_loss/policy_loss      | 3.34     |
+| rl_loss/q_grad_norm      | 4.06     |
+| rl_loss/q_rnn_grad_norm  | 13.6     |
+| rl_loss/qf1_loss         | 14.1     |
+| rl_loss/qf2_loss         | 14.1     |
+---------------------------------------
+env steps 6580 
+----2022-10-10 17:59:40.631566 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0359   |
+| rl_loss/pi_rnn_grad_norm | 0.0921   |
+| rl_loss/policy_entropy   | 0.863    |
+| rl_loss/policy_loss      | 7.42     |
+| rl_loss/q_grad_norm      | 10.6     |
+| rl_loss/q_rnn_grad_norm  | 29.5     |
+| rl_loss/qf1_loss         | 2.66     |
+| rl_loss/qf2_loss         | 2.68     |
+---------------------------------------
+env steps 7118 
+----2022-10-10 18:00:26.780226 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0336   |
+| rl_loss/pi_rnn_grad_norm | 0.0636   |
+| rl_loss/policy_entropy   | 0.386    |
+| rl_loss/policy_loss      | 8.63     |
+| rl_loss/q_grad_norm      | 11.5     |
+| rl_loss/q_rnn_grad_norm  | 33.3     |
+| rl_loss/qf1_loss         | 7.26     |
+| rl_loss/qf2_loss         | 7.59     |
+---------------------------------------
+env steps 7401 
+----2022-10-10 18:01:11.716826 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0204   |
+| rl_loss/pi_rnn_grad_norm | 0.0489   |
+| rl_loss/policy_entropy   | 0.0413   |
+| rl_loss/policy_loss      | 5.19     |
+| rl_loss/q_grad_norm      | 14.8     |
+| rl_loss/q_rnn_grad_norm  | 44.3     |
+| rl_loss/qf1_loss         | 14.5     |
+| rl_loss/qf2_loss         | 15       |
+---------------------------------------
+env steps 9901 
+----2022-10-10 18:02:03.844679 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0071   |
+| rl_loss/pi_rnn_grad_norm | 0.0193   |
+| rl_loss/policy_entropy   | 0.0139   |
+| rl_loss/policy_loss      | 1.36     |
+| rl_loss/q_grad_norm      | 8.47     |
+| rl_loss/q_rnn_grad_norm  | 25       |
+| rl_loss/qf1_loss         | 9.72     |
+| rl_loss/qf2_loss         | 9.87     |
+---------------------------------------
+env steps 12401 
+----2022-10-10 18:02:55.984150 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0537   |
+| rl_loss/pi_rnn_grad_norm | 0.155    |
+| rl_loss/policy_entropy   | 0.0455   |
+| rl_loss/policy_loss      | 3.31     |
+| rl_loss/q_grad_norm      | 14.8     |
+| rl_loss/q_rnn_grad_norm  | 43.6     |
+| rl_loss/qf1_loss         | 7.36     |
+| rl_loss/qf2_loss         | 7.44     |
+---------------------------------------
+env steps 12958 
+----2022-10-10 18:03:41.673210 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0334   |
+| rl_loss/pi_rnn_grad_norm | 0.0975   |
+| rl_loss/policy_entropy   | 0.0153   |
+| rl_loss/policy_loss      | 4.03     |
+| rl_loss/q_grad_norm      | 26.8     |
+| rl_loss/q_rnn_grad_norm  | 112      |
+| rl_loss/qf1_loss         | 12.4     |
+| rl_loss/qf2_loss         | 12.4     |
+---------------------------------------
+------2022-10-10 18:03:42.344700 EDT-------
+| metrics/return_eval_avg      | 0.5      |
+| metrics/total_steps_eval_avg | 9.75     |
+| z/env_steps                  | 12958    |
+| z/fps                        | 36.8     |
+| z/rl_steps                   | 7000     |
+| z/rollouts                   | 220      |
+| z/time_cost                  | 351      |
+-------------------------------------------
+env steps 13217 
+----2022-10-10 18:04:27.416684 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0141   |
+| rl_loss/pi_rnn_grad_norm | 0.0271   |
+| rl_loss/policy_entropy   | 0.0127   |
+| rl_loss/policy_loss      | 3.81     |
+| rl_loss/q_grad_norm      | 10.5     |
+| rl_loss/q_rnn_grad_norm  | 31.7     |
+| rl_loss/qf1_loss         | 9.8      |
+| rl_loss/qf2_loss         | 9.84     |
+---------------------------------------
+env steps 13442 
+----2022-10-10 18:05:12.610784 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0126   |
+| rl_loss/pi_rnn_grad_norm | 0.0331   |
+| rl_loss/policy_entropy   | 0.0083   |
+| rl_loss/policy_loss      | 3.53     |
+| rl_loss/q_grad_norm      | 16.7     |
+| rl_loss/q_rnn_grad_norm  | 67       |
+| rl_loss/qf1_loss         | 8.78     |
+| rl_loss/qf2_loss         | 8.8      |
+---------------------------------------
+env steps 13667 
+----2022-10-10 18:05:57.932542 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0019   |
+| rl_loss/pi_rnn_grad_norm | 0.004    |
+| rl_loss/policy_entropy   | 0.0124   |
+| rl_loss/policy_loss      | 3.36     |
+| rl_loss/q_grad_norm      | 18.5     |
+| rl_loss/q_rnn_grad_norm  | 63.9     |
+| rl_loss/qf1_loss         | 9.25     |
+| rl_loss/qf2_loss         | 9.26     |
+---------------------------------------
+env steps 13892 
+----2022-10-10 18:06:43.129651 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0164   |
+| rl_loss/pi_rnn_grad_norm | 0.0386   |
+| rl_loss/policy_entropy   | 0.0096   |
+| rl_loss/policy_loss      | 3.41     |
+| rl_loss/q_grad_norm      | 41       |
+| rl_loss/q_rnn_grad_norm  | 139      |
+| rl_loss/qf1_loss         | 8.38     |
+| rl_loss/qf2_loss         | 8.39     |
+---------------------------------------
+env steps 14117 
+----2022-10-10 18:07:28.210517 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0082   |
+| rl_loss/pi_rnn_grad_norm | 0.0206   |
+| rl_loss/policy_entropy   | 0.0048   |
+| rl_loss/policy_loss      | 3.36     |
+| rl_loss/q_grad_norm      | 28.3     |
+| rl_loss/q_rnn_grad_norm  | 112      |
+| rl_loss/qf1_loss         | 7.82     |
+| rl_loss/qf2_loss         | 7.82     |
+---------------------------------------
+env steps 14342 
+----2022-10-10 18:08:13.449254 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0017   |
+| rl_loss/pi_rnn_grad_norm | 0.0045   |
+| rl_loss/policy_entropy   | 0.0058   |
+| rl_loss/policy_loss      | 3.38     |
+| rl_loss/q_grad_norm      | 8.39     |
+| rl_loss/q_rnn_grad_norm  | 20.5     |
+| rl_loss/qf1_loss         | 8.27     |
+| rl_loss/qf2_loss         | 8.27     |
+---------------------------------------
+env steps 14567 
+----2022-10-10 18:08:59.075351 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0021   |
+| rl_loss/pi_rnn_grad_norm | 0.0051   |
+| rl_loss/policy_entropy   | 0.0033   |
+| rl_loss/policy_loss      | 3.15     |
+| rl_loss/q_grad_norm      | 3.27     |
+| rl_loss/q_rnn_grad_norm  | 4.89     |
+| rl_loss/qf1_loss         | 7.73     |
+| rl_loss/qf2_loss         | 7.72     |
+---------------------------------------
+env steps 14792 
+----2022-10-10 18:09:44.770275 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0084   |
+| rl_loss/pi_rnn_grad_norm | 0.0132   |
+| rl_loss/policy_entropy   | 0.0058   |
+| rl_loss/policy_loss      | 3.11     |
+| rl_loss/q_grad_norm      | 3.23     |
+| rl_loss/q_rnn_grad_norm  | 3.98     |
+| rl_loss/qf1_loss         | 7.35     |
+| rl_loss/qf2_loss         | 7.35     |
+---------------------------------------
+env steps 15017 
+----2022-10-10 18:10:29.543414 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0013   |
+| rl_loss/pi_rnn_grad_norm | 0.0028   |
+| rl_loss/policy_entropy   | 0.0039   |
+| rl_loss/policy_loss      | 3.06     |
+| rl_loss/q_grad_norm      | 6.82     |
+| rl_loss/q_rnn_grad_norm  | 13       |
+| rl_loss/qf1_loss         | 7.96     |
+| rl_loss/qf2_loss         | 7.95     |
+---------------------------------------
+env steps 15242 
+----2022-10-10 18:11:13.407651 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0004   |
+| rl_loss/pi_rnn_grad_norm | 0.0008   |
+| rl_loss/policy_entropy   | 0.0005   |
+| rl_loss/policy_loss      | 3.07     |
+| rl_loss/q_grad_norm      | 17.3     |
+| rl_loss/q_rnn_grad_norm  | 54       |
+| rl_loss/qf1_loss         | 7.59     |
+| rl_loss/qf2_loss         | 7.59     |
+---------------------------------------
+env steps 15467 
+----2022-10-10 18:11:56.208124 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0.0023   |
+| rl_loss/policy_loss      | 3.29     |
+| rl_loss/q_grad_norm      | 4.93     |
+| rl_loss/q_rnn_grad_norm  | 8.25     |
+| rl_loss/qf1_loss         | 6.74     |
+| rl_loss/qf2_loss         | 6.74     |
+---------------------------------------
+env steps 15692 
+----2022-10-10 18:12:41.106941 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0.0123   |
+| rl_loss/pi_rnn_grad_norm | 0.0259   |
+| rl_loss/policy_entropy   | 0.0015   |
+| rl_loss/policy_loss      | 3.14     |
+| rl_loss/q_grad_norm      | 6.12     |
+| rl_loss/q_rnn_grad_norm  | 10.5     |
+| rl_loss/qf1_loss         | 7.06     |
+| rl_loss/qf2_loss         | 7.05     |
+---------------------------------------
+env steps 15917 
+----2022-10-10 18:13:26.725222 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0.0006   |
+| rl_loss/policy_loss      | 2.98     |
+| rl_loss/q_grad_norm      | 4.97     |
+| rl_loss/q_rnn_grad_norm  | 7.29     |
+| rl_loss/qf1_loss         | 6.58     |
+| rl_loss/qf2_loss         | 6.57     |
+---------------------------------------
+env steps 16142 
+----2022-10-10 18:14:12.428108 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0.0003   |
+| rl_loss/policy_loss      | 2.59     |
+| rl_loss/q_grad_norm      | 4.71     |
+| rl_loss/q_rnn_grad_norm  | 7.28     |
+| rl_loss/qf1_loss         | 7.56     |
+| rl_loss/qf2_loss         | 7.55     |
+---------------------------------------
+env steps 16367 
+----2022-10-10 18:14:58.143053 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 1.22     |
+| rl_loss/q_grad_norm      | 10.5     |
+| rl_loss/q_rnn_grad_norm  | 20.2     |
+| rl_loss/qf1_loss         | 6.64     |
+| rl_loss/qf2_loss         | 6.64     |
+---------------------------------------
+env steps 16592 
+----2022-10-10 18:15:43.854590 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 0.91     |
+| rl_loss/q_grad_norm      | 7.38     |
+| rl_loss/q_rnn_grad_norm  | 12.2     |
+| rl_loss/qf1_loss         | 6.98     |
+| rl_loss/qf2_loss         | 6.97     |
+---------------------------------------
+env steps 16817 
+----2022-10-10 18:16:29.508092 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 0.758    |
+| rl_loss/q_grad_norm      | 2.36     |
+| rl_loss/q_rnn_grad_norm  | 2.28     |
+| rl_loss/qf1_loss         | 6.29     |
+| rl_loss/qf2_loss         | 6.29     |
+---------------------------------------
+env steps 17042 
+----2022-10-10 18:17:14.636741 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 0.734    |
+| rl_loss/q_grad_norm      | 4.27     |
+| rl_loss/q_rnn_grad_norm  | 4.93     |
+| rl_loss/qf1_loss         | 6.65     |
+| rl_loss/qf2_loss         | 6.64     |
+---------------------------------------
+env steps 17267 
+----2022-10-10 18:17:59.560808 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 0.426    |
+| rl_loss/q_grad_norm      | 47.6     |
+| rl_loss/q_rnn_grad_norm  | 106      |
+| rl_loss/qf1_loss         | 8.13     |
+| rl_loss/qf2_loss         | 8.12     |
+---------------------------------------
+env steps 17492 
+----2022-10-10 18:18:45.029510 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 0.165    |
+| rl_loss/q_grad_norm      | 5.5      |
+| rl_loss/q_rnn_grad_norm  | 8.06     |
+| rl_loss/qf1_loss         | 6.3      |
+| rl_loss/qf2_loss         | 6.3      |
+---------------------------------------
+env steps 17717 
+----2022-10-10 18:19:30.454893 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 0.164    |
+| rl_loss/q_grad_norm      | 4.43     |
+| rl_loss/q_rnn_grad_norm  | 5.29     |
+| rl_loss/qf1_loss         | 6.24     |
+| rl_loss/qf2_loss         | 6.24     |
+---------------------------------------
+env steps 17942 
+----2022-10-10 18:20:16.290280 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | 0.086    |
+| rl_loss/q_grad_norm      | 2.66     |
+| rl_loss/q_rnn_grad_norm  | 3.37     |
+| rl_loss/qf1_loss         | 6.31     |
+| rl_loss/qf2_loss         | 6.31     |
+---------------------------------------
+env steps 18167 
+----2022-10-10 18:21:01.910547 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.0512  |
+| rl_loss/q_grad_norm      | 6.95     |
+| rl_loss/q_rnn_grad_norm  | 9.55     |
+| rl_loss/qf1_loss         | 6.09     |
+| rl_loss/qf2_loss         | 6.09     |
+---------------------------------------
+env steps 18392 
+----2022-10-10 18:21:47.270437 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.258   |
+| rl_loss/q_grad_norm      | 4.17     |
+| rl_loss/q_rnn_grad_norm  | 4.36     |
+| rl_loss/qf1_loss         | 5.99     |
+| rl_loss/qf2_loss         | 5.98     |
+---------------------------------------
+env steps 18617 
+----2022-10-10 18:22:32.952988 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.41    |
+| rl_loss/q_grad_norm      | 5.56     |
+| rl_loss/q_rnn_grad_norm  | 6.8      |
+| rl_loss/qf1_loss         | 5.67     |
+| rl_loss/qf2_loss         | 5.67     |
+---------------------------------------
+env steps 18842 
+----2022-10-10 18:23:18.162508 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.484   |
+| rl_loss/q_grad_norm      | 4.23     |
+| rl_loss/q_rnn_grad_norm  | 5.6      |
+| rl_loss/qf1_loss         | 5.94     |
+| rl_loss/qf2_loss         | 5.94     |
+---------------------------------------
+env steps 19067 
+----2022-10-10 18:24:02.093826 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.226   |
+| rl_loss/q_grad_norm      | 3.55     |
+| rl_loss/q_rnn_grad_norm  | 3.24     |
+| rl_loss/qf1_loss         | 5.74     |
+| rl_loss/qf2_loss         | 5.73     |
+---------------------------------------
+env steps 19292 
+----2022-10-10 18:24:47.405848 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.335   |
+| rl_loss/q_grad_norm      | 3.85     |
+| rl_loss/q_rnn_grad_norm  | 3.97     |
+| rl_loss/qf1_loss         | 5.81     |
+| rl_loss/qf2_loss         | 5.81     |
+---------------------------------------
+env steps 19517 
+----2022-10-10 18:25:32.557426 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.331   |
+| rl_loss/q_grad_norm      | 2.64     |
+| rl_loss/q_rnn_grad_norm  | 1.97     |
+| rl_loss/qf1_loss         | 5.77     |
+| rl_loss/qf2_loss         | 5.76     |
+---------------------------------------
+env steps 19742 
+----2022-10-10 18:26:17.868893 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.564   |
+| rl_loss/q_grad_norm      | 3.57     |
+| rl_loss/q_rnn_grad_norm  | 3.17     |
+| rl_loss/qf1_loss         | 5.82     |
+| rl_loss/qf2_loss         | 5.81     |
+---------------------------------------
+env steps 19967 
+----2022-10-10 18:27:03.052229 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.605   |
+| rl_loss/q_grad_norm      | 2.55     |
+| rl_loss/q_rnn_grad_norm  | 1.63     |
+| rl_loss/qf1_loss         | 5.67     |
+| rl_loss/qf2_loss         | 5.68     |
+---------------------------------------
+env steps 20192 
+----2022-10-10 18:27:48.426890 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.691   |
+| rl_loss/q_grad_norm      | 6.64     |
+| rl_loss/q_rnn_grad_norm  | 8.85     |
+| rl_loss/qf1_loss         | 5.69     |
+| rl_loss/qf2_loss         | 5.69     |
+---------------------------------------
+env steps 20417 
+----2022-10-10 18:28:33.762445 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.735   |
+| rl_loss/q_grad_norm      | 4.46     |
+| rl_loss/q_rnn_grad_norm  | 1.7      |
+| rl_loss/qf1_loss         | 5.68     |
+| rl_loss/qf2_loss         | 5.68     |
+---------------------------------------
+env steps 20642 
+----2022-10-10 18:29:19.075623 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.799   |
+| rl_loss/q_grad_norm      | 8.61     |
+| rl_loss/q_rnn_grad_norm  | 9.59     |
+| rl_loss/qf1_loss         | 5.55     |
+| rl_loss/qf2_loss         | 5.55     |
+---------------------------------------
+env steps 20867 
+----2022-10-10 18:30:04.378733 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -0.872   |
+| rl_loss/q_grad_norm      | 2.43     |
+| rl_loss/q_rnn_grad_norm  | 1.73     |
+| rl_loss/qf1_loss         | 5.36     |
+| rl_loss/qf2_loss         | 5.36     |
+---------------------------------------
+env steps 21092 
+----2022-10-10 18:30:49.696170 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.02    |
+| rl_loss/q_grad_norm      | 2.16     |
+| rl_loss/q_rnn_grad_norm  | 1.25     |
+| rl_loss/qf1_loss         | 5.04     |
+| rl_loss/qf2_loss         | 5.04     |
+---------------------------------------
+env steps 21317 
+----2022-10-10 18:31:35.135505 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.05    |
+| rl_loss/q_grad_norm      | 2.74     |
+| rl_loss/q_rnn_grad_norm  | 1.77     |
+| rl_loss/qf1_loss         | 5.07     |
+| rl_loss/qf2_loss         | 5.07     |
+---------------------------------------
+env steps 21542 
+----2022-10-10 18:32:21.116501 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.1     |
+| rl_loss/q_grad_norm      | 3.68     |
+| rl_loss/q_rnn_grad_norm  | 3.22     |
+| rl_loss/qf1_loss         | 5.11     |
+| rl_loss/qf2_loss         | 5.1      |
+---------------------------------------
+env steps 21767 
+----2022-10-10 18:33:06.827143 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.07    |
+| rl_loss/q_grad_norm      | 2.06     |
+| rl_loss/q_rnn_grad_norm  | 1.22     |
+| rl_loss/qf1_loss         | 5.25     |
+| rl_loss/qf2_loss         | 5.25     |
+---------------------------------------
+env steps 21992 
+----2022-10-10 18:33:52.489718 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.22    |
+| rl_loss/q_grad_norm      | 20.4     |
+| rl_loss/q_rnn_grad_norm  | 39.1     |
+| rl_loss/qf1_loss         | 5.34     |
+| rl_loss/qf2_loss         | 5.34     |
+---------------------------------------
+env steps 22217 
+----2022-10-10 18:34:37.873549 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.4     |
+| rl_loss/q_grad_norm      | 3.95     |
+| rl_loss/q_rnn_grad_norm  | 2.8      |
+| rl_loss/qf1_loss         | 5.05     |
+| rl_loss/qf2_loss         | 5.05     |
+---------------------------------------
+env steps 22442 
+----2022-10-10 18:35:23.790511 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.41    |
+| rl_loss/q_grad_norm      | 2.04     |
+| rl_loss/q_rnn_grad_norm  | 0.826    |
+| rl_loss/qf1_loss         | 5.2      |
+| rl_loss/qf2_loss         | 5.2      |
+---------------------------------------
+env steps 22667 
+----2022-10-10 18:36:09.286342 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.47    |
+| rl_loss/q_grad_norm      | 2.65     |
+| rl_loss/q_rnn_grad_norm  | 2.23     |
+| rl_loss/qf1_loss         | 5.23     |
+| rl_loss/qf2_loss         | 5.23     |
+---------------------------------------
+env steps 22892 
+----2022-10-10 18:36:54.963780 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.43    |
+| rl_loss/q_grad_norm      | 3.75     |
+| rl_loss/q_rnn_grad_norm  | 2.79     |
+| rl_loss/qf1_loss         | 4.4      |
+| rl_loss/qf2_loss         | 4.4      |
+---------------------------------------
+env steps 23117 
+----2022-10-10 18:37:40.811979 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.52    |
+| rl_loss/q_grad_norm      | 43.3     |
+| rl_loss/q_rnn_grad_norm  | 135      |
+| rl_loss/qf1_loss         | 4.48     |
+| rl_loss/qf2_loss         | 4.48     |
+---------------------------------------
+env steps 23342 
+----2022-10-10 18:38:26.396361 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.59    |
+| rl_loss/q_grad_norm      | 2.98     |
+| rl_loss/q_rnn_grad_norm  | 2.5      |
+| rl_loss/qf1_loss         | 5.05     |
+| rl_loss/qf2_loss         | 5.04     |
+---------------------------------------
+env steps 23567 
+----2022-10-10 18:39:12.219619 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.59    |
+| rl_loss/q_grad_norm      | 4.65     |
+| rl_loss/q_rnn_grad_norm  | 3.99     |
+| rl_loss/qf1_loss         | 4.76     |
+| rl_loss/qf2_loss         | 4.75     |
+---------------------------------------
+env steps 23792 
+----2022-10-10 18:39:58.452274 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.58    |
+| rl_loss/q_grad_norm      | 3.15     |
+| rl_loss/q_rnn_grad_norm  | 3.5      |
+| rl_loss/qf1_loss         | 4.34     |
+| rl_loss/qf2_loss         | 4.34     |
+---------------------------------------
+env steps 24017 
+----2022-10-10 18:40:44.236780 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.67    |
+| rl_loss/q_grad_norm      | 3.67     |
+| rl_loss/q_rnn_grad_norm  | 4.45     |
+| rl_loss/qf1_loss         | 4.47     |
+| rl_loss/qf2_loss         | 4.47     |
+---------------------------------------
+env steps 24242 
+----2022-10-10 18:41:30.087060 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.69    |
+| rl_loss/q_grad_norm      | 2.45     |
+| rl_loss/q_rnn_grad_norm  | 1.42     |
+| rl_loss/qf1_loss         | 4.42     |
+| rl_loss/qf2_loss         | 4.42     |
+---------------------------------------
+env steps 24467 
+----2022-10-10 18:42:15.656501 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.83    |
+| rl_loss/q_grad_norm      | 3.69     |
+| rl_loss/q_rnn_grad_norm  | 2.83     |
+| rl_loss/qf1_loss         | 4.42     |
+| rl_loss/qf2_loss         | 4.42     |
+---------------------------------------
+env steps 24692 
+----2022-10-10 18:42:59.531608 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.87    |
+| rl_loss/q_grad_norm      | 2.35     |
+| rl_loss/q_rnn_grad_norm  | 1.53     |
+| rl_loss/qf1_loss         | 4.43     |
+| rl_loss/qf2_loss         | 4.43     |
+---------------------------------------
+env steps 24917 
+----2022-10-10 18:43:44.311567 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0.0001   |
+| rl_loss/policy_loss      | -2.09    |
+| rl_loss/q_grad_norm      | 2.39     |
+| rl_loss/q_rnn_grad_norm  | 1.37     |
+| rl_loss/qf1_loss         | 4.05     |
+| rl_loss/qf2_loss         | 4.05     |
+---------------------------------------
+env steps 25142 
+----2022-10-10 18:44:29.948128 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -1.96    |
+| rl_loss/q_grad_norm      | 5.71     |
+| rl_loss/q_rnn_grad_norm  | 4.65     |
+| rl_loss/qf1_loss         | 4.36     |
+| rl_loss/qf2_loss         | 4.36     |
+---------------------------------------
+------2022-10-10 18:44:30.564880 EDT-------
+| metrics/return_eval_avg      | 2        |
+| metrics/total_steps_eval_avg | 9        |
+| z/env_steps                  | 25142    |
+| z/fps                        | 4.98     |
+| z/rl_steps                   | 61000    |
+| z/rollouts                   | 1570     |
+| z/time_cost                  | 2800     |
+-------------------------------------------
+env steps 25367 
+----2022-10-10 18:45:16.099551 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.02    |
+| rl_loss/q_grad_norm      | 2.36     |
+| rl_loss/q_rnn_grad_norm  | 0.977    |
+| rl_loss/qf1_loss         | 4.47     |
+| rl_loss/qf2_loss         | 4.47     |
+---------------------------------------
+env steps 25592 
+----2022-10-10 18:46:01.985753 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.04    |
+| rl_loss/q_grad_norm      | 13.2     |
+| rl_loss/q_rnn_grad_norm  | 18.6     |
+| rl_loss/qf1_loss         | 4.52     |
+| rl_loss/qf2_loss         | 4.52     |
+---------------------------------------
+env steps 25817 
+----2022-10-10 18:46:47.020107 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.1     |
+| rl_loss/q_grad_norm      | 2.36     |
+| rl_loss/q_rnn_grad_norm  | 0.99     |
+| rl_loss/qf1_loss         | 4.17     |
+| rl_loss/qf2_loss         | 4.17     |
+---------------------------------------
+env steps 26042 
+----2022-10-10 18:47:32.536273 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.18    |
+| rl_loss/q_grad_norm      | 2.18     |
+| rl_loss/q_rnn_grad_norm  | 1.3      |
+| rl_loss/qf1_loss         | 3.95     |
+| rl_loss/qf2_loss         | 3.95     |
+---------------------------------------
+env steps 26267 
+----2022-10-10 18:48:18.077044 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.22    |
+| rl_loss/q_grad_norm      | 2.14     |
+| rl_loss/q_rnn_grad_norm  | 0.777    |
+| rl_loss/qf1_loss         | 4.43     |
+| rl_loss/qf2_loss         | 4.42     |
+---------------------------------------
+env steps 26492 
+----2022-10-10 18:49:03.759028 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.29    |
+| rl_loss/q_grad_norm      | 2.65     |
+| rl_loss/q_rnn_grad_norm  | 0.763    |
+| rl_loss/qf1_loss         | 4.24     |
+| rl_loss/qf2_loss         | 4.24     |
+---------------------------------------
+env steps 26717 
+----2022-10-10 18:49:49.155775 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.32    |
+| rl_loss/q_grad_norm      | 1.98     |
+| rl_loss/q_rnn_grad_norm  | 0.942    |
+| rl_loss/qf1_loss         | 4.35     |
+| rl_loss/qf2_loss         | 4.35     |
+---------------------------------------
+env steps 26942 
+----2022-10-10 18:50:34.779754 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.3     |
+| rl_loss/q_grad_norm      | 3.08     |
+| rl_loss/q_rnn_grad_norm  | 1.52     |
+| rl_loss/qf1_loss         | 4.03     |
+| rl_loss/qf2_loss         | 4.03     |
+---------------------------------------
+env steps 27167 
+----2022-10-10 18:51:20.348752 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.27    |
+| rl_loss/q_grad_norm      | 2.26     |
+| rl_loss/q_rnn_grad_norm  | 1.58     |
+| rl_loss/qf1_loss         | 3.83     |
+| rl_loss/qf2_loss         | 3.82     |
+---------------------------------------
+env steps 27392 
+----2022-10-10 18:52:05.799832 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.42    |
+| rl_loss/q_grad_norm      | 2.01     |
+| rl_loss/q_rnn_grad_norm  | 0.959    |
+| rl_loss/qf1_loss         | 3.95     |
+| rl_loss/qf2_loss         | 3.95     |
+---------------------------------------
+env steps 27617 
+----2022-10-10 18:52:51.650159 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.41    |
+| rl_loss/q_grad_norm      | 3.99     |
+| rl_loss/q_rnn_grad_norm  | 2.68     |
+| rl_loss/qf1_loss         | 3.96     |
+| rl_loss/qf2_loss         | 3.96     |
+---------------------------------------
+env steps 27842 
+----2022-10-10 18:53:37.431893 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.51    |
+| rl_loss/q_grad_norm      | 2.63     |
+| rl_loss/q_rnn_grad_norm  | 1.21     |
+| rl_loss/qf1_loss         | 4.05     |
+| rl_loss/qf2_loss         | 4.05     |
+---------------------------------------
+env steps 28067 
+----2022-10-10 18:54:23.169484 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.44    |
+| rl_loss/q_grad_norm      | 2.06     |
+| rl_loss/q_rnn_grad_norm  | 0.711    |
+| rl_loss/qf1_loss         | 3.59     |
+| rl_loss/qf2_loss         | 3.59     |
+---------------------------------------
+env steps 28292 
+----2022-10-10 18:55:08.624125 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.48    |
+| rl_loss/q_grad_norm      | 1.88     |
+| rl_loss/q_rnn_grad_norm  | 0.56     |
+| rl_loss/qf1_loss         | 3.99     |
+| rl_loss/qf2_loss         | 3.99     |
+---------------------------------------
+env steps 28517 
+----2022-10-10 18:55:54.511003 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.39    |
+| rl_loss/q_grad_norm      | 2.11     |
+| rl_loss/q_rnn_grad_norm  | 0.559    |
+| rl_loss/qf1_loss         | 3.79     |
+| rl_loss/qf2_loss         | 3.79     |
+---------------------------------------
+env steps 28742 
+----2022-10-10 18:56:39.950277 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.6     |
+| rl_loss/q_grad_norm      | 3.19     |
+| rl_loss/q_rnn_grad_norm  | 1.61     |
+| rl_loss/qf1_loss         | 3.74     |
+| rl_loss/qf2_loss         | 3.74     |
+---------------------------------------
+env steps 28967 
+----2022-10-10 18:57:25.442551 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.59    |
+| rl_loss/q_grad_norm      | 3.94     |
+| rl_loss/q_rnn_grad_norm  | 1.9      |
+| rl_loss/qf1_loss         | 3.69     |
+| rl_loss/qf2_loss         | 3.69     |
+---------------------------------------
+env steps 29192 
+----2022-10-10 18:58:09.574350 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.7     |
+| rl_loss/q_grad_norm      | 2.12     |
+| rl_loss/q_rnn_grad_norm  | 0.999    |
+| rl_loss/qf1_loss         | 3.86     |
+| rl_loss/qf2_loss         | 3.86     |
+---------------------------------------
+env steps 29417 
+----2022-10-10 18:58:54.403256 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.7     |
+| rl_loss/q_grad_norm      | 3.56     |
+| rl_loss/q_rnn_grad_norm  | 1.65     |
+| rl_loss/qf1_loss         | 4.11     |
+| rl_loss/qf2_loss         | 4.11     |
+---------------------------------------
+env steps 29642 
+----2022-10-10 18:59:39.761347 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.56    |
+| rl_loss/q_grad_norm      | 2.13     |
+| rl_loss/q_rnn_grad_norm  | 0.551    |
+| rl_loss/qf1_loss         | 3.7      |
+| rl_loss/qf2_loss         | 3.7      |
+---------------------------------------
+env steps 29867 
+----2022-10-10 19:00:25.127460 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.5     |
+| rl_loss/q_grad_norm      | 3.47     |
+| rl_loss/q_rnn_grad_norm  | 1.45     |
+| rl_loss/qf1_loss         | 3.72     |
+| rl_loss/qf2_loss         | 3.71     |
+---------------------------------------
+env steps 30092 
+----2022-10-10 19:01:10.510728 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.61    |
+| rl_loss/q_grad_norm      | 2.12     |
+| rl_loss/q_rnn_grad_norm  | 1.24     |
+| rl_loss/qf1_loss         | 3.37     |
+| rl_loss/qf2_loss         | 3.37     |
+---------------------------------------
+env steps 30317 
+----2022-10-10 19:01:55.891237 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.67    |
+| rl_loss/q_grad_norm      | 2.87     |
+| rl_loss/q_rnn_grad_norm  | 1.46     |
+| rl_loss/qf1_loss         | 3.49     |
+| rl_loss/qf2_loss         | 3.48     |
+---------------------------------------
+env steps 30542 
+----2022-10-10 19:02:41.389749 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.7     |
+| rl_loss/q_grad_norm      | 2.09     |
+| rl_loss/q_rnn_grad_norm  | 1.03     |
+| rl_loss/qf1_loss         | 3.4      |
+| rl_loss/qf2_loss         | 3.4      |
+---------------------------------------
+env steps 30767 
+----2022-10-10 19:03:26.720157 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.87    |
+| rl_loss/q_grad_norm      | 1.87     |
+| rl_loss/q_rnn_grad_norm  | 0.458    |
+| rl_loss/qf1_loss         | 3.67     |
+| rl_loss/qf2_loss         | 3.66     |
+---------------------------------------
+env steps 30992 
+----2022-10-10 19:04:12.013286 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.78    |
+| rl_loss/q_grad_norm      | 1.94     |
+| rl_loss/q_rnn_grad_norm  | 0.563    |
+| rl_loss/qf1_loss         | 3.89     |
+| rl_loss/qf2_loss         | 3.89     |
+---------------------------------------
+env steps 31217 
+----2022-10-10 19:04:57.023283 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.85    |
+| rl_loss/q_grad_norm      | 2.36     |
+| rl_loss/q_rnn_grad_norm  | 1.51     |
+| rl_loss/qf1_loss         | 3.72     |
+| rl_loss/qf2_loss         | 3.72     |
+---------------------------------------
+env steps 31442 
+----2022-10-10 19:05:42.315513 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.75    |
+| rl_loss/q_grad_norm      | 1.92     |
+| rl_loss/q_rnn_grad_norm  | 0.551    |
+| rl_loss/qf1_loss         | 3.42     |
+| rl_loss/qf2_loss         | 3.42     |
+---------------------------------------
+env steps 31667 
+----2022-10-10 19:06:27.672007 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.9     |
+| rl_loss/q_grad_norm      | 3.78     |
+| rl_loss/q_rnn_grad_norm  | 2.45     |
+| rl_loss/qf1_loss         | 3.44     |
+| rl_loss/qf2_loss         | 3.43     |
+---------------------------------------
+env steps 31892 
+----2022-10-10 19:07:12.926285 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.8     |
+| rl_loss/q_grad_norm      | 2.35     |
+| rl_loss/q_rnn_grad_norm  | 0.898    |
+| rl_loss/qf1_loss         | 3.38     |
+| rl_loss/qf2_loss         | 3.38     |
+---------------------------------------
+env steps 32117 
+----2022-10-10 19:07:58.028797 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.92    |
+| rl_loss/q_grad_norm      | 2.13     |
+| rl_loss/q_rnn_grad_norm  | 0.978    |
+| rl_loss/qf1_loss         | 3.95     |
+| rl_loss/qf2_loss         | 3.94     |
+---------------------------------------
+env steps 32342 
+----2022-10-10 19:08:43.378930 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.92    |
+| rl_loss/q_grad_norm      | 3.97     |
+| rl_loss/q_rnn_grad_norm  | 2.9      |
+| rl_loss/qf1_loss         | 3.37     |
+| rl_loss/qf2_loss         | 3.37     |
+---------------------------------------
+env steps 32567 
+----2022-10-10 19:09:28.617241 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.04    |
+| rl_loss/q_grad_norm      | 1.8      |
+| rl_loss/q_rnn_grad_norm  | 0.507    |
+| rl_loss/qf1_loss         | 3.34     |
+| rl_loss/qf2_loss         | 3.33     |
+---------------------------------------
+env steps 32792 
+----2022-10-10 19:10:13.913742 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.84    |
+| rl_loss/q_grad_norm      | 3.93     |
+| rl_loss/q_rnn_grad_norm  | 1.92     |
+| rl_loss/qf1_loss         | 3.49     |
+| rl_loss/qf2_loss         | 3.49     |
+---------------------------------------
+env steps 33017 
+----2022-10-10 19:10:59.314032 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.98    |
+| rl_loss/q_grad_norm      | 2.11     |
+| rl_loss/q_rnn_grad_norm  | 0.694    |
+| rl_loss/qf1_loss         | 3.38     |
+| rl_loss/qf2_loss         | 3.38     |
+---------------------------------------
+env steps 33242 
+----2022-10-10 19:11:44.579821 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3       |
+| rl_loss/q_grad_norm      | 2.27     |
+| rl_loss/q_rnn_grad_norm  | 1.05     |
+| rl_loss/qf1_loss         | 3.41     |
+| rl_loss/qf2_loss         | 3.4      |
+---------------------------------------
+env steps 33467 
+----2022-10-10 19:12:29.892710 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.02    |
+| rl_loss/q_grad_norm      | 1.73     |
+| rl_loss/q_rnn_grad_norm  | 0.448    |
+| rl_loss/qf1_loss         | 2.91     |
+| rl_loss/qf2_loss         | 2.91     |
+---------------------------------------
+env steps 33692 
+----2022-10-10 19:13:14.298843 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -2.95    |
+| rl_loss/q_grad_norm      | 2.89     |
+| rl_loss/q_rnn_grad_norm  | 1.11     |
+| rl_loss/qf1_loss         | 3.63     |
+| rl_loss/qf2_loss         | 3.63     |
+---------------------------------------
+env steps 33917 
+----2022-10-10 19:13:59.126259 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.08    |
+| rl_loss/q_grad_norm      | 1.85     |
+| rl_loss/q_rnn_grad_norm  | 0.559    |
+| rl_loss/qf1_loss         | 3.45     |
+| rl_loss/qf2_loss         | 3.45     |
+---------------------------------------
+env steps 34142 
+----2022-10-10 19:14:44.543316 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.03    |
+| rl_loss/q_grad_norm      | 3.04     |
+| rl_loss/q_rnn_grad_norm  | 3.7      |
+| rl_loss/qf1_loss         | 3.13     |
+| rl_loss/qf2_loss         | 3.13     |
+---------------------------------------
+env steps 34367 
+----2022-10-10 19:15:29.773187 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.07    |
+| rl_loss/q_grad_norm      | 1.89     |
+| rl_loss/q_rnn_grad_norm  | 0.717    |
+| rl_loss/qf1_loss         | 3.34     |
+| rl_loss/qf2_loss         | 3.34     |
+---------------------------------------
+env steps 34592 
+----2022-10-10 19:16:14.211776 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.15    |
+| rl_loss/q_grad_norm      | 2.02     |
+| rl_loss/q_rnn_grad_norm  | 0.902    |
+| rl_loss/qf1_loss         | 3.37     |
+| rl_loss/qf2_loss         | 3.36     |
+---------------------------------------
+env steps 34817 
+----2022-10-10 19:16:59.539687 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.06    |
+| rl_loss/q_grad_norm      | 1.86     |
+| rl_loss/q_rnn_grad_norm  | 0.933    |
+| rl_loss/qf1_loss         | 3.08     |
+| rl_loss/qf2_loss         | 3.07     |
+---------------------------------------
+env steps 35042 
+----2022-10-10 19:17:44.868099 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.17    |
+| rl_loss/q_grad_norm      | 12.5     |
+| rl_loss/q_rnn_grad_norm  | 16.1     |
+| rl_loss/qf1_loss         | 3.3      |
+| rl_loss/qf2_loss         | 3.29     |
+---------------------------------------
+env steps 35267 
+----2022-10-10 19:18:30.268457 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.2     |
+| rl_loss/q_grad_norm      | 1.83     |
+| rl_loss/q_rnn_grad_norm  | 0.413    |
+| rl_loss/qf1_loss         | 2.99     |
+| rl_loss/qf2_loss         | 2.99     |
+---------------------------------------
+env steps 35492 
+----2022-10-10 19:19:15.719539 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.16    |
+| rl_loss/q_grad_norm      | 1.96     |
+| rl_loss/q_rnn_grad_norm  | 0.733    |
+| rl_loss/qf1_loss         | 3.09     |
+| rl_loss/qf2_loss         | 3.09     |
+---------------------------------------
+env steps 35717 
+----2022-10-10 19:20:01.124352 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.39    |
+| rl_loss/q_grad_norm      | 2.01     |
+| rl_loss/q_rnn_grad_norm  | 0.771    |
+| rl_loss/qf1_loss         | 3.09     |
+| rl_loss/qf2_loss         | 3.09     |
+---------------------------------------
+env steps 35942 
+----2022-10-10 19:20:46.123507 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.37    |
+| rl_loss/q_grad_norm      | 2.26     |
+| rl_loss/q_rnn_grad_norm  | 0.9      |
+| rl_loss/qf1_loss         | 3.07     |
+| rl_loss/qf2_loss         | 3.07     |
+---------------------------------------
+env steps 36167 
+----2022-10-10 19:21:30.889582 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.31    |
+| rl_loss/q_grad_norm      | 2.1      |
+| rl_loss/q_rnn_grad_norm  | 0.484    |
+| rl_loss/qf1_loss         | 2.79     |
+| rl_loss/qf2_loss         | 2.79     |
+---------------------------------------
+env steps 36392 
+----2022-10-10 19:22:16.216969 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.31    |
+| rl_loss/q_grad_norm      | 4.67     |
+| rl_loss/q_rnn_grad_norm  | 0.613    |
+| rl_loss/qf1_loss         | 3.12     |
+| rl_loss/qf2_loss         | 3.12     |
+---------------------------------------
+env steps 36617 
+----2022-10-10 19:23:01.580217 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.35    |
+| rl_loss/q_grad_norm      | 4.19     |
+| rl_loss/q_rnn_grad_norm  | 1.86     |
+| rl_loss/qf1_loss         | 3.05     |
+| rl_loss/qf2_loss         | 3.04     |
+---------------------------------------
+env steps 36842 
+----2022-10-10 19:23:47.008475 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.31    |
+| rl_loss/q_grad_norm      | 2.01     |
+| rl_loss/q_rnn_grad_norm  | 1.02     |
+| rl_loss/qf1_loss         | 2.79     |
+| rl_loss/qf2_loss         | 2.78     |
+---------------------------------------
+env steps 37067 
+----2022-10-10 19:24:32.380423 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.37    |
+| rl_loss/q_grad_norm      | 1.73     |
+| rl_loss/q_rnn_grad_norm  | 0.604    |
+| rl_loss/qf1_loss         | 3.01     |
+| rl_loss/qf2_loss         | 3.01     |
+---------------------------------------
+env steps 37292 
+----2022-10-10 19:25:17.635978 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.43    |
+| rl_loss/q_grad_norm      | 1.79     |
+| rl_loss/q_rnn_grad_norm  | 0.722    |
+| rl_loss/qf1_loss         | 3.09     |
+| rl_loss/qf2_loss         | 3.09     |
+---------------------------------------
+env steps 37517 
+----2022-10-10 19:26:02.996690 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0.0003   |
+| rl_loss/policy_loss      | -3.47    |
+| rl_loss/q_grad_norm      | 1.71     |
+| rl_loss/q_rnn_grad_norm  | 0.398    |
+| rl_loss/qf1_loss         | 2.98     |
+| rl_loss/qf2_loss         | 2.98     |
+---------------------------------------
+------2022-10-10 19:26:03.613415 EDT-------
+| metrics/return_eval_avg      | 2        |
+| metrics/total_steps_eval_avg | 9        |
+| z/env_steps                  | 37517    |
+| z/fps                        | 4.96     |
+| z/rl_steps                   | 116000   |
+| z/rollouts                   | 2945     |
+| z/time_cost                  | 5293     |
+-------------------------------------------
+env steps 37742 
+----2022-10-10 19:26:48.964500 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.37    |
+| rl_loss/q_grad_norm      | 1.98     |
+| rl_loss/q_rnn_grad_norm  | 0.489    |
+| rl_loss/qf1_loss         | 3.04     |
+| rl_loss/qf2_loss         | 3.04     |
+---------------------------------------
+env steps 37967 
+----2022-10-10 19:27:34.234135 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.45    |
+| rl_loss/q_grad_norm      | 1.99     |
+| rl_loss/q_rnn_grad_norm  | 0.486    |
+| rl_loss/qf1_loss         | 2.58     |
+| rl_loss/qf2_loss         | 2.58     |
+---------------------------------------
+env steps 38192 
+----2022-10-10 19:28:19.499762 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.47    |
+| rl_loss/q_grad_norm      | 3.85     |
+| rl_loss/q_rnn_grad_norm  | 1.45     |
+| rl_loss/qf1_loss         | 2.94     |
+| rl_loss/qf2_loss         | 2.94     |
+---------------------------------------
+env steps 38417 
+----2022-10-10 19:29:04.907341 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.46    |
+| rl_loss/q_grad_norm      | 9.5      |
+| rl_loss/q_rnn_grad_norm  | 3.57     |
+| rl_loss/qf1_loss         | 2.75     |
+| rl_loss/qf2_loss         | 2.75     |
+---------------------------------------
+env steps 38642 
+----2022-10-10 19:29:50.232426 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.51    |
+| rl_loss/q_grad_norm      | 1.82     |
+| rl_loss/q_rnn_grad_norm  | 0.59     |
+| rl_loss/qf1_loss         | 2.89     |
+| rl_loss/qf2_loss         | 2.88     |
+---------------------------------------
+env steps 38867 
+----2022-10-10 19:30:35.652029 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.47    |
+| rl_loss/q_grad_norm      | 1.78     |
+| rl_loss/q_rnn_grad_norm  | 0.512    |
+| rl_loss/qf1_loss         | 2.57     |
+| rl_loss/qf2_loss         | 2.58     |
+---------------------------------------
+env steps 39092 
+----2022-10-10 19:31:21.039309 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.55    |
+| rl_loss/q_grad_norm      | 1.97     |
+| rl_loss/q_rnn_grad_norm  | 0.816    |
+| rl_loss/qf1_loss         | 2.88     |
+| rl_loss/qf2_loss         | 2.88     |
+---------------------------------------
+env steps 39317 
+----2022-10-10 19:32:06.419250 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.55    |
+| rl_loss/q_grad_norm      | 1.69     |
+| rl_loss/q_rnn_grad_norm  | 0.557    |
+| rl_loss/qf1_loss         | 2.66     |
+| rl_loss/qf2_loss         | 2.66     |
+---------------------------------------
+env steps 39542 
+----2022-10-10 19:32:50.475866 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.73    |
+| rl_loss/q_grad_norm      | 1.85     |
+| rl_loss/q_rnn_grad_norm  | 0.495    |
+| rl_loss/qf1_loss         | 2.83     |
+| rl_loss/qf2_loss         | 2.83     |
+---------------------------------------
+env steps 39767 
+----2022-10-10 19:33:31.338006 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.64    |
+| rl_loss/q_grad_norm      | 1.66     |
+| rl_loss/q_rnn_grad_norm  | 0.637    |
+| rl_loss/qf1_loss         | 2.79     |
+| rl_loss/qf2_loss         | 2.79     |
+---------------------------------------
+env steps 39992 
+----2022-10-10 19:34:12.697792 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.63    |
+| rl_loss/q_grad_norm      | 1.94     |
+| rl_loss/q_rnn_grad_norm  | 1.04     |
+| rl_loss/qf1_loss         | 2.54     |
+| rl_loss/qf2_loss         | 2.54     |
+---------------------------------------
+env steps 40217 
+----2022-10-10 19:34:54.923774 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.65    |
+| rl_loss/q_grad_norm      | 3.74     |
+| rl_loss/q_rnn_grad_norm  | 1.9      |
+| rl_loss/qf1_loss         | 2.2      |
+| rl_loss/qf2_loss         | 2.2      |
+---------------------------------------
+env steps 40442 
+----2022-10-10 19:35:37.423408 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.66    |
+| rl_loss/q_grad_norm      | 1.74     |
+| rl_loss/q_rnn_grad_norm  | 0.759    |
+| rl_loss/qf1_loss         | 2.52     |
+| rl_loss/qf2_loss         | 2.52     |
+---------------------------------------
+env steps 40667 
+----2022-10-10 19:36:19.697685 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.64    |
+| rl_loss/q_grad_norm      | 1.89     |
+| rl_loss/q_rnn_grad_norm  | 0.958    |
+| rl_loss/qf1_loss         | 2.61     |
+| rl_loss/qf2_loss         | 2.61     |
+---------------------------------------
+env steps 40892 
+----2022-10-10 19:37:02.251863 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.67    |
+| rl_loss/q_grad_norm      | 1.73     |
+| rl_loss/q_rnn_grad_norm  | 0.712    |
+| rl_loss/qf1_loss         | 2.66     |
+| rl_loss/qf2_loss         | 2.66     |
+---------------------------------------
+env steps 41117 
+----2022-10-10 19:37:44.699603 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.73    |
+| rl_loss/q_grad_norm      | 4.28     |
+| rl_loss/q_rnn_grad_norm  | 1.43     |
+| rl_loss/qf1_loss         | 2.85     |
+| rl_loss/qf2_loss         | 2.85     |
+---------------------------------------
+env steps 41342 
+----2022-10-10 19:38:27.036901 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.67    |
+| rl_loss/q_grad_norm      | 2.05     |
+| rl_loss/q_rnn_grad_norm  | 0.761    |
+| rl_loss/qf1_loss         | 2.41     |
+| rl_loss/qf2_loss         | 2.41     |
+---------------------------------------
+env steps 41567 
+----2022-10-10 19:39:09.410037 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.72    |
+| rl_loss/q_grad_norm      | 1.88     |
+| rl_loss/q_rnn_grad_norm  | 0.58     |
+| rl_loss/qf1_loss         | 2.56     |
+| rl_loss/qf2_loss         | 2.56     |
+---------------------------------------
+env steps 41792 
+----2022-10-10 19:39:51.600652 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.76    |
+| rl_loss/q_grad_norm      | 3.15     |
+| rl_loss/q_rnn_grad_norm  | 1.15     |
+| rl_loss/qf1_loss         | 2.36     |
+| rl_loss/qf2_loss         | 2.36     |
+---------------------------------------
+env steps 42017 
+----2022-10-10 19:40:33.320112 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.79    |
+| rl_loss/q_grad_norm      | 1.71     |
+| rl_loss/q_rnn_grad_norm  | 0.559    |
+| rl_loss/qf1_loss         | 2.73     |
+| rl_loss/qf2_loss         | 2.73     |
+---------------------------------------
+env steps 42242 
+----2022-10-10 19:41:15.771376 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.7     |
+| rl_loss/q_grad_norm      | 2.51     |
+| rl_loss/q_rnn_grad_norm  | 0.805    |
+| rl_loss/qf1_loss         | 2.53     |
+| rl_loss/qf2_loss         | 2.53     |
+---------------------------------------
+env steps 42467 
+----2022-10-10 19:41:58.025511 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.66    |
+| rl_loss/q_grad_norm      | 1.61     |
+| rl_loss/q_rnn_grad_norm  | 0.639    |
+| rl_loss/qf1_loss         | 2.3      |
+| rl_loss/qf2_loss         | 2.3      |
+---------------------------------------
+env steps 42692 
+----2022-10-10 19:42:40.433513 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.87    |
+| rl_loss/q_grad_norm      | 3.75     |
+| rl_loss/q_rnn_grad_norm  | 1.3      |
+| rl_loss/qf1_loss         | 2.63     |
+| rl_loss/qf2_loss         | 2.63     |
+---------------------------------------
+env steps 42917 
+----2022-10-10 19:43:22.691746 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.74    |
+| rl_loss/q_grad_norm      | 1.93     |
+| rl_loss/q_rnn_grad_norm  | 0.559    |
+| rl_loss/qf1_loss         | 2.47     |
+| rl_loss/qf2_loss         | 2.46     |
+---------------------------------------
+env steps 43142 
+----2022-10-10 19:44:05.058754 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.81    |
+| rl_loss/q_grad_norm      | 1.82     |
+| rl_loss/q_rnn_grad_norm  | 0.453    |
+| rl_loss/qf1_loss         | 2.4      |
+| rl_loss/qf2_loss         | 2.39     |
+---------------------------------------
+env steps 43367 
+----2022-10-10 19:44:47.492512 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.8     |
+| rl_loss/q_grad_norm      | 1.83     |
+| rl_loss/q_rnn_grad_norm  | 0.655    |
+| rl_loss/qf1_loss         | 2.59     |
+| rl_loss/qf2_loss         | 2.58     |
+---------------------------------------
+env steps 43592 
+----2022-10-10 19:45:29.722952 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.79    |
+| rl_loss/q_grad_norm      | 1.38     |
+| rl_loss/q_rnn_grad_norm  | 0.395    |
+| rl_loss/qf1_loss         | 2.78     |
+| rl_loss/qf2_loss         | 2.78     |
+---------------------------------------
+env steps 43817 
+----2022-10-10 19:46:12.084775 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.87    |
+| rl_loss/q_grad_norm      | 1.98     |
+| rl_loss/q_rnn_grad_norm  | 0.792    |
+| rl_loss/qf1_loss         | 2.49     |
+| rl_loss/qf2_loss         | 2.48     |
+---------------------------------------
+env steps 44042 
+----2022-10-10 19:46:54.439064 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.7     |
+| rl_loss/q_grad_norm      | 2.18     |
+| rl_loss/q_rnn_grad_norm  | 0.723    |
+| rl_loss/qf1_loss         | 2.47     |
+| rl_loss/qf2_loss         | 2.47     |
+---------------------------------------
+env steps 44267 
+----2022-10-10 19:47:36.659743 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.92    |
+| rl_loss/q_grad_norm      | 10.8     |
+| rl_loss/q_rnn_grad_norm  | 3.68     |
+| rl_loss/qf1_loss         | 2.5      |
+| rl_loss/qf2_loss         | 2.5      |
+---------------------------------------
+env steps 44492 
+----2022-10-10 19:48:19.320669 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.76    |
+| rl_loss/q_grad_norm      | 2.12     |
+| rl_loss/q_rnn_grad_norm  | 0.596    |
+| rl_loss/qf1_loss         | 2.73     |
+| rl_loss/qf2_loss         | 2.73     |
+---------------------------------------
+env steps 44717 
+----2022-10-10 19:49:01.858690 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.83    |
+| rl_loss/q_grad_norm      | 1.55     |
+| rl_loss/q_rnn_grad_norm  | 0.411    |
+| rl_loss/qf1_loss         | 2.28     |
+| rl_loss/qf2_loss         | 2.28     |
+---------------------------------------
+env steps 44942 
+----2022-10-10 19:49:44.375896 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.94    |
+| rl_loss/q_grad_norm      | 2.04     |
+| rl_loss/q_rnn_grad_norm  | 0.733    |
+| rl_loss/qf1_loss         | 2.3      |
+| rl_loss/qf2_loss         | 2.3      |
+---------------------------------------
+env steps 45167 
+----2022-10-10 19:50:26.916883 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.93    |
+| rl_loss/q_grad_norm      | 1.78     |
+| rl_loss/q_rnn_grad_norm  | 0.791    |
+| rl_loss/qf1_loss         | 2.42     |
+| rl_loss/qf2_loss         | 2.42     |
+---------------------------------------
+env steps 45392 
+----2022-10-10 19:51:09.216208 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.91    |
+| rl_loss/q_grad_norm      | 1.49     |
+| rl_loss/q_rnn_grad_norm  | 0.681    |
+| rl_loss/qf1_loss         | 2.03     |
+| rl_loss/qf2_loss         | 2.03     |
+---------------------------------------
+env steps 45617 
+----2022-10-10 19:51:52.141057 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.96    |
+| rl_loss/q_grad_norm      | 1.87     |
+| rl_loss/q_rnn_grad_norm  | 0.399    |
+| rl_loss/qf1_loss         | 2.34     |
+| rl_loss/qf2_loss         | 2.34     |
+---------------------------------------
+env steps 45842 
+----2022-10-10 19:52:34.568779 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.95    |
+| rl_loss/q_grad_norm      | 1.89     |
+| rl_loss/q_rnn_grad_norm  | 1.18     |
+| rl_loss/qf1_loss         | 2.52     |
+| rl_loss/qf2_loss         | 2.52     |
+---------------------------------------
+env steps 46067 
+----2022-10-10 19:53:17.021796 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.07    |
+| rl_loss/q_grad_norm      | 1.79     |
+| rl_loss/q_rnn_grad_norm  | 0.96     |
+| rl_loss/qf1_loss         | 2.46     |
+| rl_loss/qf2_loss         | 2.46     |
+---------------------------------------
+env steps 46292 
+----2022-10-10 19:53:59.778844 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4       |
+| rl_loss/q_grad_norm      | 1.49     |
+| rl_loss/q_rnn_grad_norm  | 0.539    |
+| rl_loss/qf1_loss         | 2.24     |
+| rl_loss/qf2_loss         | 2.23     |
+---------------------------------------
+env steps 46517 
+----2022-10-10 19:54:43.065574 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.94    |
+| rl_loss/q_grad_norm      | 12       |
+| rl_loss/q_rnn_grad_norm  | 4.96     |
+| rl_loss/qf1_loss         | 2.23     |
+| rl_loss/qf2_loss         | 2.23     |
+---------------------------------------
+env steps 46742 
+----2022-10-10 19:55:25.829351 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.01    |
+| rl_loss/q_grad_norm      | 1.69     |
+| rl_loss/q_rnn_grad_norm  | 0.407    |
+| rl_loss/qf1_loss         | 1.9      |
+| rl_loss/qf2_loss         | 1.9      |
+---------------------------------------
+env steps 46967 
+----2022-10-10 19:56:08.505628 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.05    |
+| rl_loss/q_grad_norm      | 1.64     |
+| rl_loss/q_rnn_grad_norm  | 0.435    |
+| rl_loss/qf1_loss         | 2.39     |
+| rl_loss/qf2_loss         | 2.39     |
+---------------------------------------
+env steps 47192 
+----2022-10-10 19:56:51.234811 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.05    |
+| rl_loss/q_grad_norm      | 1.93     |
+| rl_loss/q_rnn_grad_norm  | 0.619    |
+| rl_loss/qf1_loss         | 2.23     |
+| rl_loss/qf2_loss         | 2.23     |
+---------------------------------------
+env steps 47417 
+----2022-10-10 19:57:34.089992 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.04    |
+| rl_loss/q_grad_norm      | 1.85     |
+| rl_loss/q_rnn_grad_norm  | 0.662    |
+| rl_loss/qf1_loss         | 2.29     |
+| rl_loss/qf2_loss         | 2.29     |
+---------------------------------------
+env steps 47642 
+----2022-10-10 19:58:16.450057 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.02    |
+| rl_loss/q_grad_norm      | 3.13     |
+| rl_loss/q_rnn_grad_norm  | 1.25     |
+| rl_loss/qf1_loss         | 2.11     |
+| rl_loss/qf2_loss         | 2.11     |
+---------------------------------------
+env steps 47867 
+----2022-10-10 19:58:58.641105 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.05    |
+| rl_loss/q_grad_norm      | 1.61     |
+| rl_loss/q_rnn_grad_norm  | 0.531    |
+| rl_loss/qf1_loss         | 2.33     |
+| rl_loss/qf2_loss         | 2.33     |
+---------------------------------------
+env steps 48092 
+----2022-10-10 19:59:41.132541 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.07    |
+| rl_loss/q_grad_norm      | 1.62     |
+| rl_loss/q_rnn_grad_norm  | 0.291    |
+| rl_loss/qf1_loss         | 2.34     |
+| rl_loss/qf2_loss         | 2.34     |
+---------------------------------------
+env steps 48317 
+----2022-10-10 20:00:23.721262 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.1     |
+| rl_loss/q_grad_norm      | 1.54     |
+| rl_loss/q_rnn_grad_norm  | 0.522    |
+| rl_loss/qf1_loss         | 2.25     |
+| rl_loss/qf2_loss         | 2.25     |
+---------------------------------------
+env steps 48542 
+----2022-10-10 20:01:06.226304 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.04    |
+| rl_loss/q_grad_norm      | 1.55     |
+| rl_loss/q_rnn_grad_norm  | 0.436    |
+| rl_loss/qf1_loss         | 2.1      |
+| rl_loss/qf2_loss         | 2.09     |
+---------------------------------------
+env steps 48767 
+----2022-10-10 20:01:49.158739 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.98    |
+| rl_loss/q_grad_norm      | 1.71     |
+| rl_loss/q_rnn_grad_norm  | 0.404    |
+| rl_loss/qf1_loss         | 2.37     |
+| rl_loss/qf2_loss         | 2.36     |
+---------------------------------------
+env steps 48992 
+----2022-10-10 20:02:31.941836 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.08    |
+| rl_loss/q_grad_norm      | 3.79     |
+| rl_loss/q_rnn_grad_norm  | 1.15     |
+| rl_loss/qf1_loss         | 2.39     |
+| rl_loss/qf2_loss         | 2.4      |
+---------------------------------------
+env steps 49217 
+----2022-10-10 20:03:14.635986 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.94    |
+| rl_loss/q_grad_norm      | 3.69     |
+| rl_loss/q_rnn_grad_norm  | 0.999    |
+| rl_loss/qf1_loss         | 2.39     |
+| rl_loss/qf2_loss         | 2.39     |
+---------------------------------------
+env steps 49442 
+----2022-10-10 20:03:57.032411 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.99    |
+| rl_loss/q_grad_norm      | 1.52     |
+| rl_loss/q_rnn_grad_norm  | 0.379    |
+| rl_loss/qf1_loss         | 2.03     |
+| rl_loss/qf2_loss         | 2.02     |
+---------------------------------------
+env steps 49667 
+----2022-10-10 20:04:39.534234 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -3.98    |
+| rl_loss/q_grad_norm      | 1.42     |
+| rl_loss/q_rnn_grad_norm  | 0.365    |
+| rl_loss/qf1_loss         | 1.84     |
+| rl_loss/qf2_loss         | 1.84     |
+---------------------------------------
+env steps 49892 
+----2022-10-10 20:05:21.775602 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.13    |
+| rl_loss/q_grad_norm      | 3.63     |
+| rl_loss/q_rnn_grad_norm  | 1.05     |
+| rl_loss/qf1_loss         | 2.46     |
+| rl_loss/qf2_loss         | 2.46     |
+---------------------------------------
+env steps 50117 
+----2022-10-10 20:06:04.074971 EDT-----
+| rl_loss/alpha            | 0.1      |
+| rl_loss/pi_grad_norm     | 0        |
+| rl_loss/pi_rnn_grad_norm | 0        |
+| rl_loss/policy_entropy   | 0        |
+| rl_loss/policy_loss      | -4.17    |
+| rl_loss/q_grad_norm      | 1.6      |
+| rl_loss/q_rnn_grad_norm  | 0.665    |
+| rl_loss/qf1_loss         | 1.89     |
+| rl_loss/qf2_loss         | 1.88     |
+---------------------------------------
+------2022-10-10 20:06:04.517672 EDT-------
+| metrics/return_eval_avg      | 2        |
+| metrics/total_steps_eval_avg | 9        |
+| z/env_steps                  | 50117    |
+| z/fps                        | 5.25     |
+| z/rl_steps                   | 172000   |
+| z/rollouts                   | 4345     |
+| z/time_cost                  | 7694     |
+-------------------------------------------
+env steps 50342 
