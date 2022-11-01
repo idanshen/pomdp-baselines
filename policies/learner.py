@@ -9,7 +9,7 @@ from torch.nn import functional as F
 import gym
 
 from envs.gridworld.env_wrap import EnvWrapper
-from .models import AGENT_CLASSES, AGENT_ARCHS, TRAIN_TYPES
+from .models import AGENT_CLASSES, AGENT_ARCHS
 from torchkit.networks import ImageEncoder
 
 # Markov policy
@@ -310,12 +310,6 @@ class Learner:
         train_type="off-policy",
         **kwargs
     ):
-        assert train_type in ["off-policy", "on-policy"]
-        self.training_type = TRAIN_TYPES.OFF_POLICY if train_type == "off-policy" else TRAIN_TYPES.ON_POLICY
-        if self.training_type == TRAIN_TYPES.ON_POLICY:
-            buffer_size = num_rollouts_per_iter * self.max_trajectory_len
-            assert num_init_rollouts_pool == 0
-
         if num_updates_per_iter is None:
             num_updates_per_iter = 1.0
         assert isinstance(num_updates_per_iter, int) or isinstance(
@@ -352,8 +346,6 @@ class Learner:
                 observation_type=self.train_env.observation_space.dtype,
                 state_dim=self.state_dim if self.save_states else None,
                 state_type=self.train_env.observation_space.dtype,  # TODO: fix later
-                save_values=True if self.training_type == TRAIN_TYPES.ON_POLICY else False,
-                save_log_probs=True if self.training_type == TRAIN_TYPES.ON_POLICY else False,
             )
 
         self.batch_size = batch_size
@@ -493,11 +485,6 @@ class Learner:
                 else:
                     state_list, next_state_list = None, None
 
-                if self.training_type == TRAIN_TYPES.ON_POLICY:
-                    log_prob_list, value_list = [], []
-                else:
-                    log_prob_list, value_list = None, None
-
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
@@ -525,13 +512,6 @@ class Learner:
                         )
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
-
-                if self.training_type == TRAIN_TYPES.ON_POLICY:
-                    value, value_internal_state = self.agent.predict_value(
-                        prev_internal_state=value_internal_state,
-                        prev_action=action,
-                        reward=reward,
-                        obs=obs,)
 
                 # observe reward and next obs (B=1, dim)
                 next_obs, reward, done, info = utl.env_step(
@@ -567,10 +547,6 @@ class Learner:
                         else done_rollout
                     )
 
-                # add data to policy buffer
-                if self.training_type == TRAIN_TYPES.ON_POLICY:
-                    self.policy_storage.clear()
-
                 if self.agent_arch == AGENT_ARCHS.Markov:
                     self.policy_storage.add_sample(
                         observation=ptu.get_numpy(obs.squeeze(dim=0)),
@@ -594,9 +570,6 @@ class Learner:
                     if self.save_states:
                         state_list.append(state)
                         next_state_list.append(next_state)
-                    if self.training_type == TRAIN_TYPES.ON_POLICY:
-                        log_prob_list.append(log_prob)
-                        value_list.append(value)
                 # set: obs <- next_obs
                 obs = next_obs.clone()
 
@@ -616,8 +589,6 @@ class Learner:
                     next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
                     # states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
                     # next_state=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
-                    log_probs=ptu.get_numpy(torch.cat(log_prob_list, dim=0)) if log_prob_list is not None else None,  # (L, dim)
-                    values=ptu.get_numpy(torch.cat(value_list, dim=0)) if value_list is not None else None,  # (L, dim)
                 )
                 print(
                     f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
