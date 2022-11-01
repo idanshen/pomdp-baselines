@@ -488,7 +488,7 @@ class Learner:
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
-                (action, reward, internal_state), value_internal_state = self.agent.get_initial_info()
+                action, reward, internal_state = self.agent.get_initial_info()
 
             while not done_rollout:
                 if random_actions:
