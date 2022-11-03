@@ -47,18 +47,28 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         lr=3e-4,
         gamma=0.99,
         tau=5e-3,
+        alpha=0.5,
         # pixel obs
         image_encoder_fn=lambda: None,
+        teacher_dir=None,
         **kwargs
     ):
         super().__init__()
 
         self.obs_dim = obs_dim
+        if teacher_dir is not None:
+            self.state_dim = obs_dim
+        else:
+            self.state_dim = None
         self.action_dim = action_dim
         self.gamma = gamma
         self.tau = tau
+        self.alpha = alpha
 
-        self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name], action_dim=action_dim)
+        self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
+                                             teacher_dir=teacher_dir,
+                                             action_dim=action_dim,
+                                             state_dim=self.state_dim)
 
         # Critics
         self.critic = Critic_RNN(
@@ -125,10 +135,10 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
 
         return current_action_tuple, current_internal_state
 
-    def forward(self, actions, rewards, observs, dones, masks):
+    def forward(self, actions, rewards, observs, dones, masks, states=None):
         """
         For actions a, rewards r, observs o, dones d: (T+1, B, dim)
-                where for each t in [0, T], take action a[t], then receive reward r[t], done d[t], and next obs o[t]
+                where for each t in [0, T], take action a[t], then receive reward r[t], done d[t], and next obs o[t] and state s[t]
                 the hidden state h[t](, c[t]) = RNN(h[t-1](, c[t-1]), a[t], r[t], o[t])
                 specially, a[0]=r[0]=d[0]=h[0]=c[0]=0.0, o[0] is the initial obs
 
@@ -165,6 +175,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             rewards=rewards,
             dones=dones,
             gamma=self.gamma,
+            states=states,
         )
 
         # masked Bellman error: masks (T,B,1) ignore the invalid error
@@ -190,6 +201,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             observs=observs,
             actions=actions,
             rewards=rewards,
+            states=states,
         )
         # masked policy_loss
         policy_loss = (policy_loss * masks).sum() / num_valid
@@ -258,4 +270,10 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             (ptu.zeros((1, batch_size, 1)).float(), dones), dim=0
         )  # (T+1, B, dim)
 
-        return self.forward(actions, rewards, observs, dones, masks)
+        if "states" in batch:
+            states, next_states = batch["states"], batch["states2"]
+            states = torch.cat((states[[0]], next_states), dim=0)
+        else:
+            states = None
+
+        return self.forward(actions, rewards, observs, dones, masks, states)

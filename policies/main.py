@@ -44,7 +44,7 @@ if FLAGS.algo is not None:
 
 seq_model, algo = v["policy"]["seq_model"], v["policy"]["algo_name"]
 assert seq_model in ["mlp", "lstm", "gru", "lstm-mlp", "gru-mlp"]
-assert algo in ["td3", "sac", "sacd", "ppo"]
+assert algo in ["td3", "sac", "sacd", "ppo",'eaacd']
 
 if FLAGS.automatic_entropy_tuning is not None:
     v["policy"][algo]["automatic_entropy_tuning"] = FLAGS.automatic_entropy_tuning
@@ -79,7 +79,7 @@ set_gpu_mode(torch.cuda.is_available() and v["cuda"] >= 0, v["cuda"])
 if FLAGS.debug:
     exp_id = "debug/"
 else:
-    exp_id = "/data/scratch/idanshen/pomdp-baselines/"
+    exp_id = "/home/idanshen/pomdp-baselines/"
 
 env_type = v["env"]["env_type"]
 if len(v["env"]["env_name"].split("-")) == 3:
@@ -117,7 +117,7 @@ else:  # rnn
         exp_id += "_shared"
 exp_id += "/"
 
-if algo in ["sac", "sacd"]:
+if algo in ["sac", "sacd", "eaacd"]:
     if not v["policy"][algo]["automatic_entropy_tuning"]:
         exp_id += f"alpha-{v['policy'][algo]['entropy_alpha']}/"
     elif "target_entropy" in v["policy"]:

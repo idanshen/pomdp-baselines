@@ -5,6 +5,7 @@ env:
   env_name: MiniGrid-TigerDoorEnv-v0
   obseravibility: partial
   num_eval_tasks: 20
+  save_states: True
 
 train:
   # original rl training steps: num_iters * updates_per_iter = 1.5M
@@ -27,7 +28,8 @@ eval:
 policy:
   separate: True
   seq_model: lstm # [lstm, gru]
-  algo_name: sacd # [td3, sac]
+  algo_name: sacd # [td3, sac,eaacd]
+  teacher_dir: /home/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/Expert/
 
   action_embedding_size: 16
   observ_embedding_size: 32
@@ -41,6 +43,12 @@ policy:
   tau: 0.005
 
   sacd:
+    entropy_alpha: 0.1
+    automatic_entropy_tuning: False
+    target_entropy: None # the ratio: target_entropy = ratio * log(|A|)
+    alpha_lr: 0.0003
+
+  eaacd:
     entropy_alpha: 0.1
     automatic_entropy_tuning: False
     target_entropy: None # the ratio: target_entropy = ratio * log(|A|)

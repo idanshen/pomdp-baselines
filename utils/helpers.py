@@ -9,6 +9,7 @@ import torch.nn as nn
 import torchkit.pytorch_utils as ptu
 from gym.spaces import Box, Discrete, Tuple
 from itertools import product
+import policies.models as md
 
 
 def get_grad_norm(model):
@@ -53,6 +54,8 @@ def env_step(env, action):
     next_obs = ptu.from_numpy(next_obs).view(-1, *next_obs.shape)
     reward = ptu.FloatTensor([reward]).view(-1, 1)
     done = ptu.from_numpy(np.array(done, dtype=int)).view(-1, 1)
+    if 'state' in info:
+        info['state'] = ptu.from_numpy(info['state']).view(-1, *info['state'].shape)
 
     return next_obs, reward, done, info
 
@@ -250,3 +253,21 @@ def load_obj(folder, name):
     filename = os.path.join(folder, name + ".pkl")
     with open(filename, "rb") as f:
         return pickle.load(f)
+
+
+def parse_seq_model(seq_model,separate):
+    if seq_model == "mlp":
+        agent_class = md.AGENT_CLASSES["Policy_MLP"]
+        rnn_encoder_type = None
+        assert separate == True
+    elif "-mlp" in seq_model:
+        agent_class = md.AGENT_CLASSES["Policy_RNN_MLP"]
+        rnn_encoder_type = seq_model.split("-")[0]
+        assert separate == True
+    else:
+        rnn_encoder_type = seq_model
+        if separate == True:
+            agent_class = md.AGENT_CLASSES["Off_Policy_Separate_RNN"]
+        else:
+            agent_class = md.AGENT_CLASSES["Policy_Shared_RNN"]
+    return agent_class, rnn_encoder_type

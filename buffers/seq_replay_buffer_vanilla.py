@@ -12,7 +12,6 @@ class SeqReplayBuffer:
         sampled_seq_len: int,
         sample_weight_baseline: float,
         state_dim=None,
-        save_values: bool = False,
         **kwargs
     ):
         """
@@ -31,7 +30,6 @@ class SeqReplayBuffer:
         self._observation_dim = observation_dim
         self._action_dim = action_dim
         self._save_states = False if state_dim is None else True
-        self._save_values = save_values
 
         self._observations = np.zeros(
             (max_replay_buffer_size, *observation_dim), dtype=np.float32
@@ -42,14 +40,10 @@ class SeqReplayBuffer:
         if state_dim is not None:
             self._state_dim = state_dim
             self._states = np.zeros(
-                (max_replay_buffer_size, state_dim), dtype=np.float32
+                (max_replay_buffer_size, *state_dim), dtype=np.float32
             )
             self._next_states = np.zeros(
-                (max_replay_buffer_size, state_dim), dtype=np.float32
-            )
-        if save_values:
-            self._values = np.zeros(
-                (max_replay_buffer_size, 1), dtype=np.float32
+                (max_replay_buffer_size, *state_dim), dtype=np.float32
             )
         self._actions = np.zeros((max_replay_buffer_size, action_dim), dtype=np.float32)
         self._rewards = np.zeros((max_replay_buffer_size, 1), dtype=np.float32)
@@ -89,7 +83,7 @@ class SeqReplayBuffer:
         self._top = 0  # trajectory level (first dim in 3D buffer)
         self._size = 0  # trajectory level (first dim in 3D buffer)
 
-    def add_episode(self, observations, actions, rewards, terminals, next_observations, states=None, next_states=None, values=None):
+    def add_episode(self, observations, actions, rewards, terminals, next_observations, states=None, next_states=None):
         """
         NOTE: must add one whole episode/sequence/trajectory,
                         not some partial transitions
@@ -110,9 +104,6 @@ class SeqReplayBuffer:
             assert states is not None
             assert next_states is not None
             assert (observations.shape[0] == states.shape[0] == next_states.shape[0])
-        if self._save_values:
-            assert values is not None
-            assert values.shape[0] == observations.shape[0]
 
         seq_len = observations.shape[0]  # L
         indices = list(
@@ -127,8 +118,6 @@ class SeqReplayBuffer:
         if self._save_states:
             self._states[indices] = states
             self._next_states[indices] = next_states
-        if self._save_values:
-            self._values[indices] = values
 
         self._valid_starts[indices] = self._compute_valid_starts(seq_len)
 
@@ -202,8 +191,6 @@ class SeqReplayBuffer:
         if self._save_states:
             return_dict["states"] = self._states[indices]
             return_dict["states2"] = self._next_states[indices]
-        if self._save_values:
-            return_dict["values"] = self._values[indices]
         return return_dict
 
     def _generate_masks(self, indices, batch_size):

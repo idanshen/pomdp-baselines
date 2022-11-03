@@ -248,33 +248,12 @@ class Learner:
         self,
         seq_model,
         separate: bool = True,
-        on_policy: bool = False,
         image_encoder=None,
         reward_clip=False,
         **kwargs
     ):
         # initialize agent
-        if seq_model == "mlp":
-            agent_class = AGENT_CLASSES["Policy_MLP"]
-            rnn_encoder_type = None
-            assert separate == True
-            assert on_policy == False
-        elif "-mlp" in seq_model:
-            agent_class = AGENT_CLASSES["Policy_RNN_MLP"]
-            rnn_encoder_type = seq_model.split("-")[0]
-            assert separate == True
-            assert on_policy == False
-        else:
-            rnn_encoder_type = seq_model
-            if separate == True:
-                if on_policy == True:
-                    agent_class = AGENT_CLASSES["On_Policy_Separate_RNN"]
-                else:
-                    agent_class = AGENT_CLASSES["Off_Policy_Separate_RNN"]
-            else:
-                agent_class = AGENT_CLASSES["Policy_Shared_RNN"]
-                assert on_policy == False
-
+        agent_class, rnn_encoder_type = utl.parse_seq_model(seq_model, separate)
         self.agent_arch = agent_class.ARCH
         logger.log(agent_class, self.agent_arch)
 
@@ -462,12 +441,16 @@ class Learner:
             steps = 0
 
             if self.env_type == "meta" and self.train_env.n_tasks is not None:
-                task = self.train_tasks[np.random.randint(len(self.train_tasks))]
-                obs = ptu.from_numpy(self.train_env.reset(task=task))  # reset task
+                raise NotImplementedError
+                # task = self.train_tasks[np.random.randint(len(self.train_tasks))]
+                # obs = ptu.from_numpy(self.train_env.reset(task=task))  # reset task
             else:
-                obs = ptu.from_numpy(self.train_env.reset())  # reset
+                obs, state = self.train_env.reset()
+                obs = ptu.from_numpy(obs)  # reset
+                state = ptu.from_numpy(state)
 
             obs = obs.reshape(1, *obs.shape)
+            state = state.reshape(1, *state.shape)
             done_rollout = False
 
             if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
@@ -518,8 +501,7 @@ class Learner:
                     self.train_env, action.squeeze(dim=0)
                 )
                 if self.save_states:
-                    state = info["state"]
-                    next_state = info["next_state"]
+                    next_state = info["state"]
 
                 if self.reward_clip and self.env_type == "atari":
                     reward = torch.tanh(reward)
@@ -530,7 +512,7 @@ class Learner:
 
                 ## determine terminal flag per environment
                 if self.env_type == "meta" and "is_goal_state" in dir(
-                    self.train_env.unwrapped
+                        self.train_env.unwrapped
                 ):
                     # NOTE: following varibad practice: for meta env, even if reaching the goal (term=True),
                     # the episode still continues.
@@ -543,7 +525,7 @@ class Learner:
                     term = (
                         False
                         if "TimeLimit.truncated" in info
-                        or steps >= self.max_trajectory_len
+                           or steps >= self.max_trajectory_len
                         else done_rollout
                     )
 
@@ -572,6 +554,8 @@ class Learner:
                         next_state_list.append(next_state)
                 # set: obs <- next_obs
                 obs = next_obs.clone()
+                if self.save_states:
+                    state = next_state.clone()
 
             if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
                 # add collected sequence to buffer
@@ -587,8 +571,8 @@ class Learner:
                     rewards=ptu.get_numpy(torch.cat(rew_list, dim=0)),  # (L, dim)
                     terminals=np.array(term_list).reshape(-1, 1),  # (L, 1)
                     next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
-                    # states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
-                    # next_state=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
+                    states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
+                    next_states=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
                 )
                 print(
                     f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
@@ -652,10 +636,12 @@ class Learner:
             step = 0
 
             if self.env_type == "meta" and self.eval_env.n_tasks is not None:
-                obs = ptu.from_numpy(self.eval_env.reset(task=task))  # reset task
-                observations[task_idx, step, :] = ptu.get_numpy(obs[:obs_size])
+                raise NotImplementedError
+                # obs = ptu.from_numpy(self.eval_env.reset(task=task))  # reset task
+                # observations[task_idx, step, :] = ptu.get_numpy(obs[:obs_size])
             else:
-                obs = ptu.from_numpy(self.eval_env.reset())  # reset
+                obs, _ = self.train_env.reset()
+                obs = ptu.from_numpy(obs)  # reset
 
             obs = obs.reshape(1, obs.shape[-1])
 

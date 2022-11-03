@@ -1,3 +1,6 @@
+import glob
+from ruamel.yaml import YAML
+from utils import helpers as utl
 import torch
 import numpy as np
 import torch.nn as nn
@@ -8,8 +11,8 @@ from torchkit.networks import FlattenMlp
 import torchkit.pytorch_utils as ptu
 
 
-class SACD(RLAlgorithmBase):
-    name = "sacd"
+class EAACD(RLAlgorithmBase):
+    name = "eaacd"
     continuous_action = False
     use_target_actor = False
 
@@ -20,7 +23,8 @@ class SACD(RLAlgorithmBase):
         target_entropy=None,
         alpha_lr=3e-4,
         action_dim=None,
-        **kwargs
+        state_dim=None,
+        teacher_dir=None,
     ):
 
         self.automatic_entropy_tuning = automatic_entropy_tuning
@@ -34,6 +38,7 @@ class SACD(RLAlgorithmBase):
             self.alpha_entropy = self.log_alpha_entropy.exp().detach().item()
         else:
             self.alpha_entropy = entropy_alpha
+        self.teacher = self.load_teacher(teacher_dir, state_dim=state_dim, act_dim=action_dim)
 
     @staticmethod
     def build_actor(input_size, action_dim, hidden_sizes, **kwargs):
@@ -56,6 +61,32 @@ class SACD(RLAlgorithmBase):
             input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
         )
         return qf1, qf2
+
+    @staticmethod
+    def load_teacher(teacher_dir: str, state_dim, act_dim):
+        assert teacher_dir is not None
+        files = glob.glob(teacher_dir + "*.yml")
+        assert len(files) == 1
+        config_file = files[0]
+        yaml = YAML()
+        v = yaml.load(open(config_file))
+
+        agent_class, rnn_encoder_type = utl.parse_seq_model(
+            v['policy']['seq_model'],
+            v['policy']['seq_model'] if 'seperate' in v['policy'] else True)
+        teacher = agent_class(
+            encoder=rnn_encoder_type,
+            obs_dim=state_dim,
+            action_dim=act_dim,
+            image_encoder_fn=lambda: None,
+            **v['policy'],
+        ).to(ptu.device)
+        models = glob.glob(teacher_dir + "save/*")
+        model_path = sorted(models)[-1]
+        teacher.load_state_dict(torch.load(model_path, map_location=ptu.device))
+        for param in teacher.parameters():
+            param.requires_grad = False
+        return teacher.policy
 
     def select_action(self, actor, observ, deterministic: bool, return_log_prob: bool):
         action, prob, log_prob = actor(observ, deterministic, return_log_prob)
@@ -80,7 +111,7 @@ class SACD(RLAlgorithmBase):
         dones,
         gamma,
         next_observs=None,  # used in markov_critic
-        **kwargs,
+        states=None
     ):
         # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
         with torch.no_grad():
@@ -97,6 +128,9 @@ class SACD(RLAlgorithmBase):
                     observs=next_observs if markov_critic else observs,
                 )
 
+            # only markov teacher supported
+            _, teacher_probs, teacher_log_probs = self.teacher(states, return_log_prob=True)
+
             if markov_critic:  # (B, A)
                 next_q1 = critic_target[0](next_observs)
                 next_q2 = critic_target[1](next_observs)
@@ -110,7 +144,7 @@ class SACD(RLAlgorithmBase):
 
             min_next_q_target = torch.min(next_q1, next_q2)
 
-            min_next_q_target += self.alpha_entropy * (-new_log_probs)  # (T+1, B, A)
+            min_next_q_target += self.alpha_entropy * (teacher_log_probs)  # (T+1, B, A)
 
             # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
             min_next_q_target = (new_probs * min_next_q_target).sum(
@@ -162,7 +196,7 @@ class SACD(RLAlgorithmBase):
         observs,
         actions=None,
         rewards=None,
-        **kwargs,
+        states=None,
     ):
         if markov_actor:
             new_probs, log_probs = self.forward_actor(actor, observs)
@@ -170,6 +204,9 @@ class SACD(RLAlgorithmBase):
             new_probs, log_probs = actor(
                 prev_actions=actions, rewards=rewards, observs=observs
             )  # (T+1, B, A)
+        with torch.no_grad():
+            # only markov teacher supported
+            _, teacher_probs, teacher_log_probs = self.teacher(states, return_log_prob=True)
 
         if markov_critic:
             q1 = critic[0](observs)
@@ -185,6 +222,7 @@ class SACD(RLAlgorithmBase):
 
         policy_loss = -min_q_new_actions
         policy_loss += self.alpha_entropy * log_probs
+        policy_loss -= self.alpha_entropy * teacher_log_probs
         # E_{a\sim \pi}[Q(h,a)]
         policy_loss = (new_probs * policy_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
         if not markov_critic:

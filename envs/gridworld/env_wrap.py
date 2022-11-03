@@ -88,6 +88,7 @@ class EnvWrapper(gym.Env):
         self.action_space = self.env.action_space
         self.DEFAULT_IM_SIZE = 84
         self.observation_space = self.env.observation_space
+        self.state_space = self.env.observation_space
 
         self.render_type = params['render_type']
         assert self.render_type in ['state', 'partial_state', 'observe', 'full_observe']
@@ -163,10 +164,12 @@ class EnvWrapper(gym.Env):
             # manually overwrite the none flag to indicate that this behaviour should be
             # used.  Will break all other code...
             return_state = self.my_render()
+            state = start_state
         else:
             return_state = start_state
+            state = start_state
 
-        return return_state
+        return return_state, state
 
 
     def _call_my_render(self):
