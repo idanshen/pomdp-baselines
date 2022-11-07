@@ -44,7 +44,7 @@ if FLAGS.algo is not None:
 
 seq_model, algo = v["policy"]["seq_model"], v["policy"]["algo_name"]
 assert seq_model in ["mlp", "lstm", "gru", "lstm-mlp", "gru-mlp"]
-assert algo in ["td3", "sac", "sacd", "ppo",'eaacd']
+assert algo in ["td3", "sac", "sacd", "ppo", 'eaacd', 'DAgger']
 
 if FLAGS.automatic_entropy_tuning is not None:
     v["policy"][algo]["automatic_entropy_tuning"] = FLAGS.automatic_entropy_tuning

@@ -33,16 +33,24 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         lr=3e-4,
         gamma=0.99,
         tau=5e-3,
+        teacher_dir=None,
         **kwargs
     ):
         super().__init__()
 
         self.obs_dim = obs_dim
+        if teacher_dir is not None:
+            self.state_dim = obs_dim
+        else:
+            self.state_dim = None
         self.action_dim = action_dim
         self.gamma = gamma
         self.tau = tau
 
-        self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name], action_dim=action_dim)
+        self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
+                                             teacher_dir=teacher_dir,
+                                             action_dim=action_dim,
+                                             state_dim=self.state_dim)
 
         # Markov q networks
         self.qf1, self.qf2 = self.algo.build_critic(
@@ -78,6 +86,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
     def update(self, batch):
         observs, next_observs = batch["obs"], batch["obs2"]  # (B, dim)
         actions, rewards, dones = batch["act"], batch["rew"], batch["term"]  # (B, dim)
+        teacher_actions = batch["teacher_act"]
+        states, next_states = batch["states"], batch["states2"]  # (B, dim)
 
         ### 1. Critic loss
         (q1_pred, q2_pred), q_target = self.algo.critic_loss(
@@ -93,6 +103,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             dones=dones,
             gamma=self.gamma,
             next_observs=next_observs,
+            states=states,
+            next_states=next_states
         )
 
         qf1_loss = F.mse_loss(q1_pred, q_target)  # TD error
@@ -118,6 +130,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             critic=(self.qf1, self.qf2),
             critic_target=(self.qf1_target, self.qf2_target),
             observs=observs,
+            teacher_actions=teacher_actions,
+            states=states
         )
         policy_loss = policy_loss.mean()
 

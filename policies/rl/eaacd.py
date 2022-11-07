@@ -111,7 +111,8 @@ class EAACD(RLAlgorithmBase):
         dones,
         gamma,
         next_observs=None,  # used in markov_critic
-        states=None
+        states=None,
+        next_states=None
     ):
         # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
         with torch.no_grad():
@@ -129,7 +130,11 @@ class EAACD(RLAlgorithmBase):
                 )
 
             # only markov teacher supported
-            _, teacher_probs, teacher_log_probs = self.teacher(states, return_log_prob=True)
+            # (T+1, B, dim) including reaction to last obs
+            if markov_actor:
+                _, teacher_probs, teacher_log_probs = self.teacher(next_states, return_log_prob=True)
+            else:
+                _, teacher_probs, teacher_log_probs = self.teacher(states, return_log_prob=True)
 
             if markov_critic:  # (B, A)
                 next_q1 = critic_target[0](next_observs)
@@ -197,6 +202,7 @@ class EAACD(RLAlgorithmBase):
         actions=None,
         rewards=None,
         states=None,
+        teacher_actions=None,
     ):
         if markov_actor:
             new_probs, log_probs = self.forward_actor(actor, observs)
@@ -204,9 +210,9 @@ class EAACD(RLAlgorithmBase):
             new_probs, log_probs = actor(
                 prev_actions=actions, rewards=rewards, observs=observs
             )  # (T+1, B, A)
-        with torch.no_grad():
-            # only markov teacher supported
-            _, teacher_probs, teacher_log_probs = self.teacher(states, return_log_prob=True)
+        # with torch.no_grad():
+        #     # only markov teacher supported
+        #     _, teacher_probs, teacher_log_probs = self.teacher(states, return_log_prob=True)
 
         if markov_critic:
             q1 = critic[0](observs)
@@ -222,7 +228,7 @@ class EAACD(RLAlgorithmBase):
 
         policy_loss = -min_q_new_actions
         policy_loss += self.alpha_entropy * log_probs
-        policy_loss -= self.alpha_entropy * teacher_log_probs
+        policy_loss -= self.alpha_entropy * teacher_actions
         # E_{a\sim \pi}[Q(h,a)]
         policy_loss = (new_probs * policy_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
         if not markov_critic:

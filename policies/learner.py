@@ -25,6 +25,7 @@ from utils import helpers as utl
 from torchkit import pytorch_utils as ptu
 from utils import evaluation as utl_eval
 from utils import logger
+from .rl import EAACD
 
 
 class Learner:
@@ -274,6 +275,8 @@ class Learner:
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
+        self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.obs_dim[0], act_dim=self.act_dim)
+
 
     def init_train(
         self,
@@ -467,6 +470,8 @@ class Learner:
                     state_list, next_state_list = [], []
                 else:
                     state_list, next_state_list = None, None
+                teacher_action_list = []
+
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
@@ -492,16 +497,17 @@ class Learner:
                             reward=reward,
                             obs=obs,
                             deterministic=False,
+                            return_log_prob=True,
                         )
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
+                _, _, teacher_log_prob_action = self.teacher(state, return_log_prob=True)
 
                 # observe reward and next obs (B=1, dim)
                 next_obs, reward, done, info = utl.env_step(
                     self.train_env, action.squeeze(dim=0)
                 )
-                if self.save_states:
-                    next_state = info["state"]
+                next_state = info["state"]
 
                 if self.reward_clip and self.env_type == "atari":
                     reward = torch.tanh(reward)
@@ -542,6 +548,9 @@ class Learner:
                         reward=ptu.get_numpy(reward.squeeze(dim=0)),
                         terminal=np.array([term], dtype=float),
                         next_observation=ptu.get_numpy(next_obs.squeeze(dim=0)),
+                        state=ptu.get_numpy(state.squeeze(dim=0)),
+                        next_state=ptu.get_numpy(next_state.squeeze(dim=0)),
+                        teacher_action=ptu.get_numpy(teacher_log_prob_action.squeeze(dim=0)),
                     )
                 else:  # append tensors to temporary storage
                     obs_list.append(obs)  # (1, dim)
@@ -552,10 +561,10 @@ class Learner:
                     if self.save_states:
                         state_list.append(state)
                         next_state_list.append(next_state)
+                    teacher_action_list.append(teacher_log_prob_action)
                 # set: obs <- next_obs
                 obs = next_obs.clone()
-                if self.save_states:
-                    state = next_state.clone()
+                state = next_state.clone()
 
             if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
                 # add collected sequence to buffer
@@ -564,6 +573,7 @@ class Learner:
                     act_buffer = torch.argmax(
                         act_buffer, dim=-1, keepdims=True
                     )  # (L, 1)
+                teacher_act_buffer = torch.cat(teacher_action_list, dim=0)  # (L, dim)
 
                 self.policy_storage.add_episode(
                     observations=ptu.get_numpy(torch.cat(obs_list, dim=0)),  # (L, dim)
@@ -573,6 +583,7 @@ class Learner:
                     next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
                     states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
                     next_states=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
+                    teacher_actions=ptu.get_numpy(teacher_act_buffer),  # (L, dim)
                 )
                 print(
                     f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
@@ -640,10 +651,12 @@ class Learner:
                 # obs = ptu.from_numpy(self.eval_env.reset(task=task))  # reset task
                 # observations[task_idx, step, :] = ptu.get_numpy(obs[:obs_size])
             else:
-                obs, _ = self.train_env.reset()
+                obs, state = self.train_env.reset()
                 obs = ptu.from_numpy(obs)  # reset
+                state = ptu.from_numpy(state)
 
             obs = obs.reshape(1, obs.shape[-1])
+            state = state.reshape(1, state.shape[-1])
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # assume initial reward = 0.0
@@ -651,6 +664,9 @@ class Learner:
 
             for episode_idx in range(num_episodes):
                 running_reward = 0.0
+                # obs_list = [obs]
+                # action_list = [action]
+                # img_list = [self.eval_env.env.special_render()]
                 for _ in range(num_steps_per_episode):
                     if self.agent_arch == AGENT_ARCHS.Memory:
                         (action, _, _, _), internal_state = self.agent.act(
@@ -664,7 +680,7 @@ class Learner:
                         action, _, _, _ = self.agent.act(
                             obs, deterministic=deterministic
                         )
-
+                    # action, _, _ = self.agent.algo.teacher(state, deterministic=deterministic)
                     # observe reward and next obs
                     next_obs, reward, done, info = utl.env_step(
                         self.eval_env, action.squeeze(dim=0)
@@ -686,7 +702,10 @@ class Learner:
 
                     # set: obs <- next_obs
                     obs = next_obs.clone()
-
+                    state = info["state"].clone()
+                    # obs_list.append(obs)
+                    # action_list.append(action)
+                    # img_list.append(self.eval_env.env.special_render())
                     if (
                         self.env_type == "meta"
                         and "is_goal_state" in dir(self.eval_env.unwrapped)
