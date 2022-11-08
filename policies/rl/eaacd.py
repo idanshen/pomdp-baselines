@@ -227,7 +227,7 @@ class EAACD(RLAlgorithmBase):
         min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
 
         policy_loss = -min_q_new_actions
-        policy_loss += self.alpha_entropy * log_probs
+        policy_loss += log_probs
         policy_loss -= self.alpha_entropy * teacher_actions
         # E_{a\sim \pi}[Q(h,a)]
         policy_loss = (new_probs * policy_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
