@@ -122,6 +122,9 @@ class EnvWrapper(gym.Env):
         self.frames = []
         self.frame_stack = params['frame_stack']
         obs = self.my_render()
+        if obs.shape != self.observation_space.shape:
+            assert len(np.unique(self.observation_space.high)) == 1 and len(np.unique(self.observation_space.low)) == 1
+            self.observation_space = gym.spaces.Box(low=np.ones(obs.shape)*np.unique(self.observation_space.low), high=np.ones(obs.shape)*np.unique(self.observation_space.high), shape=obs.shape)
         if len(obs.shape) == 1:
             self.num_features = obs.shape[0]
         else:

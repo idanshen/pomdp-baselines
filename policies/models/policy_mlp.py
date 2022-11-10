@@ -34,15 +34,13 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         gamma=0.99,
         tau=5e-3,
         teacher_dir=None,
+        state_dim=None,
         **kwargs
     ):
         super().__init__()
 
         self.obs_dim = obs_dim
-        if teacher_dir is not None:
-            self.state_dim = obs_dim
-        else:
-            self.state_dim = None
+        self.state_dim = state_dim
         self.action_dim = action_dim
         self.gamma = gamma
         self.tau = tau

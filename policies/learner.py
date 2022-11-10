@@ -239,10 +239,8 @@ class Learner:
             self.act_dim = self.train_env.action_space.n
             self.act_continuous = False
         self.obs_dim = self.train_env.observation_space.shape  # include 1-dim done
-        if self.save_states:
-            self.state_dim = self.train_env.state_space.shape
-        else:
-            self.state_dim = None
+        self.state_dim = self.train_env.state_space.shape
+
         logger.log("obs_dim", self.obs_dim, "act_dim", self.act_dim)
 
     def init_agent(
@@ -270,12 +268,16 @@ class Learner:
             obs_dim=self.obs_dim[0],
             action_dim=self.act_dim,
             image_encoder_fn=image_encoder_fn,
+            state_dim=self.state_dim[0],
             **kwargs,
         ).to(ptu.device)
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
-        self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.obs_dim[0], act_dim=self.act_dim)
+        if kwargs["algo_name"] == "eaacd":
+            self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
+        else:
+            self.teacher = None
 
 
     def init_train(
@@ -304,6 +306,7 @@ class Learner:
             self.policy_storage = SimpleReplayBuffer(
                 max_replay_buffer_size=int(buffer_size),
                 observation_dim=self.obs_dim,
+                state_dim=self.state_dim,
                 action_dim=self.act_dim if self.act_continuous else 1,  # save memory
                 max_trajectory_len=self.max_trajectory_len,
                 add_timeout=False,  # no timeout storage
@@ -501,7 +504,10 @@ class Learner:
                         )
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
-                _, _, teacher_log_prob_action = self.teacher(state, return_log_prob=True)
+                if self.teacher is not None:
+                    _, _, teacher_log_prob_action = self.teacher(state, return_log_prob=True)
+                else:
+                    teacher_log_prob_action = None
 
                 # observe reward and next obs (B=1, dim)
                 next_obs, reward, done, info = utl.env_step(
@@ -548,9 +554,9 @@ class Learner:
                         reward=ptu.get_numpy(reward.squeeze(dim=0)),
                         terminal=np.array([term], dtype=float),
                         next_observation=ptu.get_numpy(next_obs.squeeze(dim=0)),
-                        state=ptu.get_numpy(state.squeeze(dim=0)),
-                        next_state=ptu.get_numpy(next_state.squeeze(dim=0)),
-                        teacher_action=ptu.get_numpy(teacher_log_prob_action.squeeze(dim=0)),
+                        state=ptu.get_numpy(state.squeeze(dim=0)) if self.save_states else None,
+                        next_state=ptu.get_numpy(next_state.squeeze(dim=0)) if self.save_states else None,
+                        teacher_action=ptu.get_numpy(teacher_log_prob_action.squeeze(dim=0)) if teacher_log_prob_action is not None else None,
                     )
                 else:  # append tensors to temporary storage
                     obs_list.append(obs)  # (1, dim)

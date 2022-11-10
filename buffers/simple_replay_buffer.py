@@ -12,6 +12,7 @@ class SimpleReplayBuffer(ReplayBuffer):
         action_dim,
         max_trajectory_len: int,
         add_timeout: bool = False,
+        state_dim = None,
         **kwargs
     ):
         """
@@ -36,8 +37,12 @@ class SimpleReplayBuffer(ReplayBuffer):
         self.trajectory_len = max_trajectory_len
 
         self._observations = np.zeros((max_replay_buffer_size, *observation_dim))
-        self._states = np.zeros((max_replay_buffer_size, *observation_dim))
-        self._next_states = np.zeros((max_replay_buffer_size, *observation_dim))
+        if state_dim is None:
+            self.state_dim = observation_dim
+        else:
+            self.state_dim = state_dim
+        self._states = np.zeros((max_replay_buffer_size, *self.state_dim))
+        self._next_states = np.zeros((max_replay_buffer_size, *self.state_dim))
         # It's a bit memory inefficient to save the observations twice,
         # but it makes the code *much* easier since you no longer have to
         # worry about termination conditions.
@@ -73,8 +78,9 @@ class SimpleReplayBuffer(ReplayBuffer):
         self._rewards[self._top] = reward
         self._terminals[self._top] = terminal
         self._next_obs[self._top] = next_observation
-        self._states[self._top] = state
-        self._next_states[self._top] = next_state
+        if state is not None:
+            self._states[self._top] = state
+            self._next_states[self._top] = next_state
 
         if self.add_timeout:
             self._timeouts[self._top] = timeout
