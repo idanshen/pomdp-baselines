@@ -27,6 +27,12 @@ from utils import evaluation as utl_eval
 from utils import logger
 from .rl import EAACD
 
+CFG_TO_RENDER_TYPE = {
+    "partial": "partial_state",
+    "full": "state",
+    "image_full": "full_observe",
+    "image_partial": "observe",
+}
 
 class Learner:
     def __init__(self, env_args, train_args, eval_args, policy_args, seed, **kwargs):
@@ -202,11 +208,11 @@ class Learner:
             import envs.gridworld
 
             assert num_eval_tasks > 0
-            assert obseravibility in ["full", "partial"]
+            assert obseravibility in CFG_TO_RENDER_TYPE.keys()
 
             # all from https://github.com/plai-group/a2d/blob/368aaf5e0e425c2d48d25925c772a0d9a4f3823b/a2d_gridworld/tests/A2D/A2Dagger_arguments.py
-            env_params = {"render_type": "partial_state" if obseravibility == "partial" else "state",
-                          "return_type": "partial_state" if obseravibility == "partial" else "state",
+            env_params = {"render_type": CFG_TO_RENDER_TYPE[obseravibility],
+                          "return_type": CFG_TO_RENDER_TYPE[obseravibility],
                           "frame_stack": 1,
                           "env_name": env_name,
                           "env_tag": 'minigrid',
