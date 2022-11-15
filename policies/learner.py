@@ -56,7 +56,7 @@ class Learner:
         num_eval_tasks=None,
         eval_envs=None,
         worst_percentile=None,
-        save_states=False,
+        save_states=True,
         obseravibility="full",
         **kwargs
     ):
@@ -264,7 +264,7 @@ class Learner:
 
         if image_encoder is not None:  # catch, keytodoor
             image_encoder_fn = lambda: ImageEncoder(
-                image_shape=self.train_env.image_space.shape, **image_encoder
+                image_shape=self.train_env.observation_space.shape, **image_encoder
             )
         else:
             image_encoder_fn = lambda: None
@@ -297,7 +297,6 @@ class Learner:
         sampled_seq_len=None,
         sample_weight_baseline=None,
         buffer_type=None,
-        train_type="off-policy",
         **kwargs
     ):
         if num_updates_per_iter is None:
@@ -511,7 +510,7 @@ class Learner:
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
                 if self.teacher is not None:
-                    _, _, teacher_log_prob_action = self.teacher(state, return_log_prob=True)
+                    _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
                 else:
                     teacher_log_prob_action = None
 
@@ -635,6 +634,7 @@ class Learner:
 
     @torch.no_grad()
     def evaluate(self, tasks, deterministic=True):
+        self.agent.eval()
 
         num_episodes = self.max_rollouts_per_task  # k
         # max_trajectory_len = k*H
@@ -667,7 +667,7 @@ class Learner:
                 obs = ptu.from_numpy(obs)  # reset
                 state = ptu.from_numpy(state)
 
-            obs = obs.reshape(1, obs.shape[-1])
+            obs = obs.reshape(1, *obs.shape)
             state = state.reshape(1, state.shape[-1])
 
             if self.agent_arch == AGENT_ARCHS.Memory:
@@ -741,6 +741,8 @@ class Learner:
 
                 returns_per_episode[task_idx, episode_idx] = running_reward
             total_steps[task_idx] = step
+        self.agent.train()
+
         return returns_per_episode, success_rate, observations, total_steps
 
     def log_train_stats(self, train_stats):

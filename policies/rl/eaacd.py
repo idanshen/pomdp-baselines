@@ -130,9 +130,9 @@ class EAACD(RLAlgorithmBase):
             # only markov teacher supported
             # (T+1, B, dim) including reaction to last obs
             if markov_actor:
-                _, teacher_probs, teacher_log_probs = self.teacher(next_states, return_log_prob=True)
+                _, teacher_probs, teacher_log_probs, _ = self.teacher.act(next_states, return_log_prob=True)
             else:
-                _, teacher_probs, teacher_log_probs = self.teacher(states, return_log_prob=True)
+                _, teacher_probs, teacher_log_probs, _ = self.teacher.act(states, return_log_prob=True)
 
             if markov_critic:  # (B, A)
                 next_q1, next_q2 = critic_target(next_observs)

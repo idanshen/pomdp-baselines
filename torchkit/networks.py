@@ -115,9 +115,9 @@ class ImageEncoder(nn.Module):
         self,
         image_shape,
         embed_size=100,
-        depths=[8, 16],
+        depths=[8, 16, 32],
         kernel_size=2,
-        stride=1,
+        stride=2,
         activation=relu_name,
         from_flattened=False,
         normalize_pixel=False,
@@ -143,6 +143,7 @@ class ImageEncoder(nn.Module):
         self.linear = nn.Linear(
             h_w[0] * h_w[1] * self.depths[-1], embed_size
         )  # dreamer does not use it
+        # self.ln = nn.LayerNorm(embed_size)
 
         self.from_flattened = from_flattened
         self.normalize_pixel = normalize_pixel
@@ -165,4 +166,5 @@ class ImageEncoder(nn.Module):
 
         embed = torch.reshape(embed, list(batch_size) + [-1])  # (T, B, C*H*W)
         embed = self.linear(embed)  # (T, B, embed_size)
+        # embed = self.ln(embed)
         return embed
