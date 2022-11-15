@@ -119,7 +119,7 @@ class DAgger(RLAlgorithmBase):
         teacher_actions=None,
     ):
         if markov_actor:
-            new_probs, log_probs = self.forward_actor(actor, observs)
+            new_probs, log_probs = actor(observs)
         else:
             new_probs, log_probs = actor(
                 prev_actions=actions, rewards=rewards, observs=observs

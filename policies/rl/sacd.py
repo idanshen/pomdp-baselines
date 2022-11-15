@@ -86,9 +86,7 @@ class SACD(RLAlgorithmBase):
         with torch.no_grad():
             # first next_actions from current policy,
             if markov_actor:
-                new_probs, new_log_probs = self.forward_actor(
-                    actor, next_observs if markov_critic else observs
-                )
+                new_probs, new_log_probs = actor(next_observs if markov_critic else observs)
             else:
                 # (T+1, B, dim) including reaction to last obs
                 new_probs, new_log_probs = actor(
@@ -98,8 +96,7 @@ class SACD(RLAlgorithmBase):
                 )
 
             if markov_critic:  # (B, A)
-                next_q1 = critic_target[0](next_observs)
-                next_q2 = critic_target[1](next_observs)
+                next_q1, next_q2 = critic_target(next_observs)
             else:
                 next_q1, next_q2 = critic_target(
                     prev_actions=actions,
@@ -123,8 +120,7 @@ class SACD(RLAlgorithmBase):
                 q_target = q_target[1:]  # (T, B, 1)
 
         if markov_critic:
-            q1_pred = critic[0](observs)
-            q2_pred = critic[1](observs)
+            q1_pred, q2_pred = critic(observs)
             action = actions.long()  # (B, 1)
             q1_pred = q1_pred.gather(dim=-1, index=action)
             q2_pred = q2_pred.gather(dim=-1, index=action)
@@ -165,15 +161,14 @@ class SACD(RLAlgorithmBase):
         **kwargs,
     ):
         if markov_actor:
-            new_probs, log_probs = self.forward_actor(actor, observs)
+            new_probs, log_probs = actor(observs)
         else:
             new_probs, log_probs = actor(
                 prev_actions=actions, rewards=rewards, observs=observs
             )  # (T+1, B, A)
 
         if markov_critic:
-            q1 = critic[0](observs)
-            q2 = critic[1](observs)
+            q1, q2 = critic(observs)
         else:
             q1, q2 = critic(
                 prev_actions=actions,
