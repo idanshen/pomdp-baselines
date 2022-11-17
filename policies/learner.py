@@ -271,7 +271,7 @@ class Learner:
 
         self.agent = agent_class(
             encoder=rnn_encoder_type,
-            obs_dim=self.obs_dim[0],
+            obs_dim=self.obs_dim,
             action_dim=self.act_dim,
             image_encoder_fn=image_encoder_fn,
             state_dim=self.state_dim[0],
@@ -478,7 +478,10 @@ class Learner:
                     state_list, next_state_list = [], []
                 else:
                     state_list, next_state_list = None, None
-                teacher_action_list = []
+                if self.teacher is not None:
+                    teacher_action_list = []
+                else:
+                    teacher_action_list = None
 
 
             if self.agent_arch == AGENT_ARCHS.Memory:
@@ -572,7 +575,8 @@ class Learner:
                     if self.save_states:
                         state_list.append(state)
                         next_state_list.append(next_state)
-                    teacher_action_list.append(teacher_log_prob_action)
+                    if self.teacher is not None:
+                        teacher_action_list.append(teacher_log_prob_action)
                 # set: obs <- next_obs
                 obs = next_obs.clone()
                 state = next_state.clone()
@@ -584,7 +588,6 @@ class Learner:
                     act_buffer = torch.argmax(
                         act_buffer, dim=-1, keepdims=True
                     )  # (L, 1)
-                teacher_act_buffer = torch.cat(teacher_action_list, dim=0)  # (L, dim)
 
                 self.policy_storage.add_episode(
                     observations=ptu.get_numpy(torch.cat(obs_list, dim=0)),  # (L, dim)
@@ -594,7 +597,7 @@ class Learner:
                     next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
                     states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
                     next_states=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
-                    teacher_actions=ptu.get_numpy(teacher_act_buffer),  # (L, dim)
+                    teacher_actions=ptu.get_numpy(torch.cat(teacher_action_list, dim=0)) if teacher_action_list is not None else None,  # (L, dim)
                 )
                 print(
                     f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"

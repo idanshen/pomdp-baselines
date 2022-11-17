@@ -51,15 +51,13 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         # pixel obs
         image_encoder_fn=lambda: None,
         teacher_dir=None,
+        state_dim=None,
         **kwargs
     ):
         super().__init__()
 
         self.obs_dim = obs_dim
-        if teacher_dir is not None:
-            self.state_dim = obs_dim
-        else:
-            self.state_dim = None
+        self.state_dim = state_dim
         self.action_dim = action_dim
         self.gamma = gamma
         self.tau = tau
@@ -149,7 +147,6 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             actions.dim()
             == rewards.dim()
             == dones.dim()
-            == observs.dim()
             == masks.dim()
             == 3
         )

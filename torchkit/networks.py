@@ -156,8 +156,15 @@ class ImageEncoder(nn.Module):
             batch_size = image.shape[:-1]
             img_shape = [np.prod(batch_size)] + list(self.shape)  # (T*B, C, H, W)
             image = torch.reshape(image, img_shape)
-        else:  # image of size (N, C, H, W)
-            batch_size = [image.shape[0]]
+        else:
+            if image.dim() == 4:  # image of size (N, C, H, W)
+                batch_size = [image.shape[0]]
+            elif image.dim() == 5:  # image of size (T, B, C, H, W)
+                batch_size = image.shape[:2]
+                img_shape = [np.prod(batch_size)] + list(self.shape)  # (T*B, C, H, W)
+                image = torch.reshape(image, img_shape)
+            else:
+                raise ValueError("Got flattened image with self.from_flattened=False")
 
         if self.normalize_pixel:
             image = image / 255.0
