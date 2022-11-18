@@ -157,17 +157,16 @@ class SeqReplayBuffer:
         batch = self._sample_data(indices)
         # each item has 2D shape (num_episodes * sampled_seq_len, dim)
 
-        # generate masks (B, T)
-        masks = self._generate_masks(indices, batch_size)
-        batch["mask"] = masks
-
         for k in batch.keys():
+            key_shape = batch[k].shape[1:]
             batch[k] = (
                 batch[k]
-                .reshape(batch_size, self._sampled_seq_len, -1)
-                .transpose(1, 0, 2)
+                .reshape(batch_size, self._sampled_seq_len, *key_shape)
+                .swapaxes(0,1)
             )
-
+        # generate masks (B, T)
+        masks = self._generate_masks(indices, batch_size)
+        batch["mask"] = np.expand_dims(masks.swapaxes(0, 1), 2)
         return batch
 
     def _sample_indices(self, batch_size):

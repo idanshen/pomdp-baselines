@@ -149,7 +149,6 @@ class Critic_RNN(nn.Module):
         assert (
             prev_actions.dim()
             == rewards.dim()
-            == observs.dim()
             == current_actions.dim()
             == 3
         )

@@ -124,7 +124,7 @@ class Actor_RNN(nn.Module):
         return current actions a' (T+1, B, dim) based on previous history
 
         """
-        assert prev_actions.dim() == rewards.dim() == observs.dim() == 3
+        assert prev_actions.dim() == rewards.dim() == 3
         assert prev_actions.shape[0] == rewards.shape[0] == observs.shape[0]
 
         ### 1. get hidden/belief states of the whole/sub trajectories, aligned with states
