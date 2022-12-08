@@ -81,9 +81,9 @@ set_gpu_mode(torch.cuda.is_available() and v["cuda"] >= 0, v["cuda"])
 if FLAGS.debug:
     exp_id = "debug/"
 elif FLAGS.remote:
-    exp_id = "/home/idanshen/pomdp-baselines/"
-else:
     exp_id = "/data/pulkitag/models/idanshen/pomdp-baselines/"
+else:
+    exp_id = "/home/idanshen/pomdp-baselines/"
 
 env_type = v["env"]["env_type"]
 if len(v["env"]["env_name"].split("-")) == 3:
