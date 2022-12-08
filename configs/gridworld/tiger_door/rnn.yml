@@ -29,7 +29,7 @@ policy:
   separate: True
   seq_model: lstm # [lstm, gru]
   algo_name: sacd # [td3, sac,eaacd]
-  teacher_dir: /home/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/New_Expert/
+  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/New_Expert/
 
   action_embedding_size: 16
 #  observ_embedding_size: 32
