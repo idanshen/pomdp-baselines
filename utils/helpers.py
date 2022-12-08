@@ -257,17 +257,19 @@ def load_obj(folder, name):
 
 def parse_seq_model(seq_model,separate):
     if seq_model == "mlp":
-        agent_class = md.AGENT_CLASSES["Policy_MLP"]
+        agent_class = md.AGENT_CLASSES["Off_Policy_MLP"]
         rnn_encoder_type = None
         assert separate == True
     elif "-mlp" in seq_model:
-        agent_class = md.AGENT_CLASSES["Policy_RNN_MLP"]
-        rnn_encoder_type = seq_model.split("-")[0]
-        assert separate == True
+        raise NotImplementedError("Support only MLP or seperate RNN")
+        # agent_class = md.AGENT_CLASSES["Policy_RNN_MLP"]
+        # rnn_encoder_type = seq_model.split("-")[0]
+        # assert separate == True
     else:
         rnn_encoder_type = seq_model
         if separate == True:
             agent_class = md.AGENT_CLASSES["Off_Policy_Separate_RNN"]
         else:
-            agent_class = md.AGENT_CLASSES["Policy_Shared_RNN"]
+            raise NotImplementedError("Support only MLP or seperate RNN")
+            # agent_class = md.AGENT_CLASSES["Policy_Shared_RNN"]
     return agent_class, rnn_encoder_type

@@ -109,10 +109,7 @@ class Learner:
             self.max_rollouts_per_task = max_rollouts_per_task
             self.max_trajectory_len = self.train_env.horizon_bamdp  # H^+ = k * H
 
-        elif self.env_type in [
-            "pomdp",
-            "credit",
-        ]:  # pomdp/mdp task, using pomdp wrapper
+        elif self.env_type in ["pomdp","credit",]:  # pomdp/mdp task, using pomdp wrapper
             import envs.pomdp
             import envs.credit_assign
 

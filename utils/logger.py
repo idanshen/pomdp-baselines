@@ -7,6 +7,7 @@ import datetime
 import dateutil.tz
 import tempfile
 from collections import OrderedDict, Set
+import wandb
 
 try:
     from torch.utils.tensorboard import SummaryWriter
@@ -194,6 +195,8 @@ class TensorBoardOutputFormat(KVWriter):
             self.writer.add_scalar(k, v, self.step)
 
         self.writer.flush()
+        kvs['z/log_step'] = self.step
+        wandb.log(kvs)
 
     def add_figure(self, tag, figure):
         self.writer.add_figure(tag, figure, self.step)

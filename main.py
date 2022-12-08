@@ -13,6 +13,7 @@ import psutil
 
 from torchkit.pytorch_utils import set_gpu_mode
 from policies.learner import Learner
+import wandb
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("cfg", None, "path to configuration file")
@@ -152,6 +153,10 @@ logger.log("\n".join(f.serialize() for f in key_flags) + "\n")
 logger.log("pid", pid, socket.gethostname())
 os.makedirs(os.path.join(logger.get_dir(), "save"))
 
+yaml = YAML(typ='safe', pure=True)
+cfg = yaml.load(Path(f"{log_folder}/variant_{pid}.yml"))
+# wandb.init(project="test-project", entity="tsrl", config=cfg, mode="disabled")
+wandb.init(project="test-project", entity="tsrl", config=cfg)
 
 # start training
 learner = Learner(
