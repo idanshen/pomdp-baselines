@@ -88,7 +88,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
     def update(self, batch):
         observs, next_observs = batch["obs"], batch["obs2"]  # (B, dim)
         actions, rewards, dones = batch["act"], batch["rew"], batch["term"]  # (B, dim)
-        teacher_actions = batch["teacher_act"]
+        teacher_log_probs = batch["teacher_act"]
         states, next_states = batch["states"], batch["states2"]  # (B, dim)
 
         ### 1. Critic loss
@@ -121,7 +121,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         self.soft_target_update()
 
         ### 2. Actor loss
-        policy_loss, log_probs = self.algo.actor_loss(
+        policy_loss, additional_outputs = self.algo.actor_loss(
             markov_actor=self.Markov_Actor,
             markov_critic=self.Markov_Critic,
             actor=self.policy,
@@ -129,7 +129,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             critic=self.critic,
             critic_target=self.critic_target,
             observs=observs,
-            teacher_actions=teacher_actions,
+            teacher_log_probs=teacher_log_probs,
             states=states
         )
         policy_loss = policy_loss.mean()
@@ -146,10 +146,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         }
 
         # update others like alpha
-        if log_probs is not None:
-            current_log_probs = log_probs.mean().item()
-
-            other_info = self.algo.update_others(current_log_probs)
+        if additional_outputs is not None:
+            other_info = self.algo.update_others(additional_outputs)
             outputs.update(other_info)
 
         return outputs

@@ -185,12 +185,15 @@ class SACD(RLAlgorithmBase):
         if not markov_critic:
             policy_loss = policy_loss[:-1]  # (T,B,1) remove the last obs
 
+        additional_ouputs = {}
         # -> negative entropy (T+1, B, 1)
-        log_probs = (new_probs * log_probs).sum(axis=-1, keepdims=True)
+        additional_ouputs['negative_entropy'] = (new_probs * log_probs).sum(axis=-1, keepdims=True)
 
-        return policy_loss, log_probs
+        return policy_loss, additional_ouputs
 
-    def update_others(self, current_log_probs):
+    def update_others(self, additional_outputs):
+        assert 'negative_entropy' in additional_outputs
+        current_log_probs = additional_outputs['negative_entropy'].mean().item()
         if self.automatic_entropy_tuning:
             alpha_entropy_loss = -self.log_alpha_entropy.exp() * (
                 current_log_probs + self.target_entropy

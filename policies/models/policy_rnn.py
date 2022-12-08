@@ -133,7 +133,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
 
         return current_action_tuple, current_internal_state
 
-    def compute_loss(self, actions, rewards, observs, dones, masks, states=None, teacher_actions=None):
+    def compute_loss(self, actions, rewards, observs, dones, masks, states=None, teacher_log_probs=None):
         """
         For actions a, rewards r, observs o, dones d: (T+1, B, dim)
                 where for each t in [0, T], take action a[t], then receive reward r[t], done d[t], and next obs o[t] and state s[t]
@@ -188,7 +188,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         self.critic_optimizer.step()
 
         ### 2. Actor loss
-        policy_loss, log_probs = self.algo.actor_loss(
+        policy_loss, additional_outputs = self.algo.actor_loss(
             markov_actor=self.Markov_Actor,
             markov_critic=self.Markov_Critic,
             actor=self.actor,
@@ -199,7 +199,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             actions=actions,
             rewards=rewards,
             states=states,
-            teacher_actions=teacher_actions,
+            teacher_log_probs=teacher_log_probs,
         )
         # masked policy_loss
         policy_loss = (policy_loss * masks).sum() / num_valid
@@ -218,15 +218,14 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         self.soft_target_update()
 
         ### 4. update others like alpha
-        if log_probs is not None:
+        if additional_outputs is not None:
             # extract valid log_probs
-            with torch.no_grad():
-                current_log_probs = (log_probs[:-1] * masks).sum() / num_valid
-                # current_log_probs = (log_probs * masks).sum() / num_valid
+            for k, v in additional_outputs.items():
+                with torch.no_grad():
+                    value = (v[:-1] * masks).sum() / num_valid
+                    additional_outputs[k] = value.item()
 
-                current_log_probs = current_log_probs.item()
-
-            other_info = self.algo.update_others(current_log_probs)
+            other_info = self.algo.update_others(additional_outputs)
             outputs.update(other_info)
 
         return outputs
@@ -275,8 +274,8 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             states = torch.cat((states[[0]], next_states), dim=0)
         else:
             states = None
-        teacher_act = batch["teacher_act"]
-        teacher_act = torch.cat(
-            (teacher_act, ptu.zeros((1, batch_size, self.action_dim)).float()), dim=0
+        teacher_log_probs = batch["teacher_act"]
+        teacher_log_probs = torch.cat(
+            (teacher_log_probs, ptu.zeros((1, batch_size, self.action_dim)).float()), dim=0
         )  # (T+1, B, dim)
-        return self.compute_loss(actions, rewards, observs, dones, masks, states, teacher_act)
+        return self.compute_loss(actions, rewards, observs, dones, masks, states, teacher_log_probs)

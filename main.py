@@ -22,7 +22,7 @@ flags.DEFINE_string("algo", None, '["td3", "sac", "sacd"]')
 
 flags.DEFINE_boolean("automatic_entropy_tuning", None, "for [sac, sacd]")
 flags.DEFINE_float("target_entropy", None, "for [sac, sacd, eaacd]")
-flags.DEFINE_float("entropy_alpha", None, "for [sac, sacd, eaacd]")
+flags.DEFINE_float("entropy_alpha", None, "for [sac, sacd]")
 
 flags.DEFINE_integer("seed", None, "seed")
 flags.DEFINE_integer("cuda", None, "cuda device id")
@@ -118,11 +118,14 @@ else:  # rnn
         exp_id += "_shared"
 exp_id += "/"
 
-if algo in ["sac", "sacd", "eaacd"]:
+if algo in ["sac", "sacd"]:
     if not v["policy"][algo]["automatic_entropy_tuning"]:
         exp_id += f"alpha-{v['policy'][algo]['entropy_alpha']}/"
     elif "target_entropy" in v["policy"]:
         exp_id += f"ent-{v['policy'][algo]['target_entropy']}/"
+
+if algo in ["eaacd"]:
+    exp_id += f"{v['policy'][algo]['coefficient_tuning']}/"
 
 exp_id += f"gamma-{v['policy']['gamma']}/"
 
