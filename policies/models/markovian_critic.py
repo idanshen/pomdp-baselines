@@ -32,7 +32,7 @@ class Critic_Markovian(nn.Module):
 
         ## 2. build q networks
 
-        self.qf1, self.qf2 = self.algo.build_critic(
+        self.q_funcs = self.algo.build_critic(
             obs_dim=observ_embedding_size,
             hidden_sizes=dqn_layers,
             action_dim=action_dim,
@@ -47,7 +47,8 @@ class Critic_Markovian(nn.Module):
     def forward(self, observs, *inputs):
         embedded_observs = self._get_obs_embedding(observs)
 
-        q1 = self.qf1(embedded_observs, *inputs)
-        q2 = self.qf2(embedded_observs, *inputs)
+        q = {}
+        for key, q_func in self.q_funcs.items():
+            q[key] = q_func(embedded_observs, *inputs)
 
-        return q1, q2
+        return q

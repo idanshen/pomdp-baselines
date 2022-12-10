@@ -79,3 +79,6 @@ class RLAlgorithmBase:
 
     def update_others(self, **kwargs):
         pass
+
+    def get_acting_policy_key(self):
+        return "main_actor"
