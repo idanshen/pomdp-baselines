@@ -29,6 +29,10 @@ class EAACD(RLAlgorithmBase):
     ):
         assert coefficient_tuning in ["Fixed", "Target", "EIPO"]
         self.coefficient_tuning = coefficient_tuning
+        self.current_policy = "main"
+        self.obj_est_main = 0.0
+        self.obj_est_aux = 0.0
+
         if self.coefficient_tuning == "Target":
             assert target_coefficient is not None
             self.target_coefficient = float(target_coefficient)
@@ -38,8 +42,9 @@ class EAACD(RLAlgorithmBase):
         elif self.coefficient_tuning == "Fixed":
             self.coefficient = initial_coefficient
         else:
-            self.log_coefficient = torch.Tensor(np.log(initial_coefficient), requires_grad=True, device=ptu.device)
+            self.log_coefficient = torch.tensor(np.log(initial_coefficient), requires_grad=True, device=ptu.device)
             self.coefficient = self.log_coefficient.exp().detach().item()
+            self.coefficient_lr = coefficient_lr / 500.0
         self.teacher = self.load_teacher(teacher_dir, state_dim=state_dim, act_dim=action_dim)
 
     def build_actor(self, input_size, action_dim, hidden_sizes, **kwargs):
@@ -386,8 +391,20 @@ class EAACD(RLAlgorithmBase):
             coefficient_loss.backward()
             self.coefficient_optim.step()
             self.coefficient = self.log_coefficient.exp().item()
-
-        return {"cross_entropy": current_cross_entropy, "policy_entropy": current_entropy, "coefficient": self.coefficient}
+        objective_difference = 0.0
+        if self.coefficient_tuning == "EIPO":
+            objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
+            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -5, 5)
+            self.coefficient = self.log_coefficient.exp().item()
+        return {"cross_entropy": current_cross_entropy,
+                "policy_entropy": current_entropy,
+                "coefficient": self.coefficient,
+                "objective_difference": objective_difference,
+                "obj_est_main": self.obj_est_main,
+                "obj_est_aux": self.obj_est_aux}
 
     def get_acting_policy_key(self):
-        return "main_actor"
+        return self.current_policy+"_actor"
+
+    def estimate_objective_difference(self):
+        return self.obj_est_main - self.obj_est_aux

@@ -48,6 +48,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         self.action_dim = action_dim
         self.gamma = gamma
         self.tau = tau
+        self.algo_name = algo_name
 
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              teacher_dir=teacher_dir,
