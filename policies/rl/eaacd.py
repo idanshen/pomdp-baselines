@@ -144,7 +144,8 @@ class EAACD(RLAlgorithmBase):
         gamma,
         next_observs=None,  # used in markov_critic
         states=None,
-        next_states=None
+        next_states=None,
+        **kwargs
     ):
         main_qf1_loss, main_qf2_loss = self._critic_loss("main",
                           markov_actor=markov_actor,
@@ -160,7 +161,8 @@ class EAACD(RLAlgorithmBase):
                           gamma=gamma,
                           next_observs=next_observs,
                           states=states,
-                          next_states=next_states)
+                          next_states=next_states,
+                          **kwargs)
         if self.coefficient_tuning == "EIPO":
             aux_qf1_loss, aux_qf2_loss = self._critic_loss("aux",
                               markov_actor=markov_actor,
@@ -176,7 +178,8 @@ class EAACD(RLAlgorithmBase):
                               gamma=gamma,
                               next_observs=next_observs,
                               states=states,
-                              next_states=next_states)
+                              next_states=next_states,
+                              **kwargs)
             return {"main_loss": main_qf1_loss, "aux_loss": aux_qf1_loss}, {"main_loss": main_qf2_loss, "aux_loss": aux_qf2_loss}
         else:
             return {"main_loss": main_qf1_loss}, {"main_loss": main_qf2_loss}
@@ -197,7 +200,8 @@ class EAACD(RLAlgorithmBase):
         gamma,
         next_observs=None,  # used in markov_critic
         states=None,
-        next_states=None
+        next_states=None,
+        **kwargs
     ):
         # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
         with torch.no_grad():
@@ -253,6 +257,8 @@ class EAACD(RLAlgorithmBase):
             action = actions.long()  # (B, 1)
             q1_pred = q1_pred.gather(dim=-1, index=action)
             q2_pred = q2_pred.gather(dim=-1, index=action)
+            qf1_loss = F.mse_loss(q1_pred, q_target)  # TD error
+            qf2_loss = F.mse_loss(q2_pred, q_target)  # TD error
 
         else:
             # Q(h(t), a(t)) (T, B, 1)
@@ -274,8 +280,17 @@ class EAACD(RLAlgorithmBase):
             q2_pred = q2_pred.gather(
                 dim=-1, index=stored_actions
             )  # (T, B, A) -> (T, B, 1)
-        qf1_loss = F.mse_loss(q1_pred, q_target)  # TD error
-        qf2_loss = F.mse_loss(q2_pred, q_target)  # TD error
+
+            # masked Bellman error: masks (T,B,1) ignore the invalid error
+            # this is not equal to masks * q1_pred, cuz the denominator in mean()
+            # 	should depend on masks > 0.0, not a constant B*T
+            assert 'masks' in kwargs
+            masks = kwargs['masks']
+            num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+            q1_pred, q2_pred = q1_pred * masks, q2_pred * masks
+            q_target = q_target * masks
+            qf1_loss = ((q1_pred - q_target) ** 2).sum() / num_valid  # TD error
+            qf2_loss = ((q2_pred - q_target) ** 2).sum() / num_valid  # TD error
 
         return qf1_loss, qf2_loss
 
@@ -292,6 +307,7 @@ class EAACD(RLAlgorithmBase):
             rewards=None,
             states=None,
             teacher_log_probs=None,
+            **kwargs
     ):
         main_policy_loss, main_additional_ouputs = self._actor_loss(
         "main",
@@ -306,6 +322,7 @@ class EAACD(RLAlgorithmBase):
         rewards=rewards,
         states=states,
         teacher_log_probs=teacher_log_probs,
+        **kwargs
         )
         if self.coefficient_tuning == "EIPO":
             aux_policy_loss, aux_additional_ouputs = self._actor_loss(
@@ -321,6 +338,7 @@ class EAACD(RLAlgorithmBase):
             rewards=rewards,
             states=states,
             teacher_log_probs=teacher_log_probs,
+            **kwargs
             )
             return {"main_loss": main_policy_loss, "aux_loss": aux_policy_loss}, main_additional_ouputs
         else:
@@ -340,6 +358,7 @@ class EAACD(RLAlgorithmBase):
         rewards=None,
         states=None,
         teacher_log_probs=None,
+        **kwargs
     ):
         if markov_actor:
             new_probs, log_probs = actor(observs)[key+"_actor"]
@@ -370,6 +389,11 @@ class EAACD(RLAlgorithmBase):
         policy_loss = (new_probs * policy_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
         if not markov_critic:
             policy_loss = policy_loss[:-1]  # (T,B,1) remove the last obs
+        if not markov_actor:
+            assert 'masks' in kwargs
+            masks = kwargs['masks']
+            num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+            policy_loss = (policy_loss * masks).sum() / num_valid
 
         additional_outputs = {}
         if key == "main":

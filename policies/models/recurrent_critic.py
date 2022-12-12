@@ -23,6 +23,9 @@ class Critic_RNN(nn.Module):
     ):
         super().__init__()
 
+        if type(obs_dim) == tuple:
+            assert len(obs_dim) == 1
+            obs_dim = obs_dim[0]
         self.obs_dim = obs_dim
         self.action_dim = action_dim
         self.algo = algo
@@ -92,7 +95,7 @@ class Critic_RNN(nn.Module):
             raise NotImplementedError
 
         ## 4. build q networks
-        self.qf1, self.qf2 = self.algo.build_critic(
+        self.q_funcs = self.algo.build_critic(
             input_size=self.rnn_hidden_size + shortcut_embedding_size,
             hidden_sizes=dqn_layers,
             action_dim=action_dim,
@@ -181,7 +184,8 @@ class Critic_RNN(nn.Module):
             )  # (T, B, dim)
 
         # 4. q value
-        q1 = self.qf1(joint_embeds)
-        q2 = self.qf2(joint_embeds)
+        q = {}
+        for key, q_func in self.q_funcs.items():
+            q[key] = q_func(joint_embeds)
 
-        return q1, q2  # (T or T+1, B, 1 or A)
+        return q  # Dict of (T or T+1, B, 1 or A)
