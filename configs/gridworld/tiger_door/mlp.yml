@@ -13,23 +13,23 @@ train:
     # 1.5k iters -> 4.55M steps (17 gpu hrs, 31 cpu hrs)
   # original rl training steps: num_iters * updates_per_iter = 1.5M
     # now makes it same as env steps
-  num_iters: 60 # number meta-training iterates
+  num_iters: 150 # number meta-training iterates
   num_init_rollouts_pool: 30 # 80 #  before training
-  num_rollouts_per_iter: 25  # 1 #
+  num_rollouts_per_iter: 5  # 1 #
   buffer_size: 1e6 # or 1e6? old belief
 
-  num_updates_per_iter: 2500
+  num_updates_per_iter: 500
   batch_size: 256 # to tune based on sampled_seq_len
 
 eval:
-  log_interval: 1 # 10 num of iters
+  log_interval: 5 # 10 num of iters
   save_interval: 1 # -1
   log_tensorboard: true
 
 policy:
   seq_model: mlp
   algo_name: sacd # [td3, sac]
-  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/New_Expert/
+  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/New_New_Expert/
 
   dqn_layers: [128, 128]
   policy_layers: [128, 128]
@@ -49,7 +49,7 @@ policy:
 
   eaacd:
     initial_coefficient: 0.3
-    coefficient_tuning: Target # Can be Fixed, Target, EIPO
+    coefficient_tuning: EIPO # Can be Fixed, Target, EIPO
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.0003
 

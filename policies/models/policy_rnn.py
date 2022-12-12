@@ -62,6 +62,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         self.gamma = gamma
         self.tau = tau
         self.alpha = alpha
+        self.algo_name = algo_name
 
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              teacher_dir=teacher_dir,
@@ -158,9 +159,10 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             == masks.shape[0] + 1
         )
         num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+        outputs = {}
 
         ### 1. Critic loss
-        (q1_pred, q2_pred), q_target = self.algo.critic_loss(
+        qf1_losses, qf2_losses = self.algo.critic_loss(
             markov_actor=self.Markov_Actor,
             markov_critic=self.Markov_Critic,
             actor=self.actor,
@@ -173,22 +175,23 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             dones=dones,
             gamma=self.gamma,
             states=states,
+            masks=masks
         )
 
-        # masked Bellman error: masks (T,B,1) ignore the invalid error
-        # this is not equal to masks * q1_pred, cuz the denominator in mean()
-        # 	should depend on masks > 0.0, not a constant B*T
-        q1_pred, q2_pred = q1_pred * masks, q2_pred * masks
-        q_target = q_target * masks
-        qf1_loss = ((q1_pred - q_target) ** 2).sum() / num_valid  # TD error
-        qf2_loss = ((q2_pred - q_target) ** 2).sum() / num_valid  # TD error
-
         self.critic_optimizer.zero_grad()
+        qf1_loss = 0
+        for key, loss in qf1_losses.items():
+            qf1_loss += loss
+            outputs["qf1_"+key] = loss.item()
+        qf2_loss = 0
+        for key, loss in qf2_losses.items():
+            qf2_loss += loss
+            outputs["qf2_" + key] = loss.item()
         (qf1_loss + qf2_loss).backward()
         self.critic_optimizer.step()
 
         ### 2. Actor loss
-        policy_loss, additional_outputs = self.algo.actor_loss(
+        policy_losses, additional_outputs = self.algo.actor_loss(
             markov_actor=self.Markov_Actor,
             markov_critic=self.Markov_Critic,
             actor=self.actor,
@@ -200,19 +203,17 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             rewards=rewards,
             states=states,
             teacher_log_probs=teacher_log_probs,
+            masks=masks
         )
-        # masked policy_loss
-        policy_loss = (policy_loss * masks).sum() / num_valid
 
         self.actor_optimizer.zero_grad()
+        policy_loss = 0
+        for key, loss in policy_losses.items():
+            policy_loss += loss.mean()
+            outputs["policy_" + key] = loss.item()
         policy_loss.backward()
         self.actor_optimizer.step()
 
-        outputs = {
-            "qf1_loss": qf1_loss.item(),
-            "qf2_loss": qf2_loss.item(),
-            "policy_loss": policy_loss.item(),
-        }
 
         ### 3. soft update
         self.soft_target_update()
@@ -223,7 +224,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             for k, v in additional_outputs.items():
                 with torch.no_grad():
                     value = (v[:-1] * masks).sum() / num_valid
-                    additional_outputs[k] = value.item()
+                    additional_outputs[k] = value
 
             other_info = self.algo.update_others(additional_outputs)
             outputs.update(other_info)

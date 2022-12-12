@@ -412,6 +412,20 @@ class Learner:
             env_steps = self.collect_rollouts(num_rollouts=self.num_rollouts_per_iter)
             logger.log("env steps", self._n_env_steps_total)
 
+            if self.env_type == "gridworld" and self.agent.algo_name == "eaacd":
+                if self.agent.algo.coefficient_tuning == "EIPO":
+                    self.agent.algo.current_policy = "main"
+                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
+                    self.agent.algo.obj_est_main = returns_eval_main.mean()
+                    self.agent.algo.current_policy = "aux"
+                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
+                    self.agent.algo.obj_est_aux = returns_eval_aux.mean()
+
+                    # Collect data using the best of the two policies
+                    if returns_eval_main.mean() - returns_eval_aux.mean() > 0:
+                        self.agent.algo.current_policy = "main"
+                    else:
+                        self.agent.algo.current_policy = "aux"
             train_stats = self.update(
                 self.num_updates_per_iter
                 if isinstance(self.num_updates_per_iter, int)

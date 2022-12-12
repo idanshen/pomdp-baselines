@@ -1,10 +1,6 @@
 #!/bin/bash
-#/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 0.01 --seed 4
-#/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 0.01 --seed 5
-#/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 0.01 --seed 6
-#/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 1.0 --seed 4
-#/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 1.0 --seed 5
-#/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 1.0 --seed 6
-/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 0.3 --seed 4
-/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 0.3 --seed 5
-/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/lava_gap/mlp.yml --algo eaacd --entropy_alpha 0.3 --seed 6
+/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/tiger_door/mlp.yml --algo eaacd --seed 1 --remote
+/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/tiger_door/mlp.yml --algo eaacd --seed 2 --remote
+/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/tiger_door/mlp.yml --algo eaacd --seed 3 --remote
+/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/tiger_door/mlp.yml --algo eaacd --seed 4 --remote
+/home/idanshen/anaconda3/envs/pomdp/bin/python /home/idanshen/pomdp-baselines/main.py --cfg /home/idanshen/pomdp-baselines/configs/gridworld/tiger_door/mlp.yml --algo eaacd --seed 5 --remote

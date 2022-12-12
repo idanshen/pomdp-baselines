@@ -48,6 +48,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         self.action_dim = action_dim
         self.gamma = gamma
         self.tau = tau
+        self.algo_name = algo_name
 
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              teacher_dir=teacher_dir,
@@ -90,9 +91,10 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         actions, rewards, dones = batch["act"], batch["rew"], batch["term"]  # (B, dim)
         teacher_log_probs = batch["teacher_act"]
         states, next_states = batch["states"], batch["states2"]  # (B, dim)
+        outputs = {}
 
         ### 1. Critic loss
-        (q1_pred, q2_pred), q_target = self.algo.critic_loss(
+        qf1_losses, qf2_losses = self.algo.critic_loss(
             markov_actor=self.Markov_Actor,
             markov_critic=self.Markov_Critic,
             actor=self.policy,
@@ -109,11 +111,16 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             next_states=next_states
         )
 
-        qf1_loss = F.mse_loss(q1_pred, q_target)  # TD error
-        qf2_loss = F.mse_loss(q2_pred, q_target)  # TD error
-
         # update q networks
         self.critic_optimizer.zero_grad()
+        qf1_loss = 0
+        for key, loss in qf1_losses.items():
+            qf1_loss += loss
+            outputs["qf1_"+key] = loss.item()
+        qf2_loss = 0
+        for key, loss in qf2_losses.items():
+            qf2_loss += loss
+            outputs["qf2_" + key] = loss.item()
         (qf1_loss + qf2_loss).backward()
         self.critic_optimizer.step()
 
@@ -121,7 +128,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         self.soft_target_update()
 
         ### 2. Actor loss
-        policy_loss, additional_outputs = self.algo.actor_loss(
+        policy_losses, additional_outputs = self.algo.actor_loss(
             markov_actor=self.Markov_Actor,
             markov_critic=self.Markov_Critic,
             actor=self.policy,
@@ -132,18 +139,15 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             teacher_log_probs=teacher_log_probs,
             states=states
         )
-        policy_loss = policy_loss.mean()
 
         # update policy network
         self.policy_optim.zero_grad()
+        policy_loss = 0
+        for key, loss in policy_losses.items():
+            policy_loss += loss.mean()
+            outputs["policy_" + key] = loss.mean().item()
         policy_loss.backward()
         self.policy_optim.step()
-
-        outputs = {
-            "qf1_loss": qf1_loss.item(),
-            "qf2_loss": qf2_loss.item(),
-            "policy_loss": policy_loss.item(),
-        }
 
         # update others like alpha
         if additional_outputs is not None:

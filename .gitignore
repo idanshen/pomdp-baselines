@@ -21,3 +21,4 @@ gridworld/
 policies/wandb/
 
 .idea/
+wandb/
