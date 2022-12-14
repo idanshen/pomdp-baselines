@@ -409,16 +409,16 @@ class Learner:
         last_eval_num_iters = 0
         while self._n_env_steps_total < self.n_env_steps_total:
             # collect data from num_rollouts_per_iter train tasks:
-            env_steps = self.collect_rollouts(num_rollouts=self.num_rollouts_per_iter)
+            env_steps = self.collect_rollouts(num_rollouts=self.num_rollouts_per_iter, min_steps=0.25*self.num_rollouts_per_iter*self.max_trajectory_len)
             logger.log("env steps", self._n_env_steps_total)
 
             if self.env_type == "gridworld" and self.agent.algo_name == "eaacd":
                 if self.agent.algo.coefficient_tuning == "EIPO":
                     self.agent.algo.current_policy = "main"
-                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
+                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
                     self.agent.algo.obj_est_main = returns_eval_main.mean()
                     self.agent.algo.current_policy = "aux"
-                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
+                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
                     self.agent.algo.obj_est_aux = returns_eval_aux.mean()
 
                     # Collect data using the best of the two policies
@@ -453,13 +453,16 @@ class Learner:
         self.save_model(current_num_iters, perf)
 
     @torch.no_grad()
-    def collect_rollouts(self, num_rollouts, random_actions=False):
+    def collect_rollouts(self, num_rollouts, min_steps=-1, random_actions=False):
         """collect num_rollouts of trajectories in task and save into policy buffer
+        :param min_steps: minimum number of steps to collect
         :param random_actions: whether to use policy to sample actions, or randomly sample action space
         """
 
         before_env_steps = self._n_env_steps_total
-        for idx in range(num_rollouts):
+        collected_rollouts = 0
+        collected_steps = 0
+        while (collected_rollouts < num_rollouts) or (collected_steps < min_steps):
             steps = 0
 
             if self.env_type == "meta" and self.train_env.n_tasks is not None:
@@ -614,7 +617,9 @@ class Learner:
                     f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
                 )
             self._n_env_steps_total += steps
+            collected_steps += steps
             self._n_rollouts_total += 1
+            collected_rollouts += 1
         return self._n_env_steps_total - before_env_steps
 
     def sample_rl_batch(self, batch_size):

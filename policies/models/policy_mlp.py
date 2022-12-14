@@ -3,15 +3,15 @@ Based on https://github.com/pranz24/pytorch-soft-actor-critic
 """
 
 import copy
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.optim import Adam
-from policies.models import *
+
+import torchkit.pytorch_utils as ptu
 from policies.models.markovian_actor import Actor_Markovian
 from policies.models.markovian_critic import Critic_Markovian
 from policies.rl import RL_ALGORITHMS
-import torchkit.pytorch_utils as ptu
 
 
 class ModelFreeOffPolicy_MLP(nn.Module):
@@ -26,20 +26,20 @@ class ModelFreeOffPolicy_MLP(nn.Module):
     Markov_Critic = True
 
     def __init__(
-        self,
-        obs_dim,
-        action_dim,
-        algo_name,
-        dqn_layers,
-        policy_layers,
-        lr=3e-4,
-        gamma=0.99,
-        tau=5e-3,
-        # pixel obs
-        image_encoder_fn=lambda: None,
-        teacher_dir=None,
-        state_dim=None,
-        **kwargs
+            self,
+            obs_dim,
+            action_dim,
+            algo_name,
+            dqn_layers,
+            policy_layers,
+            lr=3e-4,
+            gamma=0.99,
+            tau=5e-3,
+            # pixel obs
+            image_encoder_fn=lambda: None,
+            teacher_dir=None,
+            state_dim=None,
+            **kwargs
     ):
         super().__init__()
 
@@ -116,7 +116,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         qf1_loss = 0
         for key, loss in qf1_losses.items():
             qf1_loss += loss
-            outputs["qf1_"+key] = loss.item()
+            outputs["qf1_" + key] = loss.item()
         qf2_loss = 0
         for key, loss in qf2_losses.items():
             qf2_loss += loss
@@ -151,7 +151,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
 
         # update others like alpha
         if additional_outputs is not None:
-            other_info = self.algo.update_others(additional_outputs)
+            other_info = self.algo.update_others(additional_outputs, self.Markov_Critic, self.Markov_Actor, self.critic,
+                                                 self.policy, observs, actions, rewards)
             outputs.update(other_info)
 
         return outputs

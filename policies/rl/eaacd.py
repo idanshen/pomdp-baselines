@@ -286,7 +286,7 @@ class EAACD(RLAlgorithmBase):
                     rewards=rewards,
                     observs=observs,
                     current_actions=actions[1:],
-                )  # (T, B, A)
+                )  # (T, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
                 q1_pred, q2_pred = q_pred_dict[key + "_qf1"], q_pred_dict[key + "_qf2"]
 
                 stored_actions = actions[1:]  # (T, B, A)
@@ -377,7 +377,7 @@ class EAACD(RLAlgorithmBase):
                     rewards=rewards,
                     observs=observs,
                     current_actions=actions[1:],
-                )  # (T, B, A)
+                )  # (T, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
 
                 stored_actions = actions[1:]  # (T, B, A)
                 stored_actions = torch.argmax(stored_actions, dim=-1, keepdims=True)  # (T, B, 1)
@@ -479,14 +479,13 @@ class EAACD(RLAlgorithmBase):
 
             if markov_critic:
                 q_dict = critic(observs)
-
             else:
                 q_dict = critic(
                     prev_actions=actions,
                     rewards=rewards,
                     observs=observs,
                     current_actions=new_probs,
-                )  # (T+1, B, A)
+                )  # (T+1, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
             if key == "main" and self.split_q:
                 q1 = q_dict[key + "_qf1_env"] - coefficient * q_dict[key + "_qf1_teacher"]
                 q2 = q_dict[key + "_qf2_env"] - coefficient * q_dict[key + "_qf2_teacher"]
@@ -495,8 +494,8 @@ class EAACD(RLAlgorithmBase):
             min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
 
             policy_loss = -min_q_new_actions
-            policy_loss += log_probs
             if key == "main":
+                policy_loss += log_probs
                 policy_loss -= coefficient * teacher_log_probs
 
             # E_{a\sim \pi}[Q(h,a)]
@@ -543,7 +542,7 @@ class EAACD(RLAlgorithmBase):
                         rewards=rewards,
                         observs=observs,
                         current_actions=new_probs,
-                    )  # (T+1, B, A)
+                    )  # (T+1, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
                 if self.split_q:
                     q1 = q_dict[key + "_qf1_env"]
                     q2 = q_dict[key + "_qf2_env"]
@@ -574,7 +573,7 @@ class EAACD(RLAlgorithmBase):
 
         return policy_loss, additional_outputs
 
-    def update_others(self, additional_outputs):
+    def update_others(self, additional_outputs, markov_critic, markov_actor, critic, actor, observs, actions, rewards):
         assert 'negative_entropy' in additional_outputs
         assert 'negative_cross_entropy' in additional_outputs
         current_entropy = -additional_outputs['negative_entropy'].mean().item()
@@ -588,8 +587,9 @@ class EAACD(RLAlgorithmBase):
             self.coefficient = self.log_coefficient.exp().item()
         objective_difference = 0.0
         if self.coefficient_tuning == "EIPO":
+            # obj_aproximation = self.approximate_objective_difference(markov_critic, markov_actor, critic, actor, observs, actions, rewards)
             objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
-            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -5, 5)
+            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -2, 2)
             self.coefficient = self.log_coefficient.exp().item()
 
         output_dict = {"cross_entropy": current_cross_entropy,
@@ -597,6 +597,7 @@ class EAACD(RLAlgorithmBase):
                 "coefficient": self.coefficient}
         if self.coefficient_tuning == "EIPO":
             output_dict["objective_difference"] = objective_difference
+            # output_dict["objective_difference_approx"] = obj_aproximation
             output_dict["obj_est_main"] = self.obj_est_main
             output_dict["obj_est_aux"] = self.obj_est_aux
         return output_dict
@@ -606,3 +607,46 @@ class EAACD(RLAlgorithmBase):
 
     def estimate_objective_difference(self):
         return self.obj_est_main - self.obj_est_aux
+
+    @torch.no_grad()
+    def approximate_objective_difference(self,
+                                         markov_critic: bool,
+                                         markov_actor: bool,
+                                         critic,
+                                         actor,
+                                         observs,
+                                         actions,
+                                         rewards):
+        if markov_actor:
+            actor_dict = actor(observs)
+        else:
+            actor_dict = actor(
+                prev_actions=actions, rewards=rewards, observs=observs
+            )  # (T+1, B, A).
+        action_probs_main, _ = actor_dict["main_actor"]
+        action_main = torch.argmax(action_probs_main, dim=1).unsqueeze(dim=1)
+        action_probs_aux, _ = actor_dict["aux_actor"]
+        action_aux = torch.argmax(action_probs_aux, dim=1).unsqueeze(dim=1)
+
+        if markov_critic:
+            q_dict = critic(observs)
+        else:
+            q_dict = critic(
+                prev_actions=actions,
+                rewards=rewards,
+                observs=observs,
+                current_actions=new_probs,
+            )  # (T+1, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
+        if self.split_q:
+            q1 = q_dict["main_qf1_env"]
+            q2 = q_dict["main_qf2_env"]
+        else:
+            raise RuntimeError("Cannot estimate using advantage functions without env Q")
+        q_main = torch.min(q1, q2)
+
+        q1 = q_dict["aux_qf1"]
+        q2 = q_dict["aux_qf2"]
+        q_aux = torch.min(q1, q2)
+
+        obj_aproximation = q_aux.gather(dim=-1, index=action_aux) - torch.sum(action_probs_aux * q_aux) - q_main.gather(dim=-1, index=action_main) + torch.sum(action_probs_main * q_main)
+        return obj_aproximation.mean().item()
