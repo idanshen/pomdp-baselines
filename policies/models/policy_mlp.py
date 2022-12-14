@@ -151,8 +151,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
 
         # update others like alpha
         if additional_outputs is not None:
-            other_info = self.algo.update_others(additional_outputs, self.Markov_Critic, self.Markov_Actor, self.critic,
-                                                 self.policy, observs, actions, rewards)
+            other_info = self.algo.update_others(additional_outputs, markov_critic=self.Markov_Critic, markov_actor=self.Markov_Actor, critic=self.critic,
+                                                 actor=self.policy, observs=observs, actions=actions, rewards=rewards)
             outputs.update(other_info)
 
         return outputs

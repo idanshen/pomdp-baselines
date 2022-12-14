@@ -39,7 +39,7 @@ class EAACD(RLAlgorithmBase):
         if self.coefficient_tuning == "Target":
             assert target_coefficient is not None
             self.target_coefficient = float(target_coefficient)
-            self.log_coefficient = torch.zeros(1, requires_grad=True, device=ptu.device)
+            self.log_coefficient = torch.tensor(np.log(initial_coefficient), requires_grad=True, device=ptu.device)
             self.coefficient_optim = Adam([self.log_coefficient], lr=coefficient_lr)
             self.coefficient = self.log_coefficient.exp().detach().item()
         elif self.coefficient_tuning == "Fixed":
