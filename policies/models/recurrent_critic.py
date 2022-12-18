@@ -23,9 +23,9 @@ class Critic_RNN(nn.Module):
     ):
         super().__init__()
 
-        if type(obs_dim) == tuple:
-            assert len(obs_dim) == 1
-            obs_dim = obs_dim[0]
+        # if type(obs_dim) == tuple:
+        #     assert len(obs_dim) == 1
+        #     obs_dim = obs_dim[0]
         self.obs_dim = obs_dim
         self.action_dim = action_dim
         self.algo = algo
@@ -152,7 +152,6 @@ class Critic_RNN(nn.Module):
         assert (
             prev_actions.dim()
             == rewards.dim()
-            == current_actions.dim()
             == 3
         )
         assert prev_actions.shape[0] == rewards.shape[0] == observs.shape[0]
@@ -164,7 +163,7 @@ class Critic_RNN(nn.Module):
         )
 
         # 2. another branch for state & **current** action
-        if current_actions.shape[0] == observs.shape[0]:
+        if current_actions is None or current_actions.shape[0] == observs.shape[0]:
             # current_actions include last obs's action, i.e. we have a'[T] in reaction to o[T]
             curr_embed = self._get_shortcut_obs_act_embedding(
                 observs, current_actions

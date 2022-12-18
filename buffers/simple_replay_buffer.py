@@ -36,7 +36,7 @@ class SimpleReplayBuffer(ReplayBuffer):
         self._action_dim = action_dim
         self.trajectory_len = max_trajectory_len
 
-        self._observations = np.zeros((max_replay_buffer_size, *observation_dim))
+        self._observations = np.zeros((max_replay_buffer_size, *observation_dim), dtype=np.float32)
         if state_dim is None:
             self.state_dim = observation_dim
         else:
@@ -46,9 +46,10 @@ class SimpleReplayBuffer(ReplayBuffer):
         # It's a bit memory inefficient to save the observations twice,
         # but it makes the code *much* easier since you no longer have to
         # worry about termination conditions.
-        self._next_obs = np.zeros((max_replay_buffer_size, *observation_dim))
+        self._next_obs = np.zeros((max_replay_buffer_size, *observation_dim), dtype=np.float32)
         self._actions = np.zeros((max_replay_buffer_size, action_dim))
-        self._teacher_actions = np.zeros((max_replay_buffer_size, 4))
+        self._teacher_log_probs = np.zeros((max_replay_buffer_size, 4))  # TODO: change from 4 to variable
+        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, 4))  # TODO: change from 4 to variable
         # Make everything a 2D np array to make it easier for other code to
         # reason about the shape of the data
         self._rewards = np.zeros((max_replay_buffer_size, 1))
@@ -67,14 +68,16 @@ class SimpleReplayBuffer(ReplayBuffer):
         terminal,
         next_observation,
         timeout=None,
-        teacher_action=None,
+        teacher_log_prob=None,
+        teacher_next_log_prob=None,
         state=None,
         next_state=None,
         **kwargs
     ):
         self._observations[self._top] = observation
         self._actions[self._top] = action
-        self._teacher_actions[self._top] = teacher_action
+        self._teacher_log_probs[self._top] = teacher_log_prob
+        self._teacher_next_log_probs[self._top] = teacher_next_log_prob
         self._rewards[self._top] = reward
         self._terminals[self._top] = terminal
         self._next_obs[self._top] = next_observation
@@ -120,7 +123,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         return dict(
             obs=self._observations[indices],
             act=self._actions[indices],
-            teacher_act=self._teacher_actions[indices],
+            teacher_log_prob=self._teacher_log_probs[indices],
+            teacher_log_prob2=self._teacher_next_log_probs[indices],
             rew=self._rewards[indices],
             term=self._terminals[indices],
             obs2=self._next_obs[indices],

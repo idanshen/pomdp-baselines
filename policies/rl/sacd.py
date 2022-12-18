@@ -223,7 +223,7 @@ class SACD(RLAlgorithmBase):
 
         return {"main_loss": policy_loss}, additional_outputs
 
-    def update_others(self, additional_outputs):
+    def update_others(self, additional_outputs, **kwargs):
         assert 'negative_entropy' in additional_outputs
         current_log_probs = additional_outputs['negative_entropy'].mean().item()
         if self.automatic_entropy_tuning:
