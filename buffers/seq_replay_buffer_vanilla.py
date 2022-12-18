@@ -47,7 +47,8 @@ class SeqReplayBuffer:
             )
         self._actions = np.zeros((max_replay_buffer_size, action_dim), dtype=np.float32)
         self._rewards = np.zeros((max_replay_buffer_size, 1), dtype=np.float32)
-        self._teacher_actions = np.zeros((max_replay_buffer_size, 4), dtype=np.float32)
+        self._teacher_log_probs = np.zeros((max_replay_buffer_size, 4), dtype=np.float32)  # TODO: change from 4 to variable
+        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, 4), dtype=np.float32)  # TODO: change from 4 to variable
         # terminals are "done" signals, useful for policy training
         # for each trajectory, it has single 1 like 0000001000 for reaching goal or early stopping
         # 	or simply 0s for timing out.
@@ -83,7 +84,7 @@ class SeqReplayBuffer:
         self._top = 0  # trajectory level (first dim in 3D buffer)
         self._size = 0  # trajectory level (first dim in 3D buffer)
 
-    def add_episode(self, observations, actions, rewards, terminals, next_observations, states=None, next_states=None, teacher_actions=None):
+    def add_episode(self, observations, actions, rewards, terminals, next_observations, states=None, next_states=None, teacher_log_probs=None, teacher_next_log_probs=None):
         """
         NOTE: must add one whole episode/sequence/trajectory,
                         not some partial transitions
@@ -112,7 +113,8 @@ class SeqReplayBuffer:
 
         self._observations[indices] = observations
         self._actions[indices] = actions
-        self._teacher_actions[indices] = teacher_actions
+        self._teacher_log_probs[indices] = teacher_log_probs
+        self._teacher_next_log_probs[indices] = teacher_next_log_probs
         self._rewards[indices] = rewards
         self._terminals[indices] = terminals
         self._next_observations[indices] = next_observations
@@ -187,7 +189,8 @@ class SeqReplayBuffer:
             rew=self._rewards[indices],
             term=self._terminals[indices],
             obs2=self._next_observations[indices],
-            teacher_act=self._teacher_actions[indices]
+            teacher_log_prob=self._teacher_log_probs[indices],
+            teacher_log_prob2=self._teacher_next_log_probs[indices]
         )
         if self._save_states:
             return_dict["states"] = self._states[indices]

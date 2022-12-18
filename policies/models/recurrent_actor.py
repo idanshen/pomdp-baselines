@@ -24,9 +24,9 @@ class Actor_RNN(nn.Module):
     ):
         super().__init__()
 
-        if type(obs_dim) == tuple:
-            assert len(obs_dim) == 1
-            obs_dim = obs_dim[0]
+        # if type(obs_dim) == tuple:
+        #     assert len(obs_dim) == 1
+        #     obs_dim = obs_dim[0]
         self.obs_dim = obs_dim
 
         self.action_dim = action_dim

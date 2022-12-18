@@ -48,7 +48,6 @@ class EAACD(RLAlgorithmBase):
             self.log_coefficient = torch.tensor(np.log(initial_coefficient), requires_grad=True, device=ptu.device)
             self.coefficient = self.log_coefficient.exp().detach().item()
             self.coefficient_lr = coefficient_lr / 500.0
-        self.teacher = self.load_teacher(teacher_dir, state_dim=state_dim, act_dim=action_dim)
 
     def build_actor(self, input_size, action_dim, hidden_sizes, **kwargs):
         if type(input_size) == tuple:
@@ -163,6 +162,8 @@ class EAACD(RLAlgorithmBase):
         next_observs=None,  # used in markov_critic
         states=None,
         next_states=None,
+        teacher_log_probs=None,
+        teacher_next_log_probs=None,
         **kwargs
     ):
         main_qf1_loss, main_qf2_loss = self._critic_loss("main",
@@ -180,6 +181,8 @@ class EAACD(RLAlgorithmBase):
                           next_observs=next_observs,
                           states=states,
                           next_states=next_states,
+                          teacher_log_probs=teacher_log_probs,
+                          teacher_next_log_probs=teacher_next_log_probs,
                           **kwargs)
         if self.coefficient_tuning == "EIPO":
             aux_qf1_loss, aux_qf2_loss = self._critic_loss("aux",
@@ -197,6 +200,8 @@ class EAACD(RLAlgorithmBase):
                               next_observs=next_observs,
                               states=states,
                               next_states=next_states,
+                              teacher_log_probs=teacher_log_probs,
+                              teacher_next_log_probs=teacher_next_log_probs,
                               **kwargs)
             return {"main_loss": main_qf1_loss, "aux_loss": aux_qf1_loss}, {"main_loss": main_qf2_loss, "aux_loss": aux_qf2_loss}
         else:
@@ -219,6 +224,8 @@ class EAACD(RLAlgorithmBase):
         next_observs=None,  # used in markov_critic
         states=None,
         next_states=None,
+        teacher_log_probs=None,
+        teacher_next_log_probs=None,
         **kwargs
     ):
         if key == "aux" or not self.split_q:
@@ -235,14 +242,6 @@ class EAACD(RLAlgorithmBase):
                         observs=next_observs if markov_critic else observs,
                     )[key+"_actor"]
 
-                if key == "main":
-                    # only markov teacher supported
-                    # (T+1, B, dim) including reaction to last obs
-                    if markov_actor:
-                        _, teacher_probs, teacher_log_probs, _ = self.teacher.act(next_states, return_log_prob=True)
-                    else:
-                        _, teacher_probs, teacher_log_probs, _ = self.teacher.act(states, return_log_prob=True)
-
                 if markov_critic:  # (B, A)
                     q_dict = critic_target(next_observs)
                     next_q1, next_q2 = q_dict[key+"_qf1"], q_dict[key+"_qf2"]
@@ -251,14 +250,17 @@ class EAACD(RLAlgorithmBase):
                         prev_actions=actions,
                         rewards=rewards,
                         observs=observs,
-                        current_actions=new_probs,
+                        current_actions=None,
                     )  # (T+1, B, A)
                     next_q1, next_q2 = q_dict[key + "_qf1"], q_dict[key + "_qf2"]
 
                 min_next_q_target = torch.min(next_q1, next_q2)
 
                 if key == "main":
-                    min_next_q_target += self.coefficient * (teacher_log_probs)  # (T+1, B, A)
+                    if markov_critic:
+                        min_next_q_target += self.coefficient * (teacher_next_log_probs)  # (T+1, B, A)
+                    else:
+                        min_next_q_target += self.coefficient * (teacher_log_probs)  # (T+1, B, A)
 
                 # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
                 min_next_q_target = (new_probs * min_next_q_target).sum(
@@ -285,8 +287,8 @@ class EAACD(RLAlgorithmBase):
                     prev_actions=actions,
                     rewards=rewards,
                     observs=observs,
-                    current_actions=actions[1:],
-                )  # (T, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
+                    current_actions=None,
+                )  # (T, B, A)
                 q1_pred, q2_pred = q_pred_dict[key + "_qf1"], q_pred_dict[key + "_qf2"]
 
                 stored_actions = actions[1:]  # (T, B, A)
@@ -326,14 +328,6 @@ class EAACD(RLAlgorithmBase):
                         observs=next_observs if markov_critic else observs,
                     )[key + "_actor"]
 
-                if key == "main":
-                    # only markov teacher supported
-                    # (T+1, B, dim) including reaction to last obs
-                    if markov_actor:
-                        _, teacher_probs, teacher_log_probs, _ = self.teacher.act(next_states, return_log_prob=True)
-                    else:
-                        _, teacher_probs, teacher_log_probs, _ = self.teacher.act(states, return_log_prob=True)
-
                 if markov_critic:  # (B, A)
                     q_dict = critic_target(next_observs)
                 else:
@@ -341,14 +335,14 @@ class EAACD(RLAlgorithmBase):
                         prev_actions=actions,
                         rewards=rewards,
                         observs=observs,
-                        current_actions=new_probs,
+                        current_actions=None,
                     )  # (T+1, B, A)
                 next_q1_env, next_q2_env = q_dict[key + "_qf1_env"], q_dict[key + "_qf2_env"]
                 next_q1_teacher, next_q2_teacher = q_dict[key + "_qf1_teacher"], q_dict[key + "_qf2_teacher"]
 
                 min_next_q_env_target = torch.min(next_q1_env, next_q2_env)
                 min_next_q_teacher_target = torch.min(next_q1_teacher, next_q2_teacher)
-                min_next_q_teacher_target -= teacher_log_probs  # (T+1, B, A)
+                min_next_q_teacher_target -= teacher_next_log_probs  # (T+1, B, A)
 
                 # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
                 min_next_q_env_target = (new_probs * min_next_q_env_target).sum(dim=-1, keepdims=True)
@@ -376,8 +370,8 @@ class EAACD(RLAlgorithmBase):
                     prev_actions=actions,
                     rewards=rewards,
                     observs=observs,
-                    current_actions=actions[1:],
-                )  # (T, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
+                    current_actions=None,
+                )  # (T, B, A)
 
                 stored_actions = actions[1:]  # (T, B, A)
                 stored_actions = torch.argmax(stored_actions, dim=-1, keepdims=True)  # (T, B, 1)
@@ -485,7 +479,7 @@ class EAACD(RLAlgorithmBase):
                     rewards=rewards,
                     observs=observs,
                     current_actions=new_probs,
-                )  # (T+1, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
+                )  # (T+1, B, A)
             if key == "main" and self.split_q:
                 q1 = q_dict[key + "_qf1_env"] - coefficient * q_dict[key + "_qf1_teacher"]
                 q2 = q_dict[key + "_qf2_env"] - coefficient * q_dict[key + "_qf2_teacher"]
@@ -541,8 +535,8 @@ class EAACD(RLAlgorithmBase):
                         prev_actions=actions,
                         rewards=rewards,
                         observs=observs,
-                        current_actions=new_probs,
-                    )  # (T+1, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
+                        current_actions=None,
+                    )  # (T+1, B, A)
                 if self.split_q:
                     q1 = q_dict[key + "_qf1_env"]
                     q2 = q_dict[key + "_qf2_env"]
@@ -635,8 +629,8 @@ class EAACD(RLAlgorithmBase):
                 prev_actions=actions,
                 rewards=rewards,
                 observs=observs,
-                current_actions=new_probs,
-            )  # (T+1, B, A) TODO@idan: Why need current actions for discrete critic? possibly bug?
+                current_actions=None,
+            )  # (T+1, B, A)
         if self.split_q:
             q1 = q_dict["main_qf1_env"]
             q2 = q_dict["main_qf2_env"]

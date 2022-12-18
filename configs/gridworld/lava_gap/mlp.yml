@@ -1,4 +1,4 @@
-seed: 1
+seed: 2
 cuda: 0 # use_gpu
 env:
   env_type: gridworld
@@ -49,7 +49,7 @@ policy:
 
   eaacd:
     initial_coefficient: 0.3
-    coefficient_tuning: Target # Can be Fixed, Target, EIPO
+    coefficient_tuning: ADVISOR # Can be Fixed, Target, EIPO, ADVISOR
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.0003
     split_q: True

@@ -51,7 +51,6 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         self.algo_name = algo_name
 
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
-                                             teacher_dir=teacher_dir,
                                              action_dim=action_dim,
                                              state_dim=self.state_dim)
 
@@ -89,7 +88,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
     def update(self, batch):
         observs, next_observs = batch["obs"], batch["obs2"]  # (B, dim)
         actions, rewards, dones = batch["act"], batch["rew"], batch["term"]  # (B, dim)
-        teacher_log_probs = batch["teacher_act"]
+        teacher_log_probs, teacher_next_log_probs = batch["teacher_log_prob"], batch["teacher_log_prob2"]
         states, next_states = batch["states"], batch["states2"]  # (B, dim)
         outputs = {}
 
@@ -108,7 +107,9 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             gamma=self.gamma,
             next_observs=next_observs,
             states=states,
-            next_states=next_states
+            next_states=next_states,
+            teacher_log_probs=teacher_log_probs,
+            teacher_next_log_probs=teacher_next_log_probs
         )
 
         # update q networks

@@ -704,7 +704,7 @@ class MiniGridEnv(gym.Env):
             max_steps=100,
             see_through_walls=False,
             seed=1337,
-            agent_view_size=7
+            agent_view_size=5
     ):
         # Can't set both grid_size and width/height
         if grid_size:
@@ -751,6 +751,7 @@ class MiniGridEnv(gym.Env):
         self.max_steps = max_steps
         self._max_episode_steps = max_steps
         self.see_through_walls = see_through_walls
+        self.compact_obs = True
 
         # Current position and direction of the agent
         self.agent_pos = None
@@ -1178,9 +1179,11 @@ class MiniGridEnv(gym.Env):
         cur_cell = self.grid.get(*cur_pos)
 
         # Are we already on the goal pose?
+        reached_goal = False
         if cur_cell is not None and cur_cell.type == 'goal':
             done = True
             reward += self._reward()
+            reached_goal=True
 
         else:
 
@@ -1207,6 +1210,7 @@ class MiniGridEnv(gym.Env):
             if fwd_cell is not None and fwd_cell.type == 'goal':
                 done = True
                 reward += self._reward()
+                reached_goal = True
 
             if fwd_cell is not None and fwd_cell.type == 'lava':
                 reward += - 5.0 * self.reward_range[1]  # Penalize the agent.
@@ -1221,7 +1225,7 @@ class MiniGridEnv(gym.Env):
 
         obs = self.gen_obs()
 
-        return obs, reward, done, {}
+        return obs, reward, done, {'reached_goal': reached_goal}
 
     def gen_obs_grid(self):
         """
@@ -1259,28 +1263,51 @@ class MiniGridEnv(gym.Env):
         """
         Generate the agent's view (partially observable, low-resolution encoding)
         """
+        if not self.compact_obs:
+            encoding = self.grid.encode()
+            encoding_only_type = encoding[:, :, 0]
+            encoding_only_type[self.agent_pos[0], self.agent_pos[1]] = OBJECT_TO_IDX['agent']
+            return encoding_only_type.reshape(-1) / 10.0
+        else:
+            agent_pos = self.agent_pos
+            _idx = np.arange((self.width-2) * (self.height-2)).reshape((self.width-2), (self.height-2))[agent_pos[0]-1, agent_pos[1]-1]
+            agent_pos_one_hot = np.zeros((self.width-2) * (self.height-2))
+            agent_pos_one_hot[_idx] = 1.
+            compact_state = np.concatenate((agent_pos_one_hot, ))
 
-        agent_pos = self.agent_pos
-        _idx = np.arange((self.width-2) * (self.height-2)).reshape((self.width-2), (self.height-2))[agent_pos[0]-1, agent_pos[1]-1]
-        agent_pos_one_hot = np.zeros((self.width-2) * (self.height-2))
-        agent_pos_one_hot[_idx] = 1.
-        compact_state = np.concatenate((agent_pos_one_hot, ))
+            try:
+                goal_pos_one_hot = np.zeros((2, ))
+                goal_pos_one_hot[self.goal_idx[0]] = 1.
+                compact_state = np.concatenate((agent_pos_one_hot, goal_pos_one_hot))
+            except:
+                pass
 
-        try:
-            goal_pos_one_hot = np.zeros((2, ))
-            goal_pos_one_hot[self.goal_idx[0]] = 1.
-            compact_state = np.concatenate((agent_pos_one_hot, goal_pos_one_hot))
-        except:
-            pass
+            # If we have a gap, append that.
+            if hasattr(self, 'potential_lava_locs'):
+                _lava_one_hot = np.zeros((len(self.potential_lava_locs, )))
+                _lava_one_hot[self.lava_idx] = 1
+                compact_state = np.concatenate((compact_state, _lava_one_hot))
 
-        # If we have a gap, append that.
-        if hasattr(self, 'potential_lava_locs'):
-            _lava_one_hot = np.zeros((len(self.potential_lava_locs, )))
-            _lava_one_hot[self.lava_idx] = 1
-            compact_state = np.concatenate((compact_state, _lava_one_hot))
+            compact_state = np.concatenate((compact_state, self.illuminated * np.ones(1, )))  # Append lights are off.
+            return compact_state
 
-        compact_state = np.concatenate((compact_state, self.illuminated * np.ones(1, )))  # Append lights are off.
-        return compact_state
+    def gen_obs_encode(self):
+        """
+        Generate the agent's view (partially observable, low-resolution encoding)
+        """
+
+        grid, vis_mask = self.gen_obs_grid()
+
+        # Encode the partially observable view into a numpy array
+        image = grid.encode(vis_mask)
+
+        # Observations are dictionaries containing:
+        # - an image (partially observable view of the environment)
+        # - the agent's direction/orientation (acting as a compass)
+        # - a textual mission string (instructions for the agent)
+        obs = {"image": image, "direction": self.agent_dir, "mission": self.mission}
+
+        return obs
 
     def get_obs_render(self, obs, tile_size=TILE_PIXELS//2):
         """

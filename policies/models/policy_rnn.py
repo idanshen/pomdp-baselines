@@ -175,7 +175,8 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             dones=dones,
             gamma=self.gamma,
             states=states,
-            masks=masks
+            masks=masks,
+            teacher_log_probs=teacher_log_probs
         )
 
         self.critic_optimizer.zero_grad()
@@ -210,10 +211,9 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         policy_loss = 0
         for key, loss in policy_losses.items():
             policy_loss += loss.mean()
-            outputs["policy_" + key] = loss.item()
+            outputs["policy_" + key] = loss.mean().item()
         policy_loss.backward()
         self.actor_optimizer.step()
-
 
         ### 3. soft update
         self.soft_target_update()
@@ -226,7 +226,8 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
                     value = (v[:-1] * masks).sum() / num_valid
                     additional_outputs[k] = value
 
-            other_info = self.algo.update_others(additional_outputs)
+            other_info = self.algo.update_others(additional_outputs, markov_critic=self.Markov_Critic, markov_actor=self.Markov_Actor, critic=self.critic,
+                                                 actor=self.actor, observs=observs, actions=actions, rewards=rewards)
             outputs.update(other_info)
 
         return outputs
@@ -275,8 +276,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             states = torch.cat((states[[0]], next_states), dim=0)
         else:
             states = None
-        teacher_log_probs = batch["teacher_act"]
-        teacher_log_probs = torch.cat(
-            (teacher_log_probs, ptu.zeros((1, batch_size, self.action_dim)).float()), dim=0
-        )  # (T+1, B, dim)
+        teacher_log_probs = batch["teacher_log_prob"]
+        teacher_next_log_probs = batch["teacher_log_prob2"]
+        teacher_log_probs = torch.cat((teacher_log_probs[[0]], teacher_next_log_probs), dim=0)  # (T+1, B, dim)
         return self.compute_loss(actions, rewards, observs, dones, masks, states, teacher_log_probs)

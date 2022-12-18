@@ -277,8 +277,9 @@ class Learner:
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
-        if kwargs["algo_name"] == "eaacd":
-            self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
+        if kwargs["algo_name"] in ["eaacd", "DAgger"]:
+            self.teacher = "oracle"
+            # self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
         else:
             self.teacher = None
 
@@ -493,9 +494,11 @@ class Learner:
                 else:
                     state_list, next_state_list = None, None
                 if self.teacher is not None:
-                    teacher_action_list = []
+                    teacher_log_prob_list = []
+                    teacher_next_log_prob_list = []
                 else:
                     teacher_action_list = None
+                    teacher_next_log_prob_list = None
 
 
             if self.agent_arch == AGENT_ARCHS.Memory:
@@ -526,8 +529,18 @@ class Learner:
                         )
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
+
                 if self.teacher is not None:
-                    _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
+                    if self.teacher == "oracle":
+                        teacher_action = ptu.FloatTensor(
+                            [self.train_env.env.query_expert()[0]]
+                        )  # (1, A) for continuous action, (1) for discrete action
+                        teacher_prob_action = F.one_hot(
+                            teacher_action.long(), num_classes=self.act_dim
+                        ).float()  # (1, A)
+                        teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
+                    else:
+                        _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
                 else:
                     teacher_log_prob_action = None
 
@@ -536,6 +549,22 @@ class Learner:
                     self.train_env, action.squeeze(dim=0)
                 )
                 next_state = info["state"]
+                if not done.item():
+                    if self.teacher is not None:
+                        if self.teacher == "oracle":
+                            teacher_next_action = ptu.FloatTensor(
+                                [self.train_env.env.query_expert()[0]]
+                            )  # (1, A) for continuous action, (1) for discrete action
+                            teacher_prob_next_action = F.one_hot(
+                                teacher_next_action.long(), num_classes=self.act_dim
+                            ).float()  # (1, A)
+                            teacher_log_prob_next_action = torch.clip(torch.log(teacher_prob_next_action), -18.0, 18.0)
+                        else:
+                            _, _, teacher_log_prob_next_action, _ = self.teacher.act(next_state, return_log_prob=True)
+                    else:
+                        teacher_log_prob_next_action = None
+                else:
+                    teacher_log_prob_next_action = torch.zeros(1, self.act_dim, device=teacher_log_prob_action.device).float()
 
                 if self.reward_clip and self.env_type == "atari":
                     reward = torch.tanh(reward)
@@ -578,7 +607,8 @@ class Learner:
                         next_observation=ptu.get_numpy(next_obs.squeeze(dim=0)),
                         state=ptu.get_numpy(state.squeeze(dim=0)) if self.save_states else None,
                         next_state=ptu.get_numpy(next_state.squeeze(dim=0)) if self.save_states else None,
-                        teacher_action=ptu.get_numpy(teacher_log_prob_action.squeeze(dim=0)) if teacher_log_prob_action is not None else None,
+                        teacher_log_prob=ptu.get_numpy(teacher_log_prob_action.squeeze(dim=0)) if teacher_log_prob_action is not None else None,
+                        teacher_next_log_prob=ptu.get_numpy(teacher_log_prob_next_action.squeeze(dim=0)) if teacher_log_prob_next_action is not None else None,
                     )
                 else:  # append tensors to temporary storage
                     obs_list.append(obs)  # (1, dim)
@@ -590,36 +620,44 @@ class Learner:
                         state_list.append(state)
                         next_state_list.append(next_state)
                     if self.teacher is not None:
-                        teacher_action_list.append(teacher_log_prob_action)
+                        teacher_log_prob_list.append(teacher_log_prob_action)
+                        teacher_next_log_prob_list.append(teacher_log_prob_next_action)
                 # set: obs <- next_obs
                 obs = next_obs.clone()
                 state = next_state.clone()
 
             if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
-                # add collected sequence to buffer
-                act_buffer = torch.cat(act_list, dim=0)  # (L, dim)
-                if not self.act_continuous:
-                    act_buffer = torch.argmax(
-                        act_buffer, dim=-1, keepdims=True
-                    )  # (L, 1)
+                if len(obs_list) > 1:
+                    # add collected sequence to buffer
+                    act_buffer = torch.cat(act_list, dim=0)  # (L, dim)
+                    if not self.act_continuous:
+                        act_buffer = torch.argmax(
+                            act_buffer, dim=-1, keepdims=True
+                        )  # (L, 1)
 
-                self.policy_storage.add_episode(
-                    observations=ptu.get_numpy(torch.cat(obs_list, dim=0)),  # (L, dim)
-                    actions=ptu.get_numpy(act_buffer),  # (L, dim)
-                    rewards=ptu.get_numpy(torch.cat(rew_list, dim=0)),  # (L, dim)
-                    terminals=np.array(term_list).reshape(-1, 1),  # (L, 1)
-                    next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
-                    states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
-                    next_states=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
-                    teacher_actions=ptu.get_numpy(torch.cat(teacher_action_list, dim=0)) if teacher_action_list is not None else None,  # (L, dim)
-                )
-                print(
-                    f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
-                )
-            self._n_env_steps_total += steps
-            collected_steps += steps
-            self._n_rollouts_total += 1
-            collected_rollouts += 1
+                    self.policy_storage.add_episode(
+                        observations=ptu.get_numpy(torch.cat(obs_list, dim=0)),  # (L, dim)
+                        actions=ptu.get_numpy(act_buffer),  # (L, dim)
+                        rewards=ptu.get_numpy(torch.cat(rew_list, dim=0)),  # (L, dim)
+                        terminals=np.array(term_list).reshape(-1, 1),  # (L, 1)
+                        next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
+                        states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
+                        next_states=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
+                        teacher_log_probs=ptu.get_numpy(torch.cat(teacher_log_prob_list, dim=0)) if teacher_log_prob_list is not None else None,  # (L, dim)
+                        teacher_next_log_probs=ptu.get_numpy(torch.cat(teacher_next_log_prob_list, dim=0)) if teacher_next_log_prob_list is not None else None,  # (L, dim)
+                    )
+                    print(
+                        f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
+                    )
+                    self._n_env_steps_total += steps
+                    collected_steps += steps
+                    self._n_rollouts_total += 1
+                    collected_rollouts += 1
+            else:
+                self._n_env_steps_total += steps
+                collected_steps += steps
+                self._n_rollouts_total += 1
+                collected_rollouts += 1
         return self._n_env_steps_total - before_env_steps
 
     def sample_rl_batch(self, batch_size):
@@ -711,7 +749,21 @@ class Learner:
                         action, _, _, _ = self.agent.act(
                             obs, deterministic=deterministic
                         )
-                    # action, _, _ = self.agent.algo.teacher(state, deterministic=deterministic)
+
+                    # if self.teacher is not None:
+                    #     if self.teacher == "oracle":
+                    #         teacher_action = ptu.FloatTensor(
+                    #             [self.eval_env.env.query_expert()[0]]
+                    #         )  # (1, A) for continuous action, (1) for discrete action
+                    #         teacher_prob_action = F.one_hot(
+                    #             teacher_action.long(), num_classes=self.act_dim
+                    #         ).float()  # (1, A)
+                    #         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
+                    #     else:
+                    #         _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
+                    # else:
+                    #     teacher_log_prob_action = None
+
                     # observe reward and next obs
                     next_obs, reward, done, info = utl.env_step(
                         self.eval_env, action.squeeze(dim=0)
@@ -746,6 +798,11 @@ class Learner:
                     elif (
                         self.env_type == "generalize"
                         and self.eval_env.unwrapped.is_success()
+                    ):
+                        success_rate[task_idx] = 1.0  # ever once reach
+                    elif (
+                        self.env_type == "gridworld"
+                        and info["reached_goal"]
                     ):
                         success_rate[task_idx] = 1.0  # ever once reach
                     elif "success" in info and info["success"] == True:  # keytodoor
@@ -978,7 +1035,7 @@ class Learner:
                 )
 
         elif self.env_type == "gridworld":
-            returns_eval, _, _, total_steps_eval = self.evaluate(self.eval_tasks)
+            returns_eval, success_rate_eval, _, total_steps_eval = self.evaluate(self.eval_tasks)
             returns_eval = returns_eval.squeeze(-1)
             # np.quantile is introduced in np v1.15, so we have to use np.percentile
             # cutoff = np.percentile(returns_eval, 100 * self.worst_percentile)
@@ -996,6 +1053,9 @@ class Learner:
             # )
             logger.record_tabular(
                 "metrics/total_steps_eval_avg", total_steps_eval.mean()
+            )
+            logger.record_tabular(
+                "metrics/success_rate_eval", np.mean(success_rate_eval)
             )
             # logger.record_tabular(
             #     "metrics/total_steps_eval_worst", total_steps_eval_worst.mean()

@@ -209,6 +209,8 @@ class CategoricalPolicy(MarkovPolicyBase):
             )  # NOTE: cannot be used for estimating entropy
         else:
             prob = F.softmax(action_logits, dim=-1)  # (*, A)
+            prob = torch.clip(prob, np.finfo(float).eps, 1.0)
+            assert torch.all(prob > 0.0).item()
             distr = Categorical(prob)
             # categorical distr cannot reparameterize
             action = distr.sample()  # (*)
