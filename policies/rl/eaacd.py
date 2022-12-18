@@ -342,7 +342,10 @@ class EAACD(RLAlgorithmBase):
 
                 min_next_q_env_target = torch.min(next_q1_env, next_q2_env)
                 min_next_q_teacher_target = torch.min(next_q1_teacher, next_q2_teacher)
-                min_next_q_teacher_target -= teacher_next_log_probs  # (T+1, B, A)
+                if markov_critic:
+                    min_next_q_teacher_target += teacher_next_log_probs  # (T+1, B, A)
+                else:
+                    min_next_q_teacher_target += teacher_log_probs  # (T+1, B, A)
 
                 # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
                 min_next_q_env_target = (new_probs * min_next_q_env_target).sum(dim=-1, keepdims=True)
