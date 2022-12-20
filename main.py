@@ -54,7 +54,7 @@ assert seq_model in ["mlp", "lstm", "gru", "lstm-mlp", "gru-mlp"]
 assert algo in ["td3", "sac", "sacd", "ppo", 'eaacd', 'DAgger']
 assert data_collection_method in ["only_student", "only_teacher", "based_on_coefficient_update",
                                         "beta_student_teacher", "beta_student_aux", "start_student_than_teacher",
-                                        "start_beta_student_aux_than_teacher"]
+                                        "start_beta_student_aux_than_teacher", "all"]
 
 if FLAGS.automatic_entropy_tuning is not None:
     v["policy"][algo]["automatic_entropy_tuning"] = FLAGS.automatic_entropy_tuning
