@@ -21,6 +21,7 @@ class DAgger(RLAlgorithmBase):
         loss_type="L2",
         **kwargs,
     ):
+        super().__init__()
         self.loss_type = loss_type
 
     @staticmethod
@@ -96,18 +97,18 @@ class DAgger(RLAlgorithmBase):
         **kwargs
     ):
         if markov_actor:
-            new_probs, log_probs = actor(observs)["main_actor"]
+            new_probs, log_probs = actor["main"](observs)
         else:
-            new_probs, log_probs = actor(
+            new_probs, log_probs = actor["main"](
                 prev_actions=actions, rewards=rewards, observs=observs
-            )["main_actor"]  # (T+1, B, A)
+            ) # (T+1, B, A)
 
-        if self.loss_type == "L2": # Imitation using L2 norm
+        if self.loss_type == "L2":  # Imitation using L2 norm
             if markov_actor:
                 policy_loss = torch.norm(new_probs - torch.exp(teacher_log_probs), dim=1).unsqueeze(dim=1)
             else:
                 policy_loss = torch.norm(new_probs[:-1] - torch.exp(teacher_log_probs[:-1]), dim=2).unsqueeze(dim=2)
-        elif self.loss_type == "CE": # Imitation using L2 norm
+        elif self.loss_type == "CE":  # Imitation using L2 norm
             if markov_actor:
                 policy_loss = -torch.sum(torch.exp(teacher_log_probs) * torch.log(new_probs), dim=1).unsqueeze(dim=1)
             else:

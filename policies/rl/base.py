@@ -8,7 +8,7 @@ class RLAlgorithmBase:
     use_target_actor = True
 
     def __init__(self, **kwargs):
-        pass
+        self.current_policy = "main"
 
     @staticmethod
     def build_actor(input_size, action_dim, hidden_sizes) -> MarkovPolicyBase:
@@ -81,8 +81,8 @@ class RLAlgorithmBase:
         pass
 
     def get_acting_policy_key(self):
-        return "main_actor"
+        return "main"
 
     @property
     def model_keys(self):
-        return "main"
+        return ["main"]

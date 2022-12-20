@@ -331,6 +331,7 @@ class Learner:
                 max_replay_buffer_size=int(buffer_size),
                 observation_dim=self.obs_dim,
                 action_dim=self.act_dim if self.act_continuous else 1,  # save memory
+                teacher_action_dim=self.act_dim,
                 sampled_seq_len=sampled_seq_len,
                 sample_weight_baseline=sample_weight_baseline,
                 observation_type=self.train_env.observation_space.dtype,
@@ -395,7 +396,7 @@ class Learner:
             ):
                 self.collect_rollouts(
                     num_rollouts=1,
-                    random_actions=True,
+                    # random_actions=True,
                 )
             logger.log(
                 "Done! env steps",
@@ -500,9 +501,8 @@ class Learner:
                     teacher_log_prob_list = []
                     teacher_next_log_prob_list = []
                 else:
-                    teacher_action_list = None
+                    teacher_log_prob_list = None
                     teacher_next_log_prob_list = None
-
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
@@ -569,18 +569,28 @@ class Learner:
                             self.agent.algo.current_policy = "main"
                     else:
                         collect_from_policy = False
+                elif self.data_collection_method == "all":
+                    i = collected_rollouts % 3
+                    if i == 0:
+                        collect_from_policy = False
+                    elif i == 1:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "aux"
+                    else:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
                 else:
                     raise NotImplementedError
 
                 if random_actions:
-                    action = teacher_prob_action
-                    # action = ptu.FloatTensor(
-                    #     [self.train_env.action_space.sample()]
-                    # )  # (1, A) for continuous action, (1) for discrete action
-                    # if not self.act_continuous:
-                    #     action = F.one_hot(
-                    #         action.long(), num_classes=self.act_dim
-                    #     ).float()  # (1, A)
+                    # action = teacher_prob_action
+                    action = ptu.FloatTensor(
+                        [self.train_env.action_space.sample()]
+                    )  # (1, A) for continuous action, (1) for discrete action
+                    if not self.act_continuous:
+                        action = F.one_hot(
+                            action.long(), num_classes=self.act_dim
+                        ).float()  # (1, A)
                 elif collect_from_policy:
                     # policy takes hidden state as input for memory-based actor,
                     # while takes obs for markov actor
@@ -606,8 +616,8 @@ class Learner:
 
                 # 4. Collect teacher action for the next state. If last state than append vector of zeroes.
                 # TODO: can be done in more efficient way in the next iteration
-                if not done.item():
-                    if self.teacher is not None:
+                if self.teacher is not None:
+                    if not done.item():
                         if self.teacher == "oracle":
                             teacher_next_action = ptu.FloatTensor(
                                 [self.train_env.env.query_expert()[0]]
@@ -619,9 +629,10 @@ class Learner:
                         else:
                             _, _, teacher_log_prob_next_action, _ = self.teacher.act(next_state, return_log_prob=True)
                     else:
-                        teacher_log_prob_next_action = None
+                        teacher_log_prob_next_action = torch.zeros(1, self.act_dim,
+                                                                   device=teacher_log_prob_action.device).float()
                 else:
-                    teacher_log_prob_next_action = torch.zeros(1, self.act_dim, device=teacher_log_prob_action.device).float()
+                    teacher_log_prob_next_action = None
 
                 # 5. Determine terminal flag per environment
                 done_rollout = False if ptu.get_numpy(done[0][0]) == 0.0 else True
