@@ -9,6 +9,7 @@ class SeqReplayBuffer:
         max_replay_buffer_size,
         observation_dim,
         action_dim,
+        teacher_action_dim,
         sampled_seq_len: int,
         sample_weight_baseline: float,
         state_dim=None,
@@ -47,8 +48,8 @@ class SeqReplayBuffer:
             )
         self._actions = np.zeros((max_replay_buffer_size, action_dim), dtype=np.float32)
         self._rewards = np.zeros((max_replay_buffer_size, 1), dtype=np.float32)
-        self._teacher_log_probs = np.zeros((max_replay_buffer_size, 4), dtype=np.float32)  # TODO: change from 4 to variable
-        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, 4), dtype=np.float32)  # TODO: change from 4 to variable
+        self._teacher_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim), dtype=np.float32)
+        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim), dtype=np.float32)
         # terminals are "done" signals, useful for policy training
         # for each trajectory, it has single 1 like 0000001000 for reaching goal or early stopping
         # 	or simply 0s for timing out.

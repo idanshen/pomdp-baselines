@@ -66,13 +66,14 @@ class CrossingEnv(MiniGridEnv):
         - `MiniGrid-SimpleCrossingS9N3-v0`
         - `MiniGrid-SimpleCrossingS11N5-v0`
     """
-    _ACTION_NAMES: Tuple[str, ...] = ("right", "down", "left", "up")
+    _ACTION_NAMES: Tuple[str, ...] = ("left", "right", "forward")
     _XY_DIFF_TO_AGENT_DIR = {
         tuple(vec): dir_ind for dir_ind, vec in enumerate(DIR_TO_VEC)
     }
     _NEIGHBOR_OFFSETS = tuple(
-        [(-1, 0), (0, -1), (1, 0), (0, 1)]
+        [(-1, 0, 0), (0, -1, 0), (0, 0, -1), (1, 0, 0), (0, 1, 0), (0, 0, 1),]
     )
+
     def __init__(
         self,
         size=9,
@@ -93,6 +94,7 @@ class CrossingEnv(MiniGridEnv):
             max_steps=_tmax,
             seed=seed,
             agent_view_size=5,
+            actions_type="forward_and_turns",
             **kwargs,
         )
         self._graph: Optional[nx.DiGraph] = None
@@ -231,7 +233,7 @@ class CrossingEnv(MiniGridEnv):
     def _add_node_to_graph(
         self,
         graph: nx.DiGraph,
-        s: Tuple[int, int],
+        s: Tuple[int, int, int],
         valid_node_types: Tuple[str, ...],
         attr_dict: Dict[Any, Any] = None,
         include_rotation_free_leaves: bool = False,
@@ -242,15 +244,15 @@ class CrossingEnv(MiniGridEnv):
             print("adding a node with neighbor checks and no attributes")
         graph.add_node(s, **attr_dict)
 
-        # if include_rotation_free_leaves:
-        #     rot_free_leaf = (*s[:-1], None)
-        #     if rot_free_leaf not in graph:
-        #         graph.add_node(rot_free_leaf)
-        #     graph.add_edge(s, rot_free_leaf, action="NA")
+        if include_rotation_free_leaves:
+            rot_free_leaf = (*s[:-1], None)
+            if rot_free_leaf not in graph:
+                graph.add_node(rot_free_leaf)
+            graph.add_edge(s, rot_free_leaf, action="NA")
 
         if attr_dict["type"] in valid_node_types:
             for o in self.possible_neighbor_offsets():
-                t = (s[0] + o[0], s[1] + o[1])
+                t = (s[0] + o[0], s[1] + o[1], (s[2] + o[2]) % 4)
                 if t in graph and graph.nodes[t]["type"] in valid_node_types:
                     self._add_from_to_edge(graph, s, t)
                     self._add_from_to_edge(graph, t, s)
@@ -281,22 +283,24 @@ class CrossingEnv(MiniGridEnv):
                     type, color, state = image[x, y]
                     self._add_node_to_graph(
                         graph,
-                        (x, y),
+                        (x, y, rotation),
                         attr_dict={
                             "type": IDX_TO_OBJECT[type],
+                            "color": color,
+                            "state": state,
                         },
                         valid_node_types=("empty", "goal"),
                     )
                     if IDX_TO_OBJECT[type] == "goal":
                         if not graph.has_node("unified_goal"):
                             graph.add_node("unified_goal")
-                        graph.add_edge((x, y), "unified_goal")
+                        graph.add_edge((x, y, rotation), "unified_goal")
 
         return graph
 
     @classmethod
     def _add_from_to_edge(
-        cls, g: nx.DiGraph, s: Tuple[int, int], t: Tuple[int, int],
+        cls, g: nx.DiGraph, s: Tuple[int, int, int], t: Tuple[int, int, int],
     ):
         """Adds nodes and corresponding edges to existing nodes.
         This approach avoids adding the same edge multiple times.
@@ -322,25 +326,26 @@ class CrossingEnv(MiniGridEnv):
             agent_dir += 1
         """
 
-        s_x, s_y = s
-        t_x, t_y = t
+        s_x, s_y, s_rot = s
+        t_x, t_y, t_rot = t
 
         x_diff = t_x - s_x
         y_diff = t_y - s_y
+        angle_diff = (t_rot - s_rot) % 4
 
         # If source and target differ by more than one action, continue
-        if (x_diff != 0) + (y_diff != 0) != 1:
+        if (x_diff != 0) + (y_diff != 0) + (angle_diff != 0) != 1 or angle_diff == 2:
             return
 
         action = None
-        if x_diff == 1:
+        if angle_diff == 1:
             action = "right"
-        elif x_diff == -1:
+        elif angle_diff == 3:
             action = "left"
-        elif y_diff == 1:
-            action = "down"
-        elif y_diff == -1:
-            action = "up"
+        elif cls._XY_DIFF_TO_AGENT_DIR[(x_diff, y_diff)] == s_rot:
+            # if translation is the same direction as source
+            # orientation, then it's a valid forward action
+            action = "forward"
         else:
             # This is when the source and target aren't one action
             # apart, despite having dx=1 or dy=1
@@ -389,7 +394,8 @@ class CrossingEnv(MiniGridEnv):
     def query_expert(self, **kwargs) -> Tuple[int, bool]:
         paths = []
         agent_x, agent_y = self.agent_pos
-        source_state_key = (agent_x, agent_y)
+        agent_rot = self.agent_dir
+        source_state_key = (agent_x, agent_y, agent_rot)
         assert source_state_key in self.graph
 
         paths.append(nx.shortest_path(self.graph, source_state_key, "unified_goal"))
@@ -426,13 +432,21 @@ class CrossingEnv(MiniGridEnv):
             True,
         )
 
+
 class LavaCrossingS11N5Env(CrossingEnv):
     def __init__(self):
         super().__init__(size=11, num_crossings=5, obstacle_type=Lava)
 
+
 class LavaCrossingS15N10Env(CrossingEnv):
     def __init__(self):
         super().__init__(size=15, num_crossings=10, obstacle_type=Lava)
+
+
+class LavaCrossingS5N1Env(CrossingEnv):
+    def __init__(self):
+        super().__init__(size=5, num_crossings=1, obstacle_type=Lava)
+
 
 
 register(
@@ -443,4 +457,9 @@ register(
 register(
     id='MiniGrid-LavaCrossingS15N10-v0',
     entry_point='envs.gridworld.minigrid.gym_minigrid.envs:LavaCrossingS15N10Env'
+)
+
+register(
+    id='MiniGrid-LavaCrossingS5N1-v0',
+    entry_point='envs.gridworld.minigrid.gym_minigrid.envs:LavaCrossingS5N1Env'
 )

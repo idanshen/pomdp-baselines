@@ -10,6 +10,7 @@ class SimpleReplayBuffer(ReplayBuffer):
         max_replay_buffer_size,
         observation_dim,
         action_dim,
+        teacher_action_dim,
         max_trajectory_len: int,
         add_timeout: bool = False,
         state_dim = None,
@@ -48,8 +49,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         # worry about termination conditions.
         self._next_obs = np.zeros((max_replay_buffer_size, *observation_dim), dtype=np.float32)
         self._actions = np.zeros((max_replay_buffer_size, action_dim))
-        self._teacher_log_probs = np.zeros((max_replay_buffer_size, 4))  # TODO: change from 4 to variable
-        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, 4))  # TODO: change from 4 to variable
+        self._teacher_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim))
+        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim))
         # Make everything a 2D np array to make it easier for other code to
         # reason about the shape of the data
         self._rewards = np.zeros((max_replay_buffer_size, 1))
