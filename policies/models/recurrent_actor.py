@@ -19,6 +19,7 @@ class Actor_RNN(nn.Module):
         rnn_hidden_size,
         policy_layers,
         rnn_num_layers,
+        policy_key,
         image_encoder=None,
         **kwargs
     ):
@@ -84,11 +85,11 @@ class Actor_RNN(nn.Module):
             )
 
         ## 4. build policy
-        self.policies = self.algo.build_actor(
+        self.policy = self.algo.build_actor(
             input_size=self.rnn_hidden_size + observ_embedding_size,
             action_dim=self.action_dim,
             hidden_sizes=policy_layers,
-        )
+        )[policy_key+"_actor"]
 
     def _get_obs_embedding(self, observs):
         if self.image_encoder is None:  # vector obs
@@ -144,9 +145,7 @@ class Actor_RNN(nn.Module):
         joint_embeds = torch.cat((hidden_states, curr_embed), dim=-1)  # (T+1, B, dim)
 
         # 4. Actor
-        actions = {}
-        for key, policy in self.policies.items():
-            actions[key] = self.algo.forward_actor(actor=policy, observ=joint_embeds)
+        actions = self.algo.forward_actor(actor=self.policy, observ=joint_embeds)
 
         return actions
 
@@ -177,7 +176,6 @@ class Actor_RNN(nn.Module):
         deterministic=False,
         return_log_prob=False,
     ):
-        acting_policy_key = self.algo.get_acting_policy_key()
         # for evaluation (not training), so no target actor, and T = 1
         # a function that generates action, works like a pytorch module
 
@@ -202,7 +200,7 @@ class Actor_RNN(nn.Module):
 
         # 4. Actor head, generate action tuple
         action_tuple = self.algo.select_action(
-            actor=self.policies[acting_policy_key],
+            actor=self.policy,
             observ=joint_embeds,
             deterministic=deterministic,
             return_log_prob=return_log_prob,

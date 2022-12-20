@@ -82,3 +82,7 @@ class RLAlgorithmBase:
 
     def get_acting_policy_key(self):
         return "main_actor"
+
+    @property
+    def model_keys(self):
+        return "main"

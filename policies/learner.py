@@ -425,6 +425,7 @@ class Learner:
                     self.agent.algo.current_policy = "aux"
                     returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
                     self.agent.algo.obj_est_aux = returns_eval_aux.mean()
+                    self.agent.algo.current_policy = "main"
 
             train_stats = self.update(
                 self.num_updates_per_iter
@@ -506,7 +507,7 @@ class Learner:
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
-                action, reward, internal_state = self.agent.get_initial_info()
+                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy)
 
             while not done_rollout:
                 # 1. Collect teacher action for the current state
@@ -572,13 +573,14 @@ class Learner:
                     raise NotImplementedError
 
                 if random_actions:
-                    action = ptu.FloatTensor(
-                        [self.train_env.action_space.sample()]
-                    )  # (1, A) for continuous action, (1) for discrete action
-                    if not self.act_continuous:
-                        action = F.one_hot(
-                            action.long(), num_classes=self.act_dim
-                        ).float()  # (1, A)
+                    action = teacher_prob_action
+                    # action = ptu.FloatTensor(
+                    #     [self.train_env.action_space.sample()]
+                    # )  # (1, A) for continuous action, (1) for discrete action
+                    # if not self.act_continuous:
+                    #     action = F.one_hot(
+                    #         action.long(), num_classes=self.act_dim
+                    #     ).float()  # (1, A)
                 elif collect_from_policy:
                     # policy takes hidden state as input for memory-based actor,
                     # while takes obs for markov actor
@@ -783,7 +785,7 @@ class Learner:
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # assume initial reward = 0.0
-                action, reward, internal_state = self.agent.get_initial_info()
+                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy)
 
             for episode_idx in range(num_episodes):
                 running_reward = 0.0

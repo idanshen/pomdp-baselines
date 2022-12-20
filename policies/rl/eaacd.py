@@ -233,26 +233,24 @@ class EAACD(RLAlgorithmBase):
             with torch.no_grad():
                 # first next_actions from current policy,
                 if markov_actor:
-                    new_probs, new_log_probs = actor(next_observs if markov_critic else observs)[key+"_actor"]
+                    new_probs, new_log_probs = actor[key](next_observs if markov_critic else observs)
                 else:
                     # (T+1, B, dim) including reaction to last obs
-                    new_probs, new_log_probs = actor(
+                    new_probs, new_log_probs = actor[key](
                         prev_actions=actions,
                         rewards=rewards,
                         observs=next_observs if markov_critic else observs,
-                    )[key+"_actor"]
+                    )
 
                 if markov_critic:  # (B, A)
-                    q_dict = critic_target(next_observs)
-                    next_q1, next_q2 = q_dict[key+"_qf1"], q_dict[key+"_qf2"]
+                    next_q1, next_q2 = critic_target[key](next_observs)
                 else:
-                    q_dict = critic_target(
+                    next_q1, next_q2 = critic_target[key](
                         prev_actions=actions,
                         rewards=rewards,
                         observs=observs,
                         current_actions=None,
                     )  # (T+1, B, A)
-                    next_q1, next_q2 = q_dict[key + "_qf1"], q_dict[key + "_qf2"]
 
                 min_next_q_target = torch.min(next_q1, next_q2)
 
@@ -273,8 +271,7 @@ class EAACD(RLAlgorithmBase):
                     q_target = q_target[1:]  # (T, B, 1)
 
             if markov_critic:
-                q_pred_dict = critic(observs)
-                q1_pred, q2_pred = q_pred_dict[key+"_qf1"], q_pred_dict[key+"_qf2"]
+                q1_pred, q2_pred = critic[key](observs)
                 action = actions.long()  # (B, 1)
                 q1_pred = q1_pred.gather(dim=-1, index=action)
                 q2_pred = q2_pred.gather(dim=-1, index=action)
@@ -283,13 +280,12 @@ class EAACD(RLAlgorithmBase):
 
             else:
                 # Q(h(t), a(t)) (T, B, 1)
-                q_pred_dict = critic(
+                q1_pred, q2_pred = critic[key](
                     prev_actions=actions,
                     rewards=rewards,
                     observs=observs,
                     current_actions=None,
                 )  # (T, B, A)
-                q1_pred, q2_pred = q_pred_dict[key + "_qf1"], q_pred_dict[key + "_qf2"]
 
                 stored_actions = actions[1:]  # (T, B, A)
                 stored_actions = torch.argmax(
@@ -314,19 +310,19 @@ class EAACD(RLAlgorithmBase):
                 qf2_loss = ((q2_pred - q_target) ** 2).sum() / num_valid  # TD error
 
             return qf1_loss, qf2_loss
-        else:
+        else:   #TODO: fix split_q
             # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
             with torch.no_grad():
                 # first next_actions from current policy,
                 if markov_actor:
-                    new_probs, new_log_probs = actor(next_observs if markov_critic else observs)[key + "_actor"]
+                    new_probs, new_log_probs = actor[key](next_observs if markov_critic else observs)
                 else:
                     # (T+1, B, dim) including reaction to last obs
-                    new_probs, new_log_probs = actor(
+                    new_probs, new_log_probs = actor[key](
                         prev_actions=actions,
                         rewards=rewards,
                         observs=next_observs if markov_critic else observs,
-                    )[key + "_actor"]
+                    )
 
                 if markov_critic:  # (B, A)
                     q_dict = critic_target(next_observs)
@@ -466,28 +462,27 @@ class EAACD(RLAlgorithmBase):
     ):
         if self.coefficient_tuning != "ADVISOR":
             if markov_actor:
-                new_probs, log_probs = actor(observs)[key + "_actor"]
+                new_probs, log_probs = actor[key](observs)
             else:
-                new_probs, log_probs = actor(
+                new_probs, log_probs = actor[key](
                     prev_actions=actions, rewards=rewards, observs=observs
-                )[key + "_actor"]  # (T+1, B, A).
+                )  # (T+1, B, A).
 
             coefficient = self.coefficient
 
             if markov_critic:
-                q_dict = critic(observs)
+                q1, q2 = critic[key](observs)
             else:
-                q_dict = critic(
+                q1, q2 = critic[key](
                     prev_actions=actions,
                     rewards=rewards,
                     observs=observs,
                     current_actions=new_probs,
                 )  # (T+1, B, A)
-            if key == "main" and self.split_q:
+            if key == "main" and self.split_q: # TODO: fix split_q
                 q1 = q_dict[key + "_qf1_env"] - coefficient * q_dict[key + "_qf1_teacher"]
                 q2 = q_dict[key + "_qf2_env"] - coefficient * q_dict[key + "_qf2_teacher"]
-            else:
-                q1, q2 = q_dict[key + "_qf1"], q_dict[key + "_qf2"]
+
             min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
 
             policy_loss = -min_q_new_actions
@@ -514,33 +509,36 @@ class EAACD(RLAlgorithmBase):
                                                                                                    keepdims=True)
         else:
             if markov_actor:
-                actor_dict = actor(observs)
-                new_probs, log_probs = actor_dict[key+"_actor"]
+                new_probs, log_probs = actor[key](observs)
             else:
-                actor_dict = actor(
+                new_probs, log_probs = actor[key](
                     prev_actions=actions, rewards=rewards, observs=observs
-                )
-                new_probs, log_probs = actor_dict[key+"_actor"]  # (T+1, B, A).
+                )  # (T+1, B, A).
 
             if key == "aux":
                 policy_loss = -(new_probs * teacher_log_probs).sum(axis=-1, keepdims=True)  # (T+1,B,1)
             elif key == "main":
                 CE_loss = -(new_probs * teacher_log_probs).sum(axis=-1, keepdims=True)  # (T+1,B,1)
 
-                aux_probs, aux_log_probs = actor_dict["aux_actor"]
+                if markov_actor:
+                    aux_probs, aux_log_probs = actor["aux"](observs)
+                else:
+                    aux_probs, aux_log_probs = actor["aux"](
+                        prev_actions=actions, rewards=rewards, observs=observs
+                    )  # (T+1, B, A).
                 kl_div = torch.sum(teacher_log_probs.exp() * (teacher_log_probs - aux_log_probs), axis=1)
                 coefficient = torch.exp(-kl_div).unsqueeze(dim=1)
 
                 if markov_critic:
-                    q_dict = critic(observs)
+                    q_dict = critic[key](observs)
                 else:
-                    q_dict = critic(
+                    q_dict = critic[key](
                         prev_actions=actions,
                         rewards=rewards,
                         observs=observs,
                         current_actions=None,
                     )  # (T+1, B, A)
-                if self.split_q:
+                if self.split_q:  # TODO: fix spliq_q
                     q1 = q_dict[key + "_qf1_env"]
                     q2 = q_dict[key + "_qf2_env"]
                 else:
@@ -586,7 +584,7 @@ class EAACD(RLAlgorithmBase):
         if self.coefficient_tuning == "EIPO":
             # obj_aproximation = self.approximate_objective_difference(markov_critic, markov_actor, critic, actor, observs, actions, rewards)
             objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
-            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -2, 2)
+            # self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -2, 2)
             self.coefficient = self.log_coefficient.exp().item()
 
         output_dict = {"cross_entropy": current_cross_entropy,
@@ -599,8 +597,15 @@ class EAACD(RLAlgorithmBase):
             output_dict["obj_est_aux"] = self.obj_est_aux
         return output_dict
 
+    @property
+    def model_keys(self):
+        if self.coefficient_tuning in ["EIPO", "ADVISOR"]:
+            return ["main", "aux"]
+        else:
+            return ["main"]
+
     def get_acting_policy_key(self):
-        return self.current_policy+"_actor"
+        return self.current_policy
 
     def estimate_objective_difference(self):
         return self.obj_est_main - self.obj_est_aux
@@ -615,34 +620,45 @@ class EAACD(RLAlgorithmBase):
                                          actions,
                                          rewards):
         if markov_actor:
-            actor_dict = actor(observs)
+            action_probs_main, _ = actor["main"](observs)
         else:
-            actor_dict = actor(
+            action_probs_main, _ = actor["main"](
                 prev_actions=actions, rewards=rewards, observs=observs
             )  # (T+1, B, A).
-        action_probs_main, _ = actor_dict["main_actor"]
+        if markov_actor:
+            action_probs_aux, _ = actor["aux"](observs)
+        else:
+            action_probs_aux, _ = actor["aux"](
+                prev_actions=actions, rewards=rewards, observs=observs
+            )  # (T+1, B, A).
         action_main = torch.argmax(action_probs_main, dim=1).unsqueeze(dim=1)
-        action_probs_aux, _ = actor_dict["aux_actor"]
         action_aux = torch.argmax(action_probs_aux, dim=1).unsqueeze(dim=1)
 
         if markov_critic:
-            q_dict = critic(observs)
+            q1, q2 = critic["main"](observs)
         else:
-            q_dict = critic(
+            q1, q2 = critic["main"](
                 prev_actions=actions,
                 rewards=rewards,
                 observs=observs,
                 current_actions=None,
             )  # (T+1, B, A)
-        if self.split_q:
+        if self.split_q:   # TODO: fix spliq_q
             q1 = q_dict["main_qf1_env"]
             q2 = q_dict["main_qf2_env"]
         else:
             raise RuntimeError("Cannot estimate using advantage functions without env Q")
         q_main = torch.min(q1, q2)
 
-        q1 = q_dict["aux_qf1"]
-        q2 = q_dict["aux_qf2"]
+        if markov_critic:
+            q1, q2 = critic["aux"](observs)
+        else:
+            q1, q2 = critic["aux"](
+                prev_actions=actions,
+                rewards=rewards,
+                observs=observs,
+                current_actions=None,
+            )  # (T+1, B, A)
         q_aux = torch.min(q1, q2)
 
         obj_aproximation = q_aux.gather(dim=-1, index=action_aux) - torch.sum(action_probs_aux * q_aux) - q_main.gather(dim=-1, index=action_main) + torch.sum(action_probs_main * q_main)

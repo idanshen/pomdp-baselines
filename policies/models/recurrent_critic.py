@@ -18,6 +18,7 @@ class Critic_RNN(nn.Module):
         rnn_hidden_size,
         dqn_layers,
         rnn_num_layers,
+        critic_key,
         image_encoder=None,
         **kwargs
     ):
@@ -100,6 +101,8 @@ class Critic_RNN(nn.Module):
             hidden_sizes=dqn_layers,
             action_dim=action_dim,
         )
+        self.qf1 = self.q_funcs[critic_key + "_qf1"]
+        self.qf2 = self.q_funcs[critic_key + "_qf2"]
 
     def _get_obs_embedding(self, observs):
         if self.image_encoder is None:  # vector obs
@@ -183,8 +186,7 @@ class Critic_RNN(nn.Module):
             )  # (T, B, dim)
 
         # 4. q value
-        q = {}
-        for key, q_func in self.q_funcs.items():
-            q[key] = q_func(joint_embeds)
+        q1 = self.qf1(joint_embeds)
+        q2 = self.qf2(joint_embeds)
 
-        return q  # Dict of (T or T+1, B, 1 or A)
+        return q1, q2  # Dict of (T or T+1, B, 1 or A)
