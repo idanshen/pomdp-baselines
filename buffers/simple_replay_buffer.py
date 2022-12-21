@@ -10,8 +10,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         max_replay_buffer_size,
         observation_dim,
         action_dim,
-        teacher_action_dim,
         max_trajectory_len: int,
+        teacher_action_dim=1,
         add_timeout: bool = False,
         state_dim = None,
         **kwargs

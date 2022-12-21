@@ -12,6 +12,7 @@ class Critic_Markovian(nn.Module):
         action_dim,
         algo,
         dqn_layers,
+        critic_key,
         image_encoder=None,
         **kwargs
     ):
@@ -37,6 +38,8 @@ class Critic_Markovian(nn.Module):
             hidden_sizes=dqn_layers,
             action_dim=action_dim,
         )
+        self.qf1 = self.q_funcs[critic_key + "_qf1"]
+        self.qf2 = self.q_funcs[critic_key + "_qf2"]
 
     def _get_obs_embedding(self, observs):
         if self.image_encoder is None:  # vector obs
@@ -47,8 +50,7 @@ class Critic_Markovian(nn.Module):
     def forward(self, observs, *inputs):
         embedded_observs = self._get_obs_embedding(observs)
 
-        q = {}
-        for key, q_func in self.q_funcs.items():
-            q[key] = q_func(embedded_observs, *inputs)
+        q1 = self.qf1(embedded_observs)
+        q2 = self.qf2(embedded_observs)
 
-        return q
+        return q1, q2

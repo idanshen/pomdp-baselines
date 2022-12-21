@@ -188,7 +188,7 @@ class CrossingEnv(MiniGridEnv):
             raise NotImplementedError
 
         # Show it a compact rendering (state without the location of the holes)
-        elif _key_to_render == 'partial_state':
+        elif _key_to_render == 'partial_state':  #TODO: broken. do not use
             obs_dict = self.gen_obs_encode()
             view = obs_dict["image"][:, :, 0]
             pos_in_view = {0: (self.agent_view_size//2, 0),

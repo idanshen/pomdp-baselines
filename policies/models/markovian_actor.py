@@ -13,6 +13,7 @@ class Actor_Markovian(nn.Module):
         action_dim,
         algo,
         policy_layers,
+        policy_key,
         image_encoder=None,
         **kwargs
     ):
@@ -32,11 +33,11 @@ class Actor_Markovian(nn.Module):
             observ_embedding_size = self.image_encoder.embed_size  # reset it
 
         ## 4. build policy
-        self.policies = self.algo.build_actor(
+        self.policy = self.algo.build_actor(
             input_size=observ_embedding_size,
             action_dim=self.action_dim,
             hidden_sizes=policy_layers,
-        )
+        )[policy_key+"_actor"]
 
     def _get_obs_embedding(self, observs):
         if self.image_encoder is None:  # vector obs
@@ -46,19 +47,15 @@ class Actor_Markovian(nn.Module):
 
     def forward(self, observs):
         embedded_observs = self._get_obs_embedding(observs)
-
-        actions = {}
-        for key, policy in self.policies.items():
-            actions[key] = self.algo.forward_actor(actor=policy, observ=embedded_observs)
+        actions = self.algo.forward_actor(actor=self.policy, observ=embedded_observs)
 
         return actions
 
     def act(self, obs, deterministic=False, return_log_prob=False,):
-        acting_policy_key = self.algo.get_acting_policy_key()
         embedded_observs = self._get_obs_embedding(obs)
 
         return self.algo.select_action(
-                actor=self.policies[acting_policy_key],
+                actor=self.policy,
                 observ=embedded_observs,
                 deterministic=deterministic,
                 return_log_prob=return_log_prob,
