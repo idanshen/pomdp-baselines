@@ -188,19 +188,20 @@ class SACD(RLAlgorithmBase):
                 prev_actions=actions, rewards=rewards, observs=observs
             )  # (T+1, B, A)
 
-        if markov_critic:
-            q1, q2 = critic["main"](observs)
-        else:
-            q1, q2 = critic["main"](
-                prev_actions=actions,
-                rewards=rewards,
-                observs=observs,
-                current_actions=new_probs,
-            )  # (T+1, B, A)
-        min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
+        with torch.no_grad():
+            if markov_critic:
+                q1, q2 = critic["main"](observs)
+            else:
+                q1, q2 = critic["main"](
+                    prev_actions=actions,
+                    rewards=rewards,
+                    observs=observs,
+                    current_actions=new_probs,
+                )  # (T+1, B, A)
+            min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
 
-        policy_loss = -min_q_new_actions
-        policy_loss += self.alpha_entropy * log_probs
+            policy_loss = -min_q_new_actions
+            policy_loss += self.alpha_entropy * log_probs
         # E_{a\sim \pi}[Q(h,a)]
         policy_loss = (new_probs * policy_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
         if not markov_critic:

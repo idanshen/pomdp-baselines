@@ -579,6 +579,14 @@ class Learner:
                     else:
                         collect_from_policy = True
                         self.agent.algo.current_policy = "main"
+                elif self.data_collection_method == "both":
+                    i = collected_rollouts % 2
+                    if i == 0:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
+                    elif i == 1:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "aux"
                 else:
                     raise NotImplementedError
 

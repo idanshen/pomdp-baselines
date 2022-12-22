@@ -54,7 +54,7 @@ assert seq_model in ["mlp", "lstm", "gru", "lstm-mlp", "gru-mlp"]
 assert algo in ["td3", "sac", "sacd", "ppo", 'eaacd', 'DAgger']
 assert data_collection_method in ["only_student", "only_teacher", "based_on_coefficient_update",
                                         "beta_student_teacher", "beta_student_aux", "start_student_than_teacher",
-                                        "start_beta_student_aux_than_teacher", "all"]
+                                        "start_beta_student_aux_than_teacher", "all", "both"]
 
 if FLAGS.automatic_entropy_tuning is not None:
     v["policy"][algo]["automatic_entropy_tuning"] = FLAGS.automatic_entropy_tuning
@@ -169,8 +169,8 @@ os.makedirs(os.path.join(logger.get_dir(), "save"))
 
 yaml = YAML(typ='safe', pure=True)
 cfg = yaml.load(Path(f"{log_folder}/variant_{pid}.yml"))
-# wandb.init(project="test-project", entity="tsrl", config=cfg, mode="disabled")
-wandb.init(project="test-project", entity="tsrl", config=cfg)
+wandb.init(project="test-project", entity="tsrl", config=cfg, mode="disabled")
+# wandb.init(project="test-project", entity="tsrl", config=cfg)
 
 # start training
 learner = Learner(

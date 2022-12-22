@@ -78,29 +78,15 @@ class EAACD(RLAlgorithmBase):
         if type(input_size) == tuple:
             assert len(input_size) == 1
             input_size = input_size[0]
-        if self.split_q:
-            main_qf1_env = FlattenMlp(
-                input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-            )
-            main_qf2_env = FlattenMlp(
-                input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-            )
-            main_qf1_teacher = FlattenMlp(
-                input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-            )
-            main_qf2_teacher = FlattenMlp(
-                input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-            )
-            qfs = nn.ModuleDict({"main_qf1_env": main_qf1_env, "main_qf2_env": main_qf2_env, "main_qf1_teacher": main_qf1_teacher, "main_qf2_teacher": main_qf2_teacher})
-        else:
-            main_qf1 = FlattenMlp(
-                input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-            )
-            main_qf2 = FlattenMlp(
-                input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-            )
-            qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2})
-        if self.coefficient_tuning in ["EIPO"]:
+
+        main_qf1 = FlattenMlp(
+            input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
+        )
+        main_qf2 = FlattenMlp(
+            input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
+        )
+        qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2})
+        if self.coefficient_tuning in ["EIPO"] or self.split_q:
             aux_qf1 = FlattenMlp(
                 input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
             )
@@ -228,7 +214,88 @@ class EAACD(RLAlgorithmBase):
         teacher_next_log_probs=None,
         **kwargs
     ):
-        if key == "aux" or not self.split_q:
+        if self.split_q and key == "aux":
+            # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
+            with torch.no_grad():
+                # first next_actions from current policy,
+                if markov_actor:
+                    new_probs, new_log_probs = actor["main"](next_observs if markov_critic else observs)
+                else:
+                    # (T+1, B, dim) including reaction to last obs
+                    new_probs, new_log_probs = actor["main"](
+                        prev_actions=actions,
+                        rewards=rewards,
+                        observs=next_observs if markov_critic else observs,
+                    )
+
+                if markov_critic:  # (B, A)
+                    next_q1, next_q2 = critic_target[key](next_observs)
+                else:
+                    next_q1, next_q2 = critic_target[key](
+                        prev_actions=actions,
+                        rewards=rewards,
+                        observs=observs,
+                        current_actions=None,
+                    )  # (T+1, B, A)
+
+                min_next_q_target = torch.min(next_q1, next_q2)
+
+                if markov_critic:
+                    min_next_q_target -= (teacher_next_log_probs)  # (T+1, B, A)
+                else:
+                    min_next_q_target -= (teacher_log_probs)  # (T+1, B, A)
+
+                # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
+                min_next_q_target = (new_probs * min_next_q_target).sum(
+                    dim=-1, keepdims=True
+                )
+
+                # q_target: (T, B, 1)
+                q_target = (1.0 - dones) * gamma * min_next_q_target  # next q
+                if not markov_critic:
+                    q_target = q_target[1:]  # (T, B, 1)
+
+            if markov_critic:
+                q1_pred, q2_pred = critic[key](observs)
+                action = actions.long()  # (B, 1)
+                q1_pred = q1_pred.gather(dim=-1, index=action)
+                q2_pred = q2_pred.gather(dim=-1, index=action)
+                qf1_loss = F.mse_loss(q1_pred, q_target)  # TD error
+                qf2_loss = F.mse_loss(q2_pred, q_target)  # TD error
+
+            else:
+                # Q(h(t), a(t)) (T, B, 1)
+                q1_pred, q2_pred = critic[key](
+                    prev_actions=actions,
+                    rewards=rewards,
+                    observs=observs,
+                    current_actions=None,
+                )  # (T, B, A)
+
+                stored_actions = actions[1:]  # (T, B, A)
+                stored_actions = torch.argmax(
+                    stored_actions, dim=-1, keepdims=True
+                )  # (T, B, 1)
+                q1_pred = q1_pred.gather(
+                    dim=-1, index=stored_actions
+                )  # (T, B, A) -> (T, B, 1)
+                q2_pred = q2_pred.gather(
+                    dim=-1, index=stored_actions
+                )  # (T, B, A) -> (T, B, 1)
+
+                # masked Bellman error: masks (T,B,1) ignore the invalid error
+                # this is not equal to masks * q1_pred, cuz the denominator in mean()
+                # 	should depend on masks > 0.0, not a constant B*T
+                assert 'masks' in kwargs
+                masks = kwargs['masks']
+                num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+                q1_pred, q2_pred = q1_pred * masks, q2_pred * masks
+                q_target = q_target * masks
+                qf1_loss = ((q1_pred - q_target) ** 2).sum() / num_valid  # TD error
+                qf2_loss = ((q2_pred - q_target) ** 2).sum() / num_valid  # TD error
+
+            return qf1_loss, qf2_loss
+        else:
             # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
             with torch.no_grad():
                 # first next_actions from current policy,
@@ -310,90 +377,91 @@ class EAACD(RLAlgorithmBase):
                 qf2_loss = ((q2_pred - q_target) ** 2).sum() / num_valid  # TD error
 
             return qf1_loss, qf2_loss
-        else:   #TODO: fix split_q
-            raise Exception
-            # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
-            # with torch.no_grad():
-            #     # first next_actions from current policy,
-            #     if markov_actor:
-            #         new_probs, new_log_probs = actor[key](next_observs if markov_critic else observs)
-            #     else:
-            #         # (T+1, B, dim) including reaction to last obs
-            #         new_probs, new_log_probs = actor[key](
-            #             prev_actions=actions,
-            #             rewards=rewards,
-            #             observs=next_observs if markov_critic else observs,
-            #         )
-            #
-            #     if markov_critic:  # (B, A)
-            #         q_dict = critic_target(next_observs)
-            #     else:
-            #         q_dict = critic_target(
-            #             prev_actions=actions,
-            #             rewards=rewards,
-            #             observs=observs,
-            #             current_actions=None,
-            #         )  # (T+1, B, A)
-            #     next_q1_env, next_q2_env = q_dict[key + "_qf1_env"], q_dict[key + "_qf2_env"]
-            #     next_q1_teacher, next_q2_teacher = q_dict[key + "_qf1_teacher"], q_dict[key + "_qf2_teacher"]
-            #
-            #     min_next_q_env_target = torch.min(next_q1_env, next_q2_env)
-            #     min_next_q_teacher_target = torch.min(next_q1_teacher, next_q2_teacher)
-            #     if markov_critic:
-            #         min_next_q_teacher_target += teacher_next_log_probs  # (T+1, B, A)
-            #     else:
-            #         min_next_q_teacher_target += teacher_log_probs  # (T+1, B, A)
-            #
-            #     # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
-            #     min_next_q_env_target = (new_probs * min_next_q_env_target).sum(dim=-1, keepdims=True)
-            #     min_next_q_teacher_target = (new_probs * min_next_q_teacher_target).sum(dim=-1, keepdims=True)
-            #
-            #     # q_target: (T, B, 1)
-            #     q_env_target = rewards + (1.0 - dones) * gamma * min_next_q_env_target  # next q
-            #     q_teacher_target = (1.0 - dones) * gamma * min_next_q_teacher_target  # next q
-            #     if not markov_critic:
-            #         q_env_target = q_env_target[1:]  # (T, B, 1)
-            #         q_teacher_target = q_teacher_target[1:]  # (T, B, 1)
-            #
-            # if markov_critic:
-            #     q_pred_dict = critic(observs)
-            #     action = actions.long()  # (B, 1)
-            #     q1_pred_env, q2_pred_env = q_pred_dict[key+"_qf1_env"].gather(dim=-1, index=action), q_pred_dict[key+"_qf2_env"].gather(dim=-1, index=action)
-            #     q1_pred_teacher, q2_pred_teacher = q_pred_dict[key+"_qf1_teacher"].gather(dim=-1, index=action), q_pred_dict[key+"_qf2_teacher"].gather(dim=-1, index=action)
-            #     qf1_env_loss = F.mse_loss(q1_pred_env, q_env_target)  # TD error
-            #     qf2_env_loss = F.mse_loss(q2_pred_env, q_env_target)  # TD error
-            #     qf1_teacher_loss = F.mse_loss(q1_pred_teacher, q_teacher_target)  # TD error
-            #     qf2_teacher_loss = F.mse_loss(q2_pred_teacher, q_teacher_target)  # TD error
-            # else:
-            #     # Q(h(t), a(t)) (T, B, 1)
-            #     q_pred_dict = critic(
-            #         prev_actions=actions,
-            #         rewards=rewards,
-            #         observs=observs,
-            #         current_actions=None,
-            #     )  # (T, B, A)
-            #
-            #     stored_actions = actions[1:]  # (T, B, A)
-            #     stored_actions = torch.argmax(stored_actions, dim=-1, keepdims=True)  # (T, B, 1)
-            #     q1_pred_env, q2_pred_env = q_pred_dict[key + "_qf1_env"].gather(dim=-1, index=stored_actions), q_pred_dict[key + "_qf2_env"].gather(dim=-1, index=stored_actions)  # (T, B, A) -> (T, B, 1)
-            #     q1_pred_teacher, q2_pred_teacher = q_pred_dict[key + "_qf1_teacher"].gather(dim=-1, index=stored_actions), q_pred_dict[key + "_qf2_teacher"].gather(dim=-1, index=stored_actions)  # (T, B, A) -> (T, B, 1)
-            #
-            #     # masked Bellman error: masks (T,B,1) ignore the invalid error
-            #     # this is not equal to masks * q1_pred, cuz the denominator in mean()
-            #     # 	should depend on masks > 0.0, not a constant B*T
-            #     assert 'masks' in kwargs
-            #     masks = kwargs['masks']
-            #     num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
-            #     q1_pred_env, q2_pred_env = q1_pred_env * masks, q2_pred_env * masks
-            #     q1_pred_teacher, q2_pred_teacher = q1_pred_teacher * masks, q2_pred_teacher * masks
-            #     q_env_target = q_env_target * masks
-            #     q_teacher_target = q_teacher_target * masks
-            #     qf1_env_loss = ((q1_pred_env - q_env_target) ** 2).sum() / num_valid  # TD error
-            #     qf2_env_loss = ((q2_pred_env - q_env_target) ** 2).sum() / num_valid  # TD error
-            #     qf1_teacher_loss = ((q1_pred_teacher - q_teacher_target) ** 2).sum() / num_valid  # TD error
-            #     qf2_teacher_loss = ((q2_pred_teacher - q_teacher_target) ** 2).sum() / num_valid  # TD error
-
-            # return qf1_env_loss+qf1_teacher_loss, qf2_env_loss+qf2_teacher_loss
+        # else:
+        #
+        #     raise Exception
+        #     # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
+        #     with torch.no_grad():
+        #         # first next_actions from current policy,
+        #         if markov_actor:
+        #             new_probs, new_log_probs = actor[key](next_observs if markov_critic else observs)
+        #         else:
+        #             # (T+1, B, dim) including reaction to last obs
+        #             new_probs, new_log_probs = actor[key](
+        #                 prev_actions=actions,
+        #                 rewards=rewards,
+        #                 observs=next_observs if markov_critic else observs,
+        #             )
+        #
+        #         if markov_critic:  # (B, A)
+        #             q_dict = critic_target(next_observs)
+        #         else:
+        #             q_dict = critic_target(
+        #                 prev_actions=actions,
+        #                 rewards=rewards,
+        #                 observs=observs,
+        #                 current_actions=None,
+        #             )  # (T+1, B, A)
+        #         next_q1_env, next_q2_env = q_dict[key + "_qf1_env"], q_dict[key + "_qf2_env"]
+        #         next_q1_teacher, next_q2_teacher = q_dict[key + "_qf1_teacher"], q_dict[key + "_qf2_teacher"]
+        #
+        #         min_next_q_env_target = torch.min(next_q1_env, next_q2_env)
+        #         min_next_q_teacher_target = torch.min(next_q1_teacher, next_q2_teacher)
+        #         if markov_critic:
+        #             min_next_q_teacher_target += teacher_next_log_probs  # (T+1, B, A)
+        #         else:
+        #             min_next_q_teacher_target += teacher_log_probs  # (T+1, B, A)
+        #
+        #         # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
+        #         min_next_q_env_target = (new_probs * min_next_q_env_target).sum(dim=-1, keepdims=True)
+        #         min_next_q_teacher_target = (new_probs * min_next_q_teacher_target).sum(dim=-1, keepdims=True)
+        #
+        #         # q_target: (T, B, 1)
+        #         q_env_target = rewards + (1.0 - dones) * gamma * min_next_q_env_target  # next q
+        #         q_teacher_target = (1.0 - dones) * gamma * min_next_q_teacher_target  # next q
+        #         if not markov_critic:
+        #             q_env_target = q_env_target[1:]  # (T, B, 1)
+        #             q_teacher_target = q_teacher_target[1:]  # (T, B, 1)
+        #
+        #     if markov_critic:
+        #         q_pred_dict = critic(observs)
+        #         action = actions.long()  # (B, 1)
+        #         q1_pred_env, q2_pred_env = q_pred_dict[key+"_qf1_env"].gather(dim=-1, index=action), q_pred_dict[key+"_qf2_env"].gather(dim=-1, index=action)
+        #         q1_pred_teacher, q2_pred_teacher = q_pred_dict[key+"_qf1_teacher"].gather(dim=-1, index=action), q_pred_dict[key+"_qf2_teacher"].gather(dim=-1, index=action)
+        #         qf1_env_loss = F.mse_loss(q1_pred_env, q_env_target)  # TD error
+        #         qf2_env_loss = F.mse_loss(q2_pred_env, q_env_target)  # TD error
+        #         qf1_teacher_loss = F.mse_loss(q1_pred_teacher, q_teacher_target)  # TD error
+        #         qf2_teacher_loss = F.mse_loss(q2_pred_teacher, q_teacher_target)  # TD error
+        #     else:
+        #         # Q(h(t), a(t)) (T, B, 1)
+        #         q_pred_dict = critic(
+        #             prev_actions=actions,
+        #             rewards=rewards,
+        #             observs=observs,
+        #             current_actions=None,
+        #         )  # (T, B, A)
+        #
+        #         stored_actions = actions[1:]  # (T, B, A)
+        #         stored_actions = torch.argmax(stored_actions, dim=-1, keepdims=True)  # (T, B, 1)
+        #         q1_pred_env, q2_pred_env = q_pred_dict[key + "_qf1_env"].gather(dim=-1, index=stored_actions), q_pred_dict[key + "_qf2_env"].gather(dim=-1, index=stored_actions)  # (T, B, A) -> (T, B, 1)
+        #         q1_pred_teacher, q2_pred_teacher = q_pred_dict[key + "_qf1_teacher"].gather(dim=-1, index=stored_actions), q_pred_dict[key + "_qf2_teacher"].gather(dim=-1, index=stored_actions)  # (T, B, A) -> (T, B, 1)
+        #
+        #         # masked Bellman error: masks (T,B,1) ignore the invalid error
+        #         # this is not equal to masks * q1_pred, cuz the denominator in mean()
+        #         # 	should depend on masks > 0.0, not a constant B*T
+        #         assert 'masks' in kwargs
+        #         masks = kwargs['masks']
+        #         num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+        #         q1_pred_env, q2_pred_env = q1_pred_env * masks, q2_pred_env * masks
+        #         q1_pred_teacher, q2_pred_teacher = q1_pred_teacher * masks, q2_pred_teacher * masks
+        #         q_env_target = q_env_target * masks
+        #         q_teacher_target = q_teacher_target * masks
+        #         qf1_env_loss = ((q1_pred_env - q_env_target) ** 2).sum() / num_valid  # TD error
+        #         qf2_env_loss = ((q2_pred_env - q_env_target) ** 2).sum() / num_valid  # TD error
+        #         qf1_teacher_loss = ((q1_pred_teacher - q_teacher_target) ** 2).sum() / num_valid  # TD error
+        #         qf2_teacher_loss = ((q2_pred_teacher - q_teacher_target) ** 2).sum() / num_valid  # TD error
+        #
+        #     return qf1_env_loss+qf1_teacher_loss, qf2_env_loss+qf2_teacher_loss
 
     def actor_loss(
             self,
@@ -469,27 +537,38 @@ class EAACD(RLAlgorithmBase):
                     prev_actions=actions, rewards=rewards, observs=observs
                 )  # (T+1, B, A).
 
-            coefficient = self.coefficient
+            with torch.no_grad():
+                coefficient = self.coefficient
 
-            if markov_critic:
-                q1, q2 = critic[key](observs)
-            else:
-                q1, q2 = critic[key](
-                    prev_actions=actions,
-                    rewards=rewards,
-                    observs=observs,
-                    current_actions=new_probs,
-                )  # (T+1, B, A)
-            # if key == "main" and self.split_q: # TODO: fix split_q
-            #     q1 = q_dict[key + "_qf1_env"] - coefficient * q_dict[key + "_qf1_teacher"]
-            #     q2 = q_dict[key + "_qf2_env"] - coefficient * q_dict[key + "_qf2_teacher"]
+                if markov_critic:
+                    q1, q2 = critic[key](observs)
+                else:
+                    q1, q2 = critic[key](
+                        prev_actions=actions,
+                        rewards=rewards,
+                        observs=observs,
+                        current_actions=new_probs,
+                    )  # (T+1, B, A)
 
-            min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
+                if key == "aux" and self.split_q:
+                    if markov_critic:
+                        q1_main, q2_main = critic["main"](observs)
+                    else:
+                        q1_main, q2_main = critic["main"](
+                            prev_actions=actions,
+                            rewards=rewards,
+                            observs=observs,
+                            current_actions=new_probs,
+                        )  # (T+1, B, A)
+                    q1 = q1_main + coefficient * q1
+                    q2 = q2_main + coefficient * q2
 
-            policy_loss = -min_q_new_actions
-            policy_loss += log_probs
-            if key == "main":
-                policy_loss -= coefficient * teacher_log_probs
+                min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
+
+                policy_loss = -min_q_new_actions
+                if key == "main":
+                    policy_loss += log_probs
+                    policy_loss -= coefficient * teacher_log_probs
 
             # E_{a\sim \pi}[Q(h,a)]
             policy_loss = (new_probs * policy_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
@@ -585,7 +664,7 @@ class EAACD(RLAlgorithmBase):
         if self.coefficient_tuning == "EIPO":
             # obj_aproximation = self.approximate_objective_difference(markov_critic, markov_actor, critic, actor, observs, actions, rewards)
             objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
-            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -2, 2)
+            # self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -2, 2)
             self.coefficient = self.log_coefficient.exp().item()
 
         output_dict = {"cross_entropy": current_cross_entropy,
