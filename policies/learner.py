@@ -37,6 +37,7 @@ CFG_TO_RENDER_TYPE = {
 class Learner:
     def __init__(self, env_args, train_args, eval_args, policy_args, seed, **kwargs):
         self.seed = seed
+        policy_args['num_updates_per_iter'] = train_args['num_updates_per_iter']
 
         self.init_env(**env_args)
 
@@ -252,6 +253,7 @@ class Learner:
         separate: bool = True,
         image_encoder=None,
         reward_clip=False,
+        num_updates_per_iter=1,
         **kwargs
     ):
         # initialize agent
@@ -272,6 +274,7 @@ class Learner:
             action_dim=self.act_dim,
             image_encoder_fn=image_encoder_fn,
             state_dim=self.state_dim[0],
+            num_updates_per_iter=num_updates_per_iter,
             **kwargs,
         ).to(ptu.device)
         logger.log(self.agent)
@@ -390,14 +393,18 @@ class Learner:
 
         if self.num_init_rollouts_pool > 0:
             logger.log("Collecting initial pool of data..")
-            while (
-                self._n_env_steps_total
-                < self.num_init_rollouts_pool * self.max_trajectory_len
-            ):
-                self.collect_rollouts(
-                    num_rollouts=1,
-                    # random_actions=True,
-                )
+            # while (
+            #     self._n_env_steps_total
+            #     < self.num_init_rollouts_pool * self.max_trajectory_len
+            # ):
+            #     self.collect_rollouts(
+            #         num_rollouts=1,
+            #         # random_actions=True,
+            #     )
+            if self.agent.algo_name in ["eaacd", "Dagger"]:
+                self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool)
+            else:
+                self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool, random_actions=True)
             logger.log(
                 "Done! env steps",
                 self._n_env_steps_total,
@@ -521,7 +528,7 @@ class Learner:
                         ).float()  # (1, A)
                         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
                     else:
-                        _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
+                        teacher_prob_action, _, teacher_log_prob_action, _ = self.teacher["main"].act(state, return_log_prob=True)
                 else:
                     teacher_log_prob_action = None
 
@@ -590,7 +597,8 @@ class Learner:
                 else:
                     raise NotImplementedError
 
-                if random_actions:
+                epsilon = 1.0/20.0
+                if random_actions or np.random.random() < epsilon:
                     # action = teacher_prob_action
                     action = ptu.FloatTensor(
                         [self.train_env.action_space.sample()]
@@ -635,7 +643,7 @@ class Learner:
                             ).float()  # (1, A)
                             teacher_log_prob_next_action = torch.clip(torch.log(teacher_prob_next_action), -18.0, 18.0)
                         else:
-                            _, _, teacher_log_prob_next_action, _ = self.teacher.act(next_state, return_log_prob=True)
+                            _, _, teacher_log_prob_next_action, _ = self.teacher["main"].act(next_state, return_log_prob=True)
                     else:
                         teacher_log_prob_next_action = torch.zeros(1, self.act_dim,
                                                                    device=teacher_log_prob_action.device).float()

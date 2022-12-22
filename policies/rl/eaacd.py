@@ -26,6 +26,7 @@ class EAACD(RLAlgorithmBase):
         action_dim=None,
         state_dim=None,
         teacher_dir=None,
+        num_updates_per_iter=1,
         split_q=False,
     ):
         super().__init__()
@@ -47,7 +48,7 @@ class EAACD(RLAlgorithmBase):
         else:
             self.log_coefficient = torch.tensor(np.log(initial_coefficient), requires_grad=True, device=ptu.device)
             self.coefficient = self.log_coefficient.exp().detach().item()
-            self.coefficient_lr = coefficient_lr / 500.0
+            self.coefficient_lr = coefficient_lr / num_updates_per_iter
 
     def build_actor(self, input_size, action_dim, hidden_sizes, **kwargs):
         if type(input_size) == tuple:
@@ -300,10 +301,10 @@ class EAACD(RLAlgorithmBase):
             with torch.no_grad():
                 # first next_actions from current policy,
                 if markov_actor:
-                    new_probs, new_log_probs = actor[key](next_observs if markov_critic else observs)
+                    new_probs, new_log_probs = actor["aux"](next_observs if markov_critic else observs)
                 else:
                     # (T+1, B, dim) including reaction to last obs
-                    new_probs, new_log_probs = actor[key](
+                    new_probs, new_log_probs = actor["aux"](
                         prev_actions=actions,
                         rewards=rewards,
                         observs=next_observs if markov_critic else observs,
@@ -566,8 +567,8 @@ class EAACD(RLAlgorithmBase):
                 min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
 
                 policy_loss = -min_q_new_actions
+                policy_loss += log_probs
                 if key == "main":
-                    policy_loss += log_probs
                     policy_loss -= coefficient * teacher_log_probs
 
             # E_{a\sim \pi}[Q(h,a)]
@@ -664,7 +665,7 @@ class EAACD(RLAlgorithmBase):
         if self.coefficient_tuning == "EIPO":
             # obj_aproximation = self.approximate_objective_difference(markov_critic, markov_actor, critic, actor, observs, actions, rewards)
             objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
-            # self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -2, 2)
+            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -1, 1)
             self.coefficient = self.log_coefficient.exp().item()
 
         output_dict = {"cross_entropy": current_cross_entropy,

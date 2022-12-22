@@ -52,6 +52,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         image_encoder_fn=lambda: None,
         teacher_dir=None,
         state_dim=None,
+        num_updates_per_iter=1,
         **kwargs
     ):
         super().__init__()
@@ -67,7 +68,8 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              teacher_dir=teacher_dir,
                                              action_dim=action_dim,
-                                             state_dim=self.state_dim)
+                                             state_dim=self.state_dim,
+                                             num_updates_per_iter=num_updates_per_iter)
         self.critic = torch.nn.ModuleDict({key: Critic_RNN(
             obs_dim,
             action_dim,

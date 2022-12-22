@@ -39,6 +39,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             image_encoder_fn=lambda: None,
             teacher_dir=None,
             state_dim=None,
+            num_updates_per_iter=1,
             **kwargs
     ):
         super().__init__()
@@ -52,7 +53,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
 
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              action_dim=action_dim,
-                                             state_dim=self.state_dim)
+                                             state_dim=self.state_dim,
+                                             num_updates_per_iter=num_updates_per_iter)
 
         # Markov q networks
         self.critic = torch.nn.ModuleDict({key: Critic_Markovian(

@@ -19,9 +19,10 @@ train:
   batch_size: 30 # to tune based on sampled_seq_len
   sampled_seq_len: -1 # -1 is all, or positive integer
   sample_weight_baseline: 0.0
+  data_collection_method: both
 
 eval:
-  log_interval: 5 # 10 num of iters
+  log_interval: 1 # 10 num of iters
   save_interval: 1 # -1
   log_tensorboard: true
 
@@ -29,7 +30,7 @@ policy:
   separate: True
   seq_model: lstm # [lstm, gru]
   algo_name: sacd # [td3, sac,eaacd]
-  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/New_New_Expert/
+  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/gridworld/MiniGrid/TigerDoorEnv/Markovian_sacd/alpha-0.1/gamma-0.9/New_New_New_Expert/
 
   action_embedding_size: 16
 #  observ_embedding_size: 32
@@ -53,13 +54,11 @@ policy:
     alpha_lr: 0.0003
 
   eaacd:
-    initial_coefficient: 0.3
+    initial_coefficient: 1.0
     coefficient_tuning: EIPO # Can be Fixed, Target, EIPO
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.0003
+    split_q: True
 
   DAgger:
-    entropy_alpha: 0.01
-    automatic_entropy_tuning: False
-    target_entropy: None # the ratio: target_entropy = ratio * log(|A|)
-    alpha_lr: 0.0003
+    loss_type: CE
