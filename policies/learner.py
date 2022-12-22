@@ -316,6 +316,7 @@ class Learner:
                 observation_dim=self.obs_dim,
                 state_dim=self.state_dim,
                 action_dim=self.act_dim if self.act_continuous else 1,  # save memory
+                teacher_action_dim=self.act_dim,
                 max_trajectory_len=self.max_trajectory_len,
                 add_timeout=False,  # no timeout storage
             )
