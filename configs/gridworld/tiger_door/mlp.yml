@@ -1,4 +1,4 @@
-seed: 1
+seed: 0
 cuda: 0 # use_gpu
 env:
   env_type: gridworld

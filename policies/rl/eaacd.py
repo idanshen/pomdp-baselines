@@ -532,7 +532,42 @@ class EAACD(RLAlgorithmBase):
                 additional_outputs['negative_cross_entropy'] = (new_probs * teacher_log_probs).sum(axis=-1,
                                                                                                    keepdims=True)
             return (policy_loss_q, policy_loss_t), additional_outputs
+        if self.split_q and key == "aux":
+            if markov_actor:
+                new_probs, log_probs = actor[key](observs)
+            else:
+                new_probs, log_probs = actor[key](
+                    prev_actions=actions, rewards=rewards, observs=observs
+                )  # (T+1, B, A).
 
+            if markov_critic:  # (B, A)
+                next_q1, next_q2 = critic_target["main"](observs)
+            else:
+                next_q1, next_q2 = critic_target["main"](
+                    prev_actions=actions,
+                    rewards=rewards,
+                    observs=observs,
+                    current_actions=new_probs,
+                )  # (T+1, B, A)
+            next_q1_env, next_q1_teacher = next_q1
+            next_q2_env, next_q2_teacher = next_q2
+            min_next_q_env_target = torch.min(next_q1_env, next_q2_env)
+
+            policy_loss = -min_next_q_env_target
+
+            # E_{a\sim \pi}[Q(h,a)]
+            policy_loss = (new_probs * policy_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
+
+            if not markov_critic:
+                policy_loss = policy_loss[:-1]  # (T,B,1) remove the last obs
+
+            if not markov_actor:
+                assert 'masks' in kwargs
+                masks = kwargs['masks']
+                num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+                policy_loss = (policy_loss * masks).sum() / num_valid
+
+            return policy_loss, None
         elif self.coefficient_tuning != "ADVISOR":
             if markov_actor:
                 new_probs, log_probs = actor[key](observs)

@@ -12,6 +12,7 @@ import torchkit.pytorch_utils as ptu
 from policies.models.markovian_actor import Actor_Markovian
 from policies.models.markovian_critic import Critic_Markovian
 from policies.rl import RL_ALGORITHMS
+from utils import helpers as utl
 
 
 class ModelFreeOffPolicy_MLP(nn.Module):
@@ -88,6 +89,13 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             deterministic=deterministic,
             return_log_prob=return_log_prob,
         )
+
+    def report_grad_norm(self):
+        # may add qf1, policy, etc.
+        return {
+            "p_main_grad_norm": utl.get_grad_norm(self.policy["main"]),
+            "p_aux_grad_norm": utl.get_grad_norm(self.policy["aux"])
+        }
 
     def update(self, batch):
         observs, next_observs = batch["obs"], batch["obs2"]  # (B, dim)

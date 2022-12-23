@@ -910,11 +910,10 @@ class Learner:
         ## log losses
         for k, v in train_stats.items():
             logger.record_tabular("rl_loss/" + k, v)
-        ## gradient norms
-        if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
-            results = self.agent.report_grad_norm()
-            for k, v in results.items():
-                logger.record_tabular("rl_loss/" + k, v)
+        ## log gradient norms
+        results = self.agent.report_grad_norm()
+        for k, v in results.items():
+            logger.record_tabular("rl_loss/" + k, v)
         logger.dump_tabular()
 
     def log(self):
