@@ -94,6 +94,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         actions, rewards, dones = batch["act"], batch["rew"], batch["term"]  # (B, dim)
         teacher_log_probs, teacher_next_log_probs = batch["teacher_log_prob"], batch["teacher_log_prob2"]
         states, next_states = batch["states"], batch["states2"]  # (B, dim)
+        reward_mean, reward_std = batch["rew_mean"], batch["rew_std"]
         outputs = {}
 
         ### 1. Critic loss

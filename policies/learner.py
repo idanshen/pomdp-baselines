@@ -312,6 +312,7 @@ class Learner:
                 max_replay_buffer_size=int(buffer_size),
                 observation_dim=self.obs_dim,
                 state_dim=self.state_dim,
+                teacher_action_dim=self.act_dim,
                 action_dim=self.act_dim if self.act_continuous else 1,  # save memory
                 max_trajectory_len=self.max_trajectory_len,
                 add_timeout=False,  # no timeout storage
@@ -390,14 +391,18 @@ class Learner:
 
         if self.num_init_rollouts_pool > 0:
             logger.log("Collecting initial pool of data..")
-            while (
-                self._n_env_steps_total
-                < self.num_init_rollouts_pool * self.max_trajectory_len
-            ):
-                self.collect_rollouts(
-                    num_rollouts=1,
-                    # random_actions=True,
-                )
+            # while (
+            #     self._n_env_steps_total
+            #     < self.num_init_rollouts_pool * self.max_trajectory_len
+            # ):
+            #     self.collect_rollouts(
+            #         num_rollouts=1,
+            #         # random_actions=True,
+            #     )
+            if self.agent.algo_name in ["eaacd", "Dagger"]:
+                self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool)
+            else:
+                self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool, random_actions=True)
             logger.log(
                 "Done! env steps",
                 self._n_env_steps_total,
@@ -521,7 +526,7 @@ class Learner:
                         ).float()  # (1, A)
                         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
                     else:
-                        _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
+                        teacher_prob_action, _, teacher_log_prob_action, _ = self.teacher["main"].act(state, return_log_prob=True)
                 else:
                     teacher_log_prob_action = None
 
@@ -579,10 +584,19 @@ class Learner:
                     else:
                         collect_from_policy = True
                         self.agent.algo.current_policy = "main"
+                elif self.data_collection_method == "both":
+                    i = collected_rollouts % 2
+                    if i == 0:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "aux"
+                    else:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
                 else:
                     raise NotImplementedError
 
-                if random_actions:
+                epsilon = 0.0
+                if random_actions or np.random.random() < epsilon:
                     # action = teacher_prob_action
                     action = ptu.FloatTensor(
                         [self.train_env.action_space.sample()]
@@ -627,7 +641,7 @@ class Learner:
                             ).float()  # (1, A)
                             teacher_log_prob_next_action = torch.clip(torch.log(teacher_prob_next_action), -18.0, 18.0)
                         else:
-                            _, _, teacher_log_prob_next_action, _ = self.teacher.act(next_state, return_log_prob=True)
+                            _, _, teacher_log_prob_next_action, _ = self.teacher["main"].act(next_state, return_log_prob=True)
                     else:
                         teacher_log_prob_next_action = torch.zeros(1, self.act_dim,
                                                                    device=teacher_log_prob_action.device).float()
@@ -733,7 +747,10 @@ class Learner:
             batch = self.policy_storage.random_batch(batch_size)
         else:  # rnn: all items are (sampled_seq_len, B, dim)
             batch = self.policy_storage.random_episodes(batch_size)
-        return ptu.np_to_pytorch_batch(batch)
+        batch = ptu.np_to_pytorch_batch(batch)
+        batch["rew_mean"] = self.policy_storage.reward_mean
+        batch["rew_std"] = self.policy_storage.reward_std
+        return batch
 
     def update(self, num_updates):
         rl_losses_agg = {}

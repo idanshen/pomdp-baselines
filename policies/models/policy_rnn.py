@@ -137,7 +137,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
 
         return current_action_tuple, current_internal_state
 
-    def compute_loss(self, actions, rewards, observs, dones, masks, states=None, teacher_log_probs=None):
+    def compute_loss(self, actions, rewards, observs, dones, masks, states=None, teacher_log_probs=None, reward_mean=None, reward_std=None):
         """
         For actions a, rewards r, observs o, dones d: (T+1, B, dim)
                 where for each t in [0, T], take action a[t], then receive reward r[t], done d[t], and next obs o[t] and state s[t]
@@ -282,4 +282,5 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         teacher_log_probs = batch["teacher_log_prob"]
         teacher_next_log_probs = batch["teacher_log_prob2"]
         teacher_log_probs = torch.cat((teacher_log_probs[[0]], teacher_next_log_probs), dim=0)  # (T+1, B, dim)
-        return self.compute_loss(actions, rewards, observs, dones, masks, states, teacher_log_probs)
+        reward_mean, reward_std = batch["rew_mean"], batch["rew_std"]
+        return self.compute_loss(actions, rewards, observs, dones, masks, states, teacher_log_probs, reward_mean, reward_std)

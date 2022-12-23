@@ -1,3 +1,5 @@
+from math import sqrt
+
 import numpy as np
 from .replay_buffer import ReplayBuffer
 
@@ -61,6 +63,10 @@ class SimpleReplayBuffer(ReplayBuffer):
             self._timeouts = np.zeros((max_replay_buffer_size, 1), dtype="uint8")
         self.clear()
 
+        # reward statistics
+        self.r_sum = 0
+        self.r_sumsq = 0
+
     def add_sample(
         self,
         observation,
@@ -95,6 +101,10 @@ class SimpleReplayBuffer(ReplayBuffer):
         if (self.add_timeout and timeout) or (not self.add_timeout and terminal):
             self.terminate_episode()
 
+        # update statistics
+        self.r_sum += reward
+        self.r_sumsq += (reward * reward)
+
     def terminate_episode(self):
         # NOTE: one can also use self.terminal == True to find the starts
         # but this requires more complicated condition checking
@@ -121,6 +131,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         self._size = min(self._size + step, self._max_replay_buffer_size)
 
     def sample_data(self, indices):
+        self.reward_mean = self.r_sum / self._top
+        self.reward_std = sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
         return dict(
             obs=self._observations[indices],
             act=self._actions[indices],

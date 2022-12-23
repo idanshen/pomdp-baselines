@@ -1,3 +1,5 @@
+from math import sqrt
+
 import numpy as np
 
 
@@ -72,6 +74,10 @@ class SeqReplayBuffer:
 
         self.clear()
 
+        # reward statistics
+        self.r_sum = 0
+        self.r_sumsq = 0
+
         RAM = 0.0
         for name, var in vars(self).items():
             if isinstance(var, np.ndarray):
@@ -127,6 +133,10 @@ class SeqReplayBuffer:
 
         self._top = (self._top + seq_len) % self._max_replay_buffer_size
         self._size = min(self._size + seq_len, self._max_replay_buffer_size)
+
+        # update statistics
+        self.r_sum += rewards.sum()
+        self.r_sumsq += (rewards ** 2).sum()
 
     def _compute_valid_starts(self, seq_len):
         valid_starts = np.ones((seq_len), dtype=float)
@@ -184,6 +194,8 @@ class SeqReplayBuffer:
         return np.random.choice(valid_starts_indices, size=batch_size, p=sample_weights)
 
     def _sample_data(self, indices):
+        self.reward_mean = self.r_sum / self._top
+        self.reward_std = sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
         return_dict = dict(
             obs=self._observations[indices],
             act=self._actions[indices],

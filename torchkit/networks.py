@@ -92,6 +92,48 @@ class FlattenMlp(Mlp):
         return super().forward(flat_inputs, **kwargs)
 
 
+class DoubleHeadFlattenMlp(PyTorchModule):
+    def __init__(self,
+        hidden_sizes,
+        output_size,
+        input_size,
+        init_w = 3e-3,
+        hidden_activation = F.relu,
+        output_activation = ptu.identity,
+        hidden_init = ptu.fanin_init,
+        b_init_value = 0.1,
+        layer_norm = False,
+        layer_norm_kwargs = None,
+    ):
+        self.save_init_params(locals())
+        super().__init__()
+
+        self.Mlp1 = Mlp(hidden_sizes=hidden_sizes,
+                        output_size=output_size,
+                        input_size=input_size,
+                        init_w=init_w,
+                        hidden_activation=hidden_activation,
+                        output_activation=output_activation,
+                        hidden_init=hidden_init,
+                        b_init_value=b_init_value,
+                        layer_norm=layer_norm,
+                        layer_norm_kwargs=layer_norm_kwargs)
+        self.Mlp2 = Mlp(hidden_sizes=hidden_sizes,
+                        output_size=output_size,
+                        input_size=input_size,
+                        init_w=init_w,
+                        hidden_activation=hidden_activation,
+                        output_activation=output_activation,
+                        hidden_init=hidden_init,
+                        b_init_value=b_init_value,
+                        layer_norm=layer_norm,
+                        layer_norm_kwargs=layer_norm_kwargs)
+
+    def forward(self, *inputs, **kwargs):
+        flat_inputs = torch.cat(inputs, dim=-1)
+        return self.Mlp1.forward(flat_inputs, **kwargs), self.Mlp2.forward(flat_inputs, **kwargs)
+
+
 def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1):
     """
     Utility function for computing output of convolutions
