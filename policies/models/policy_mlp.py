@@ -83,12 +83,16 @@ class ModelFreeOffPolicy_MLP(nn.Module):
 
     @torch.no_grad()
     def act(self, obs, deterministic=False, return_log_prob=False):
-        curr_actor = self.policy[self.algo.get_acting_policy_key()]
-        return curr_actor.act(
-            obs=obs,
-            deterministic=deterministic,
-            return_log_prob=return_log_prob,
-        )
+        policy_key = self.algo.get_acting_policy_key()
+        if policy_key == "main":
+            curr_actor = self.policy["main"]
+            return curr_actor.act(
+                obs=obs,
+                deterministic=deterministic,
+                return_log_prob=return_log_prob,
+            )
+        else:
+            return self.algo.aux_act(obs=obs, critic=self.critic, deterministic=deterministic, return_log_prob=return_log_prob)
 
     def report_grad_norm(self):
         # may add qf1, policy, etc.

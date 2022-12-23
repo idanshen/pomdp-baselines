@@ -2,6 +2,8 @@ import glob
 from math import sqrt
 
 from ruamel.yaml import YAML
+from torch.distributions import Categorical
+
 from utils import helpers as utl
 import torch
 import numpy as np
@@ -772,3 +774,29 @@ class EAACD(RLAlgorithmBase):
 
         obj_aproximation = q_aux.gather(dim=-1, index=action_aux) - torch.sum(action_probs_aux * q_aux) - q_main.gather(dim=-1, index=action_main) + torch.sum(action_probs_main * q_main)
         return obj_aproximation.mean().item()
+
+    def aux_act(self, obs, critic, deterministic=False, return_log_prob=False):
+        q1, q2 = critic["main"](obs)
+        q1_env, q1_teacher = q1
+        q2_env, q2_teacher = q2
+        min_q_env = torch.min(q1_env, q2_env)
+
+        prob, log_prob = None, None
+        if deterministic:
+            action = torch.argmax(min_q_env, dim=-1)  # (*)
+            assert (return_log_prob == False)  # NOTE: cannot be used for estimating entropy
+        else:
+            prob = F.softmax(min_q_env, dim=-1)  # (*, A)
+            prob = torch.clip(prob, np.finfo(float).eps, 1.0)
+            assert torch.all(prob > 0.0).item()
+            distr = Categorical(prob)
+            # categorical distr cannot reparameterize
+            action = distr.sample()  # (*)
+            if return_log_prob:
+                PROB_MIN = 1e-8
+                log_prob = torch.log(torch.clamp(prob, min=PROB_MIN))
+
+        # convert to one-hot vectors
+        action = F.one_hot(action.long(), num_classes=4).float()  # (*, A)
+
+        return action, prob, log_prob, None

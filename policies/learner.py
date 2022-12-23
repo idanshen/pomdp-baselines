@@ -426,10 +426,10 @@ class Learner:
             if self.env_type == "gridworld" and self.agent.algo_name == "eaacd":
                 if self.agent.algo.coefficient_tuning == "EIPO":
                     self.agent.algo.current_policy = "main"
-                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
+                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
                     self.agent.algo.obj_est_main = returns_eval_main.mean()
                     self.agent.algo.current_policy = "aux"
-                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
+                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
                     self.agent.algo.obj_est_aux = returns_eval_aux.mean()
                     self.agent.algo.current_policy = "main"
 
