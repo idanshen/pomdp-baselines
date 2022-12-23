@@ -1,4 +1,4 @@
-seed: 4
+seed: 1
 cuda: 0 # use_gpu
 env:
   env_type: gridworld
@@ -50,11 +50,14 @@ policy:
     alpha_lr: 0.0003
 
   eaacd:
-    initial_coefficient: 1.0
+    initial_coefficient: 0.0
     coefficient_tuning: EIPO # Can be Fixed, Target, EIPO
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
-    coefficient_lr: 0.0003
+    coefficient_lr: 0.0001
     split_q: True
 
   DAgger:
     loss_type: CE
+
+  qlearning:
+    empty: None

@@ -280,7 +280,7 @@ class Learner:
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
-        if kwargs["algo_name"] in ["eaacd", "DAgger"]:
+        if kwargs["algo_name"] in ["eaacd", "DAgger", "qlearning"]:
             if kwargs['teacher_dir'] == 'oracle':
                 self.teacher = "oracle"
             else:
@@ -402,7 +402,7 @@ class Learner:
             #         num_rollouts=1,
             #         # random_actions=True,
             #     )
-            if self.agent.algo_name in ["eaacd", "Dagger"]:
+            if self.agent.algo_name in ["eaacd", "Dagger", "qlearning"]:
                 self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool)
             else:
                 self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool, random_actions=True)
@@ -429,11 +429,11 @@ class Learner:
             if self.env_type == "gridworld" and self.agent.algo_name == "eaacd":
                 if self.agent.algo.coefficient_tuning == "EIPO":
                     self.agent.algo.current_policy = "main"
-                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
-                    self.agent.algo.obj_est_main = returns_eval_main.mean()
+                    # returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
+                    self.agent.algo.obj_est_main = 0.0 # returns_eval_main.mean()
                     self.agent.algo.current_policy = "aux"
-                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
-                    self.agent.algo.obj_est_aux = returns_eval_aux.mean()
+                    # returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
+                    self.agent.algo.obj_est_aux = 0.0 # returns_eval_aux.mean()
                     self.agent.algo.current_policy = "main"
 
             train_stats = self.update(
@@ -593,12 +593,13 @@ class Learner:
                         collect_from_policy = True
                         self.agent.algo.current_policy = "main"
                     elif i == 1:
-                        collect_from_policy = True
-                        self.agent.algo.current_policy = "aux"
+                        collect_from_policy = False
+                        # collect_from_policy = True
+                        # self.agent.algo.current_policy = "aux"
                 else:
                     raise NotImplementedError
 
-                epsilon = 1.0/20.0
+                epsilon = 1.0/10.0
                 if random_actions or np.random.random() < epsilon:
                     # action = teacher_prob_action
                     action = ptu.FloatTensor(
