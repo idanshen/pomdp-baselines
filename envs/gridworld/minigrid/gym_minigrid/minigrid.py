@@ -688,13 +688,19 @@ class MiniGridEnv(gym.Env):
     }
 
     # Enumeration of possible actions
-    class Actions(IntEnum):
+    class Full_Actions(IntEnum):
 
         # Turn left, turn right, move forward
         up = 0
         right = 1
         down = 2
         left = 3
+
+    class Turns_Actions(IntEnum):
+        # Turn left, turn right, move forward
+        left = 0
+        right = 1
+        forward = 2
 
     def __init__(
             self,
@@ -704,7 +710,8 @@ class MiniGridEnv(gym.Env):
             max_steps=100,
             see_through_walls=False,
             seed=1337,
-            agent_view_size=5
+            agent_view_size=7,
+            actions_type="full_motion"  # Can be "full_motion" or "forward_and_turns"
     ):
         # Can't set both grid_size and width/height
         if grid_size:
@@ -713,7 +720,12 @@ class MiniGridEnv(gym.Env):
             height = grid_size
 
         # Action enumeration for this environment
-        self.actions = MiniGridEnv.Actions
+        assert actions_type in ["full_motion", "forward_and_turns"]
+        self.actions_type = actions_type
+        if self.actions_type == "full_motion":
+            self.actions = MiniGridEnv.Full_Actions
+        else:
+            self.actions = MiniGridEnv.Turns_Actions
         
         # The grid object will be inscribed later.
         self.grid = None
@@ -1186,39 +1198,56 @@ class MiniGridEnv(gym.Env):
             reached_goal=True
 
         else:
+            if self.actions_type == "forward_and_turns":
+                # Rotate left
+                if action == self.actions.left:
+                    step_froward = False
+                    self.agent_dir -= 1
+                    if self.agent_dir < 0:
+                        self.agent_dir += 4
 
-            if action == self.actions.up:
-                self.agent_dir = 0
-            elif action == self.actions.right:
-                self.agent_dir = 1
-            elif action == self.actions.down:
-                self.agent_dir = 2
-            elif action == self.actions.left:
-                self.agent_dir = 3
+                # Rotate right
+                elif action == self.actions.right:
+                    step_froward = False
+                    self.agent_dir = (self.agent_dir + 1) % 4
+
+                else:
+                    step_froward = True
             else:
-                assert False, "unknown action"
+                if action == self.actions.up:
+                    self.agent_dir = 0
+                elif action == self.actions.right:
+                    self.agent_dir = 1
+                elif action == self.actions.down:
+                    self.agent_dir = 2
+                elif action == self.actions.left:
+                    self.agent_dir = 3
+                else:
+                    assert False, "unknown action"
+                step_froward = True
 
-            # Get the position in front of the agent
-            fwd_pos = self.front_pos
+            if step_froward:
+                # Get the position in front of the agent
+                fwd_pos = self.front_pos
 
-            # Get the contents of the cell in front of the agent
-            fwd_cell = self.grid.get(*fwd_pos)
+                # Get the contents of the cell in front of the agent
+                fwd_cell = self.grid.get(*fwd_pos)
 
-            if fwd_cell is None or fwd_cell.can_overlap():
-                self.agent_pos = fwd_pos
+                if fwd_cell is None or fwd_cell.can_overlap():
+                    self.agent_pos = fwd_pos
 
-            if fwd_cell is not None and fwd_cell.type == 'goal':
-                done = True
-                reward += self._reward()
-                reached_goal = True
+                if fwd_cell is not None and fwd_cell.type == 'goal':
+                    done = True
+                    reward += 5.0 * self._reward()
+                    reached_goal = True
 
-            if fwd_cell is not None and fwd_cell.type == 'lava':
-                reward += - 5.0 * self.reward_range[1]  # Penalize the agent.
-                done = True
+                if fwd_cell is not None and fwd_cell.type == 'lava':
+                    reward += - 5.0 * self.reward_range[1]  # Penalize the agent.
+                    done = True
 
-            if fwd_cell is not None and fwd_cell.type == 'button':
-                # If we are on a button, make everything visible.
-                self.illuminated = True
+                if fwd_cell is not None and fwd_cell.type == 'button':
+                    # If we are on a button, make everything visible.
+                    self.illuminated = True
 
         if self.step_count >= self.max_steps:
             done = True

@@ -1,3 +1,5 @@
+from math import sqrt
+
 import numpy as np
 
 
@@ -9,6 +11,7 @@ class SeqReplayBuffer:
         max_replay_buffer_size,
         observation_dim,
         action_dim,
+        teacher_action_dim,
         sampled_seq_len: int,
         sample_weight_baseline: float,
         state_dim=None,
@@ -47,8 +50,8 @@ class SeqReplayBuffer:
             )
         self._actions = np.zeros((max_replay_buffer_size, action_dim), dtype=np.float32)
         self._rewards = np.zeros((max_replay_buffer_size, 1), dtype=np.float32)
-        self._teacher_log_probs = np.zeros((max_replay_buffer_size, 4), dtype=np.float32)  # TODO: change from 4 to variable
-        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, 4), dtype=np.float32)  # TODO: change from 4 to variable
+        self._teacher_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim), dtype=np.float32)
+        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim), dtype=np.float32)
         # terminals are "done" signals, useful for policy training
         # for each trajectory, it has single 1 like 0000001000 for reaching goal or early stopping
         # 	or simply 0s for timing out.
@@ -70,6 +73,10 @@ class SeqReplayBuffer:
         self._sample_weight_baseline = sample_weight_baseline
 
         self.clear()
+
+        # reward statistics
+        self.r_sum = 0
+        self.r_sumsq = 0
 
         RAM = 0.0
         for name, var in vars(self).items():
@@ -127,6 +134,10 @@ class SeqReplayBuffer:
         self._top = (self._top + seq_len) % self._max_replay_buffer_size
         self._size = min(self._size + seq_len, self._max_replay_buffer_size)
 
+        # update statistics
+        self.r_sum += rewards.sum()
+        self.r_sumsq += (rewards ** 2).sum()
+
     def _compute_valid_starts(self, seq_len):
         valid_starts = np.ones((seq_len), dtype=float)
 
@@ -183,6 +194,8 @@ class SeqReplayBuffer:
         return np.random.choice(valid_starts_indices, size=batch_size, p=sample_weights)
 
     def _sample_data(self, indices):
+        self.reward_mean = self.r_sum / self._top
+        self.reward_std = sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
         return_dict = dict(
             obs=self._observations[indices],
             act=self._actions[indices],

@@ -68,9 +68,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
                                              teacher_dir=teacher_dir,
                                              action_dim=action_dim,
                                              state_dim=self.state_dim)
-
-        # Critics
-        self.critic = Critic_RNN(
+        self.critic = torch.nn.ModuleDict({key: Critic_RNN(
             obs_dim,
             action_dim,
             encoder,
@@ -81,14 +79,17 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             rnn_hidden_size,
             dqn_layers,
             rnn_num_layers,
+            key,
             image_encoder=image_encoder_fn(),  # separate weight
-        )
+        ) for key in self.algo.model_keys["critic"]})
+        # Critics
+
         self.critic_optimizer = Adam(self.critic.parameters(), lr=lr)
         # target networks
         self.critic_target = deepcopy(self.critic)
 
         # Actor
-        self.actor = Actor_RNN(
+        self.actor = torch.nn.ModuleDict({key: Actor_RNN(
             obs_dim,
             action_dim,
             encoder,
@@ -99,15 +100,16 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             rnn_hidden_size,
             policy_layers,
             rnn_num_layers,
+            key,
             image_encoder=image_encoder_fn(),  # separate weight
-        )
+        ) for key in self.algo.model_keys["actor"]})
         self.actor_optimizer = Adam(self.actor.parameters(), lr=lr)
         # target networks
         self.actor_target = deepcopy(self.actor)
 
     @torch.no_grad()
-    def get_initial_info(self):
-        return self.actor.get_initial_info()
+    def get_initial_info(self, key):
+        return self.actor["main"].get_initial_info()
 
     @torch.no_grad()
     def act(
@@ -123,18 +125,32 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         reward = reward.unsqueeze(0)  # (1, B, 1)
         obs = obs.unsqueeze(0)  # (1, B, dim)
 
-        current_action_tuple, current_internal_state = self.actor.act(
-            prev_internal_state=prev_internal_state,
-            prev_action=prev_action,
-            reward=reward,
-            obs=obs,
-            deterministic=deterministic,
-            return_log_prob=return_log_prob,
-        )
+        policy_key = self.algo.get_acting_policy_key()
+        if policy_key == "main":
+            curr_actor = self.actor["main"]
+            current_action_tuple, current_internal_state = curr_actor.act(
+                prev_internal_state=prev_internal_state,
+                prev_action=prev_action,
+                reward=reward,
+                obs=obs,
+                deterministic=deterministic,
+                return_log_prob=return_log_prob,
+            )
+        else:
+            current_action_tuple, current_internal_state = self.algo.aux_act(
+                critic=self.critic,
+                markov_critic=False,
+                prev_internal_state=prev_internal_state,
+                prev_action=prev_action,
+                reward=reward,
+                obs=obs,
+                deterministic=deterministic,
+                return_log_prob=return_log_prob,
+            )
 
         return current_action_tuple, current_internal_state
 
-    def compute_loss(self, actions, rewards, observs, dones, masks, states=None, teacher_log_probs=None):
+    def compute_loss(self, actions, rewards, observs, dones, masks, states=None, teacher_log_probs=None, reward_mean=None, reward_std=None):
         """
         For actions a, rewards r, observs o, dones d: (T+1, B, dim)
                 where for each t in [0, T], take action a[t], then receive reward r[t], done d[t], and next obs o[t] and state s[t]
@@ -240,10 +256,10 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
     def report_grad_norm(self):
         # may add qf1, policy, etc.
         return {
-            "q_grad_norm": utl.get_grad_norm(self.critic),
-            "q_rnn_grad_norm": utl.get_grad_norm(self.critic.rnn),
-            "pi_grad_norm": utl.get_grad_norm(self.actor),
-            "pi_rnn_grad_norm": utl.get_grad_norm(self.actor.rnn),
+            "q_grad_norm": utl.get_grad_norm(self.critic["main"]),
+            "q_rnn_grad_norm": utl.get_grad_norm(self.critic["main"].rnn),
+            "pi_grad_norm": utl.get_grad_norm(self.actor["main"]),
+            "pi_rnn_grad_norm": utl.get_grad_norm(self.actor["main"].rnn),
         }
 
     def update(self, batch):
@@ -279,4 +295,5 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         teacher_log_probs = batch["teacher_log_prob"]
         teacher_next_log_probs = batch["teacher_log_prob2"]
         teacher_log_probs = torch.cat((teacher_log_probs[[0]], teacher_next_log_probs), dim=0)  # (T+1, B, dim)
-        return self.compute_loss(actions, rewards, observs, dones, masks, states, teacher_log_probs)
+        reward_mean, reward_std = batch["rew_mean"], batch["rew_std"]
+        return self.compute_loss(actions, rewards, observs, dones, masks, states, teacher_log_probs, reward_mean, reward_std)

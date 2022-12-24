@@ -1,3 +1,5 @@
+from math import sqrt
+
 import numpy as np
 from .replay_buffer import ReplayBuffer
 
@@ -11,6 +13,7 @@ class SimpleReplayBuffer(ReplayBuffer):
         observation_dim,
         action_dim,
         max_trajectory_len: int,
+        teacher_action_dim=1,
         add_timeout: bool = False,
         state_dim = None,
         **kwargs
@@ -48,8 +51,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         # worry about termination conditions.
         self._next_obs = np.zeros((max_replay_buffer_size, *observation_dim), dtype=np.float32)
         self._actions = np.zeros((max_replay_buffer_size, action_dim))
-        self._teacher_log_probs = np.zeros((max_replay_buffer_size, 4))  # TODO: change from 4 to variable
-        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, 4))  # TODO: change from 4 to variable
+        self._teacher_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim))
+        self._teacher_next_log_probs = np.zeros((max_replay_buffer_size, teacher_action_dim))
         # Make everything a 2D np array to make it easier for other code to
         # reason about the shape of the data
         self._rewards = np.zeros((max_replay_buffer_size, 1))
@@ -59,6 +62,10 @@ class SimpleReplayBuffer(ReplayBuffer):
         if add_timeout:
             self._timeouts = np.zeros((max_replay_buffer_size, 1), dtype="uint8")
         self.clear()
+
+        # reward statistics
+        self.r_sum = 0
+        self.r_sumsq = 0
 
     def add_sample(
         self,
@@ -94,6 +101,10 @@ class SimpleReplayBuffer(ReplayBuffer):
         if (self.add_timeout and timeout) or (not self.add_timeout and terminal):
             self.terminate_episode()
 
+        # update statistics
+        self.r_sum += reward
+        self.r_sumsq += (reward * reward)
+
     def terminate_episode(self):
         # NOTE: one can also use self.terminal == True to find the starts
         # but this requires more complicated condition checking
@@ -120,6 +131,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         self._size = min(self._size + step, self._max_replay_buffer_size)
 
     def sample_data(self, indices):
+        self.reward_mean = self.r_sum / self._top
+        self.reward_std = sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
         return dict(
             obs=self._observations[indices],
             act=self._actions[indices],

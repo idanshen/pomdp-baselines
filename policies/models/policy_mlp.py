@@ -12,6 +12,7 @@ import torchkit.pytorch_utils as ptu
 from policies.models.markovian_actor import Actor_Markovian
 from policies.models.markovian_critic import Critic_Markovian
 from policies.rl import RL_ALGORITHMS
+from utils import helpers as utl
 
 
 class ModelFreeOffPolicy_MLP(nn.Module):
@@ -55,41 +56,57 @@ class ModelFreeOffPolicy_MLP(nn.Module):
                                              state_dim=self.state_dim)
 
         # Markov q networks
-        self.critic = Critic_Markovian(
+        self.critic = torch.nn.ModuleDict({key: Critic_Markovian(
             obs_dim=obs_dim,
             dqn_layers=dqn_layers,
             action_dim=action_dim,
             algo=self.algo,
-            image_encoder=image_encoder_fn())
+            critic_key=key,
+            image_encoder=image_encoder_fn()
+        ) for key in self.algo.model_keys})
         self.critic_optimizer = Adam(self.critic.parameters(), lr=lr)
         # target networks
         self.critic_target = copy.deepcopy(self.critic)
 
         # Markov Actor.
-        self.policy = Actor_Markovian(
+        self.policy = torch.nn.ModuleDict({key: Actor_Markovian(
             obs_dim=obs_dim,
             action_dim=action_dim,
             policy_layers=policy_layers,
             algo=self.algo,
+            policy_key=key,
             image_encoder=image_encoder_fn()
-        )
+        ) for key in self.algo.model_keys})
         self.policy_optim = Adam(self.policy.parameters(), lr=lr)
         # target network
         self.policy_target = copy.deepcopy(self.policy)
 
     @torch.no_grad()
     def act(self, obs, deterministic=False, return_log_prob=False):
-        return self.policy.act(
-            obs=obs,
-            deterministic=deterministic,
-            return_log_prob=return_log_prob,
-        )
+        policy_key = self.algo.get_acting_policy_key()
+        if policy_key == "main":
+            curr_actor = self.policy["main"]
+            return curr_actor.act(
+                obs=obs,
+                deterministic=deterministic,
+                return_log_prob=return_log_prob,
+            )
+        else:
+            return self.algo.aux_act(obs=obs, critic=self.critic, markov_critic=True, deterministic=deterministic, return_log_prob=return_log_prob)
+
+    def report_grad_norm(self):
+        # may add qf1, policy, etc.
+        return {
+            "p_main_grad_norm": utl.get_grad_norm(self.policy["main"]),
+            "p_aux_grad_norm": utl.get_grad_norm(self.policy["aux"])
+        }
 
     def update(self, batch):
         observs, next_observs = batch["obs"], batch["obs2"]  # (B, dim)
         actions, rewards, dones = batch["act"], batch["rew"], batch["term"]  # (B, dim)
         teacher_log_probs, teacher_next_log_probs = batch["teacher_log_prob"], batch["teacher_log_prob2"]
         states, next_states = batch["states"], batch["states2"]  # (B, dim)
+        reward_mean, reward_std = batch["rew_mean"], batch["rew_std"]
         outputs = {}
 
         ### 1. Critic loss

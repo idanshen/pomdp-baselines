@@ -23,7 +23,7 @@ class SACD(RLAlgorithmBase):
         action_dim=None,
         **kwargs
     ):
-
+        super().__init__()
         self.automatic_entropy_tuning = automatic_entropy_tuning
         if self.automatic_entropy_tuning:
             assert target_entropy is not None
@@ -94,26 +94,24 @@ class SACD(RLAlgorithmBase):
         with torch.no_grad():
             # first next_actions from current policy,
             if markov_actor:
-                new_probs, new_log_probs = actor(next_observs if markov_critic else observs)["main_actor"]
+                new_probs, new_log_probs = actor["main"](next_observs if markov_critic else observs)
             else:
                 # (T+1, B, dim) including reaction to last obs
-                new_probs, new_log_probs = actor(
+                new_probs, new_log_probs = actor["main"](
                     prev_actions=actions,
                     rewards=rewards,
                     observs=next_observs if markov_critic else observs,
-                )["main_actor"]
+                )
 
             if markov_critic:  # (B, A)
-                q_dict = critic_target(next_observs)
-                next_q1, next_q2 = q_dict["main_qf1"], q_dict["main_qf2"]
+                next_q1, next_q2 = critic_target["main"](next_observs)
             else:
-                q_dict = critic_target(
+                next_q1, next_q2 = critic_target["main"](
                     prev_actions=actions,
                     rewards=rewards,
                     observs=observs,
                     current_actions=new_probs,
                 )  # (T+1, B, A)
-                next_q1, next_q2 = q_dict["main_qf1"], q_dict["main_qf2"]
 
             min_next_q_target = torch.min(next_q1, next_q2)
 
@@ -130,8 +128,7 @@ class SACD(RLAlgorithmBase):
                 q_target = q_target[1:]  # (T, B, 1)
 
         if markov_critic:
-            q_pred_dict = critic(observs)
-            q1_pred, q2_pred = q_pred_dict["main_qf1"], q_pred_dict["main_qf2"]
+            q1_pred, q2_pred = critic["main"](observs)
             action = actions.long()  # (B, 1)
             q1_pred = q1_pred.gather(dim=-1, index=action)
             q2_pred = q2_pred.gather(dim=-1, index=action)
@@ -140,13 +137,12 @@ class SACD(RLAlgorithmBase):
 
         else:
             # Q(h(t), a(t)) (T, B, 1)
-            q_pred_dict = critic(
+            q1_pred, q2_pred = critic["main"](
                 prev_actions=actions,
                 rewards=rewards,
                 observs=observs,
                 current_actions=actions[1:],
             )  # (T, B, A)
-            q1_pred, q2_pred = q_pred_dict["main_qf1"], q_pred_dict["main_qf2"]
 
             stored_actions = actions[1:]  # (T, B, A)
             stored_actions = torch.argmax(
@@ -186,23 +182,21 @@ class SACD(RLAlgorithmBase):
         **kwargs,
     ):
         if markov_actor:
-            new_probs, log_probs = actor(observs)["main_actor"]
+            new_probs, log_probs = actor["main"](observs)
         else:
-            new_probs, log_probs = actor(
+            new_probs, log_probs = actor["main"](
                 prev_actions=actions, rewards=rewards, observs=observs
-            )["main_actor"]  # (T+1, B, A)
+            )  # (T+1, B, A)
 
         if markov_critic:
-            q_dict = critic(observs)
-            q1, q2 = q_dict["main_qf1"], q_dict["main_qf2"]
+            q1, q2 = critic["main"](observs)
         else:
-            q_dict = critic(
+            q1, q2 = critic["main"](
                 prev_actions=actions,
                 rewards=rewards,
                 observs=observs,
                 current_actions=new_probs,
             )  # (T+1, B, A)
-            q1, q2 = q_dict["main_qf1"], q_dict["main_qf2"]
         min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
 
         policy_loss = -min_q_new_actions

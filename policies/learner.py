@@ -278,8 +278,10 @@ class Learner:
 
         self.reward_clip = reward_clip  # for atari
         if kwargs["algo_name"] in ["eaacd", "DAgger"]:
-            self.teacher = "oracle"
-            # self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
+            if kwargs['teacher_dir'] == 'oracle':
+                self.teacher = "oracle"
+            else:
+                self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
         else:
             self.teacher = None
 
@@ -310,6 +312,7 @@ class Learner:
                 max_replay_buffer_size=int(buffer_size),
                 observation_dim=self.obs_dim,
                 state_dim=self.state_dim,
+                teacher_action_dim=self.act_dim,
                 action_dim=self.act_dim if self.act_continuous else 1,  # save memory
                 max_trajectory_len=self.max_trajectory_len,
                 add_timeout=False,  # no timeout storage
@@ -329,6 +332,7 @@ class Learner:
                 max_replay_buffer_size=int(buffer_size),
                 observation_dim=self.obs_dim,
                 action_dim=self.act_dim if self.act_continuous else 1,  # save memory
+                teacher_action_dim=self.act_dim,
                 sampled_seq_len=sampled_seq_len,
                 sample_weight_baseline=sample_weight_baseline,
                 observation_type=self.train_env.observation_space.dtype,
@@ -349,6 +353,8 @@ class Learner:
             "total env steps",
             self.n_env_steps_total,
         )
+
+        self.data_collection_method = kwargs["data_collection_method"]
 
     def init_eval(
         self,
@@ -385,14 +391,18 @@ class Learner:
 
         if self.num_init_rollouts_pool > 0:
             logger.log("Collecting initial pool of data..")
-            while (
-                self._n_env_steps_total
-                < self.num_init_rollouts_pool * self.max_trajectory_len
-            ):
-                self.collect_rollouts(
-                    num_rollouts=1,
-                    random_actions=True,
-                )
+            # while (
+            #     self._n_env_steps_total
+            #     < self.num_init_rollouts_pool * self.max_trajectory_len
+            # ):
+            #     self.collect_rollouts(
+            #         num_rollouts=1,
+            #         # random_actions=True,
+            #     )
+            if self.agent.algo_name in ["eaacd", "Dagger"]:
+                self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool)
+            else:
+                self.collect_rollouts(num_rollouts=self.num_init_rollouts_pool, random_actions=True)
             logger.log(
                 "Done! env steps",
                 self._n_env_steps_total,
@@ -416,17 +426,13 @@ class Learner:
             if self.env_type == "gridworld" and self.agent.algo_name == "eaacd":
                 if self.agent.algo.coefficient_tuning == "EIPO":
                     self.agent.algo.current_policy = "main"
-                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
+                    returns_eval_main, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
                     self.agent.algo.obj_est_main = returns_eval_main.mean()
                     self.agent.algo.current_policy = "aux"
-                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=False)
+                    returns_eval_aux, _, _, _ = self.evaluate(self.eval_tasks, deterministic=True)
                     self.agent.algo.obj_est_aux = returns_eval_aux.mean()
+                    self.agent.algo.current_policy = "main"
 
-                    # Collect data using the best of the two policies
-                    if returns_eval_main.mean() - returns_eval_aux.mean() > 0:
-                        self.agent.algo.current_policy = "main"
-                    else:
-                        self.agent.algo.current_policy = "aux"
             train_stats = self.update(
                 self.num_updates_per_iter
                 if isinstance(self.num_updates_per_iter, int)
@@ -466,6 +472,9 @@ class Learner:
         while (collected_rollouts < num_rollouts) or (collected_steps < min_steps):
             steps = 0
 
+            if self.data_collection_method in ["start_student_than_teacher", "start_beta_student_aux_than_teacher"]:
+                switch_step = np.random.randint(self.max_trajectory_len)
+
             if self.env_type == "meta" and self.train_env.n_tasks is not None:
                 raise NotImplementedError
                 # task = self.train_tasks[np.random.randint(len(self.train_tasks))]
@@ -497,17 +506,98 @@ class Learner:
                     teacher_log_prob_list = []
                     teacher_next_log_prob_list = []
                 else:
-                    teacher_action_list = None
+                    teacher_log_prob_list = None
                     teacher_next_log_prob_list = None
-
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
-                action, reward, internal_state = self.agent.get_initial_info()
+                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy)
 
             while not done_rollout:
-                if random_actions:
+                # 1. Collect teacher action for the current state
+                if self.teacher is not None:
+                    if self.teacher == "oracle":
+                        teacher_action = ptu.FloatTensor(
+                            [self.train_env.env.query_expert()[0]]
+                        )  # (1, A) for continuous action, (1) for discrete action
+                        teacher_prob_action = F.one_hot(
+                            teacher_action.long(), num_classes=self.act_dim
+                        ).float()  # (1, A)
+                        teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
+                    else:
+                        teacher_prob_action, _, teacher_log_prob_action, _ = self.teacher["main"].act(state, return_log_prob=True)
+                else:
+                    teacher_log_prob_action = None
+
+                # 2. determine action according to data collection policy
+                if self.data_collection_method == "only_student":
+                    collect_from_policy = True
+                    self.agent.algo.current_policy = "main"
+                elif self.data_collection_method == "only_teacher":
+                    collect_from_policy = False
+                elif self.data_collection_method == "based_on_coefficient_update":
+                    collect_from_policy = True
+                    if self.agent.algo.obj_est_main - self.agent.algo.obj_est_aux >= 0:
+                        self.agent.algo.current_policy = "main"
+                    else:
+                        self.agent.algo.current_policy = "aux"
+                elif self.data_collection_method == "beta_student_teacher":
+                    prob = self.agent.algo.coefficient / (self.agent.algo.coefficient+1.0)  # Prob to get teacher
+                    if np.random.random() < prob:
+                        collect_from_policy = False
+                    else:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
+                elif self.data_collection_method == "beta_student_aux":
+                    prob = self.agent.algo.coefficient / (self.agent.algo.coefficient + 1.0)  # Prob to get aux
+                    if np.random.random() < prob:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "aux"
+                    else:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
+                elif self.data_collection_method == "start_student_than_teacher":
+                    if steps < switch_step:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
+                    else:
+                        collect_from_policy = False
+                elif self.data_collection_method == "start_beta_student_aux_than_teacher":
+                    if steps < switch_step:
+                        prob = self.agent.algo.coefficient / (self.agent.algo.coefficient + 1.0)  # Prob to get aux
+                        if np.random.random() < prob:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "aux"
+                        else:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "main"
+                    else:
+                        collect_from_policy = False
+                elif self.data_collection_method == "all":
+                    i = collected_rollouts % 3
+                    if i == 0:
+                        collect_from_policy = False
+                    elif i == 1:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "aux"
+                    else:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
+                elif self.data_collection_method == "both":
+                    i = collected_rollouts % 2
+                    if i == 0:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "aux"
+                    else:
+                        collect_from_policy = True
+                        self.agent.algo.current_policy = "main"
+                else:
+                    raise NotImplementedError
+
+                epsilon = 0.0
+                if random_actions or np.random.random() < epsilon:
+                    # action = teacher_prob_action
                     action = ptu.FloatTensor(
                         [self.train_env.action_space.sample()]
                     )  # (1, A) for continuous action, (1) for discrete action
@@ -515,7 +605,7 @@ class Learner:
                         action = F.one_hot(
                             action.long(), num_classes=self.act_dim
                         ).float()  # (1, A)
-                else:
+                elif collect_from_policy:
                     # policy takes hidden state as input for memory-based actor,
                     # while takes obs for markov actor
                     if self.agent_arch == AGENT_ARCHS.Memory:
@@ -529,28 +619,19 @@ class Learner:
                         )
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
+                else:  # collect from teacher
+                    action = teacher_prob_action
 
-                if self.teacher is not None:
-                    if self.teacher == "oracle":
-                        teacher_action = ptu.FloatTensor(
-                            [self.train_env.env.query_expert()[0]]
-                        )  # (1, A) for continuous action, (1) for discrete action
-                        teacher_prob_action = F.one_hot(
-                            teacher_action.long(), num_classes=self.act_dim
-                        ).float()  # (1, A)
-                        teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
-                    else:
-                        _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
-                else:
-                    teacher_log_prob_action = None
-
-                # observe reward and next obs (B=1, dim)
+                # 3. Take action, observe reward, next state and next obs
                 next_obs, reward, done, info = utl.env_step(
                     self.train_env, action.squeeze(dim=0)
                 )
                 next_state = info["state"]
-                if not done.item():
-                    if self.teacher is not None:
+
+                # 4. Collect teacher action for the next state. If last state than append vector of zeroes.
+                # TODO: can be done in more efficient way in the next iteration
+                if self.teacher is not None:
+                    if not done.item():
                         if self.teacher == "oracle":
                             teacher_next_action = ptu.FloatTensor(
                                 [self.train_env.env.query_expert()[0]]
@@ -560,23 +641,18 @@ class Learner:
                             ).float()  # (1, A)
                             teacher_log_prob_next_action = torch.clip(torch.log(teacher_prob_next_action), -18.0, 18.0)
                         else:
-                            _, _, teacher_log_prob_next_action, _ = self.teacher.act(next_state, return_log_prob=True)
+                            _, _, teacher_log_prob_next_action, _ = self.teacher["main"].act(next_state, return_log_prob=True)
                     else:
-                        teacher_log_prob_next_action = None
+                        teacher_log_prob_next_action = torch.zeros(1, self.act_dim,
+                                                                   device=teacher_log_prob_action.device).float()
                 else:
-                    teacher_log_prob_next_action = torch.zeros(1, self.act_dim, device=teacher_log_prob_action.device).float()
+                    teacher_log_prob_next_action = None
 
-                if self.reward_clip and self.env_type == "atari":
-                    reward = torch.tanh(reward)
-
+                # 5. Determine terminal flag per environment
                 done_rollout = False if ptu.get_numpy(done[0][0]) == 0.0 else True
-                # update statistics
                 steps += 1
 
-                ## determine terminal flag per environment
-                if self.env_type == "meta" and "is_goal_state" in dir(
-                        self.train_env.unwrapped
-                ):
+                if self.env_type == "meta" and "is_goal_state" in dir(self.train_env.unwrapped):
                     # NOTE: following varibad practice: for meta env, even if reaching the goal (term=True),
                     # the episode still continues.
                     term = self.train_env.unwrapped.is_goal_state()
@@ -591,6 +667,10 @@ class Learner:
                            or steps >= self.max_trajectory_len
                         else done_rollout
                     )
+
+                # 6. Save current tuple to replay data or trajectory list
+                if self.reward_clip and self.env_type == "atari":
+                    reward = torch.tanh(reward)
 
                 if self.agent_arch == AGENT_ARCHS.Markov:
                     self.policy_storage.add_sample(
@@ -622,7 +702,8 @@ class Learner:
                     if self.teacher is not None:
                         teacher_log_prob_list.append(teacher_log_prob_action)
                         teacher_next_log_prob_list.append(teacher_log_prob_next_action)
-                # set: obs <- next_obs
+
+                # 7. set: obs <- next_obs
                 obs = next_obs.clone()
                 state = next_state.clone()
 
@@ -666,7 +747,10 @@ class Learner:
             batch = self.policy_storage.random_batch(batch_size)
         else:  # rnn: all items are (sampled_seq_len, B, dim)
             batch = self.policy_storage.random_episodes(batch_size)
-        return ptu.np_to_pytorch_batch(batch)
+        batch = ptu.np_to_pytorch_batch(batch)
+        batch["rew_mean"] = self.policy_storage.reward_mean
+        batch["rew_std"] = self.policy_storage.reward_std
+        return batch
 
     def update(self, num_updates):
         rl_losses_agg = {}
@@ -729,7 +813,7 @@ class Learner:
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # assume initial reward = 0.0
-                action, reward, internal_state = self.agent.get_initial_info()
+                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy)
 
             for episode_idx in range(num_episodes):
                 running_reward = 0.0
@@ -826,11 +910,10 @@ class Learner:
         ## log losses
         for k, v in train_stats.items():
             logger.record_tabular("rl_loss/" + k, v)
-        ## gradient norms
-        if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
-            results = self.agent.report_grad_norm()
-            for k, v in results.items():
-                logger.record_tabular("rl_loss/" + k, v)
+        ## log gradient norms
+        results = self.agent.report_grad_norm()
+        for k, v in results.items():
+            logger.record_tabular("rl_loss/" + k, v)
         logger.dump_tabular()
 
     def log(self):
