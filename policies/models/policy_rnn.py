@@ -81,7 +81,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             rnn_num_layers,
             key,
             image_encoder=image_encoder_fn(),  # separate weight
-        ) for key in self.algo.model_keys})
+        ) for key in self.algo.model_keys["critic"]})
         # Critics
 
         self.critic_optimizer = Adam(self.critic.parameters(), lr=lr)
@@ -102,14 +102,14 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             rnn_num_layers,
             key,
             image_encoder=image_encoder_fn(),  # separate weight
-        ) for key in self.algo.model_keys})
+        ) for key in self.algo.model_keys["actor"]})
         self.actor_optimizer = Adam(self.actor.parameters(), lr=lr)
         # target networks
         self.actor_target = deepcopy(self.actor)
 
     @torch.no_grad()
     def get_initial_info(self, key):
-        return self.actor[key].get_initial_info()
+        return self.actor["main"].get_initial_info()
 
     @torch.no_grad()
     def act(
@@ -125,15 +125,28 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         reward = reward.unsqueeze(0)  # (1, B, 1)
         obs = obs.unsqueeze(0)  # (1, B, dim)
 
-        curr_actor = self.actor[self.algo.get_acting_policy_key()]
-        current_action_tuple, current_internal_state = curr_actor.act(
-            prev_internal_state=prev_internal_state,
-            prev_action=prev_action,
-            reward=reward,
-            obs=obs,
-            deterministic=deterministic,
-            return_log_prob=return_log_prob,
-        )
+        policy_key = self.algo.get_acting_policy_key()
+        if policy_key == "main":
+            curr_actor = self.actor["main"]
+            current_action_tuple, current_internal_state = curr_actor.act(
+                prev_internal_state=prev_internal_state,
+                prev_action=prev_action,
+                reward=reward,
+                obs=obs,
+                deterministic=deterministic,
+                return_log_prob=return_log_prob,
+            )
+        else:
+            current_action_tuple, current_internal_state = self.algo.aux_act(
+                critic=self.critic,
+                markov_critic=False,
+                prev_internal_state=prev_internal_state,
+                prev_action=prev_action,
+                reward=reward,
+                obs=obs,
+                deterministic=deterministic,
+                return_log_prob=return_log_prob,
+            )
 
         return current_action_tuple, current_internal_state
 

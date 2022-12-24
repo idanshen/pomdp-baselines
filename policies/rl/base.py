@@ -85,4 +85,4 @@ class RLAlgorithmBase:
 
     @property
     def model_keys(self):
-        return ["main"]
+        return {"actor": ["main"], "critic": ["main"]}

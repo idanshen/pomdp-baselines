@@ -132,7 +132,7 @@ class Critic_RNN(nn.Module):
             # for image-based discrete action problems (not using actions)
             return self.image_encoder(observs)
 
-    def get_hidden_states(self, prev_actions, rewards, observs):
+    def get_hidden_states(self, prev_actions, rewards, observs, initial_internal_state=None):
         # all the input have the shape of (T+1, B, *)
         # get embedding of initial transition
         input_a = self.action_embedder(prev_actions)
@@ -141,8 +141,12 @@ class Critic_RNN(nn.Module):
         inputs = torch.cat((input_a, input_r, input_s), dim=-1)
 
         # feed into RNN: output (T+1, B, hidden_size)
-        output, _ = self.rnn(inputs)  # initial hidden state is zeros
-        return output
+        if initial_internal_state is None:  # initial_internal_state is zeros
+            output, _ = self.rnn(inputs)
+            return output
+        else:  # useful for one-step rollout
+            output, current_internal_state = self.rnn(inputs, initial_internal_state)
+            return output, current_internal_state
 
     def forward(self, prev_actions, rewards, observs, current_actions):
         """
@@ -190,3 +194,45 @@ class Critic_RNN(nn.Module):
         q2 = self.qf2(joint_embeds)
 
         return q1, q2  # Dict of (T or T+1, B, 1 or A)
+
+    @torch.no_grad()
+    def forward_with_internal_state(
+            self,
+            prev_internal_state,
+            prev_action,
+            reward,
+            obs,
+            current_actions=None
+    ):
+        # for evaluation (not training), so no target actor, and T = 1
+        # a function that generates action, works like a pytorch module
+
+        # 1. get hidden state and current internal state
+        ## NOTE: in T=1 step rollout (and RNN layers = 1), for GRU they are the same,
+        # for LSTM, current_internal_state also includes cell state, i.e.
+        # hidden state: (1, B, dim)
+        # current_internal_state: (layers, B, dim) or ((layers, B, dim), (layers, B, dim))
+        hidden_state, current_internal_state = self.get_hidden_states(
+            prev_actions=prev_action,
+            rewards=reward,
+            observs=obs,
+            initial_internal_state=prev_internal_state,
+        )
+
+        # 2. another branch for current obs
+        curr_embed = self._get_shortcut_obs_act_embedding(
+            obs, current_actions
+        )
+
+        # 3. joint embed
+        joint_embeds = torch.cat(
+            (hidden_state, curr_embed), dim=-1
+        )  # (1, B, dim)
+        if joint_embeds.dim() == 3:
+            joint_embeds = joint_embeds.squeeze(0)  # (B, dim)
+
+        # 4. q value
+        q1 = self.qf1(joint_embeds)
+        q2 = self.qf2(joint_embeds)
+
+        return q1, q2, current_internal_state
