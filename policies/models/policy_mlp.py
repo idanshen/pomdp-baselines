@@ -63,7 +63,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             algo=self.algo,
             critic_key=key,
             image_encoder=image_encoder_fn()
-        ) for key in self.algo.model_keys})
+        ) for key in self.algo.model_keys["critic"]})
         self.critic_optimizer = Adam(self.critic.parameters(), lr=lr)
         # target networks
         self.critic_target = copy.deepcopy(self.critic)
@@ -76,7 +76,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             algo=self.algo,
             policy_key=key,
             image_encoder=image_encoder_fn()
-        ) for key in self.algo.model_keys})
+        ) for key in self.algo.model_keys["actor"]})
         self.policy_optim = Adam(self.policy.parameters(), lr=lr)
         # target network
         self.policy_target = copy.deepcopy(self.policy)
@@ -98,7 +98,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         # may add qf1, policy, etc.
         return {
             "p_main_grad_norm": utl.get_grad_norm(self.policy["main"]),
-            "p_aux_grad_norm": utl.get_grad_norm(self.policy["aux"])
+            # "p_aux_grad_norm": utl.get_grad_norm(self.policy["aux"])
         }
 
     def update(self, batch):

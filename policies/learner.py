@@ -285,7 +285,6 @@ class Learner:
         else:
             self.teacher = None
 
-
     def init_train(
         self,
         buffer_size,
@@ -595,7 +594,7 @@ class Learner:
                 else:
                     raise NotImplementedError
 
-                epsilon = 0.0
+                epsilon = 0.1
                 if random_actions or np.random.random() < epsilon:
                     # action = teacher_prob_action
                     action = ptu.FloatTensor(
@@ -1118,7 +1117,7 @@ class Learner:
                 )
 
         elif self.env_type == "gridworld":
-            returns_eval, success_rate_eval, _, total_steps_eval = self.evaluate(self.eval_tasks)
+            returns_eval, success_rate_eval, _, total_steps_eval = self.evaluate(self.eval_tasks, deterministic=True)
             returns_eval = returns_eval.squeeze(-1)
             # np.quantile is introduced in np v1.15, so we have to use np.percentile
             # cutoff = np.percentile(returns_eval, 100 * self.worst_percentile)

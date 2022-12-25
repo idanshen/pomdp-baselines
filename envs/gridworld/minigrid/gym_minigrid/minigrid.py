@@ -513,9 +513,6 @@ class Grid:
                 (0.12, 0.81),
             )
 
-            # NOTE - fix the agent direction.
-            agent_dir = 1
-
             # Rotate the agent based on its direction
             tri_fn = rotate_fn(tri_fn, cx=0.5, cy=0.5, theta=0.5*math.pi*agent_dir)
             fill_coords(img, tri_fn, (255, 0, 0))
@@ -1294,9 +1291,8 @@ class MiniGridEnv(gym.Env):
         """
         if not self.compact_obs:
             encoding = self.grid.encode()
-            encoding_only_type = encoding[:, :, 0]
-            encoding_only_type[self.agent_pos[0], self.agent_pos[1]] = OBJECT_TO_IDX['agent']
-            return encoding_only_type.reshape(-1) / 10.0
+            encoding[self.agent_pos[0], self.agent_pos[1], :] = OBJECT_TO_IDX['agent']
+            return encoding / 10.0
         else:
             agent_pos = self.agent_pos
             _idx = np.arange((self.width-2) * (self.height-2)).reshape((self.width-2), (self.height-2))[agent_pos[0]-1, agent_pos[1]-1]
@@ -1404,12 +1400,16 @@ class MiniGridEnv(gym.Env):
 
                 # Mark this cell to be highlighted
                 highlight_mask[abs_i, abs_j] = True
+        if self.actions_type == "full_motion":
+            agent_dir = 1
+        else:
+            agent_dir = self.agent_dir
 
         # Render the whole grid
         img = self.grid.render(
             tile_size,
             self.agent_pos,
-            self.agent_dir,
+            agent_dir,
             highlight_mask=highlight_mask if highlight else None,
             render_goal=render_goal,
             render_lava=render_lava,
