@@ -3,7 +3,7 @@ cuda: 0 # use_gpu
 env:
   env_type: gridworld
   env_name: MiniGrid-MemoryS11-v0
-  obseravibility: image_full
+  obseravibility: image_partial
   num_eval_tasks: 20
   save_states: True
 
@@ -20,6 +20,7 @@ train:
   sampled_seq_len: -1 # -1 is all, or positive integer
   sample_weight_baseline: 0.0
   data_collection_method: only_student
+  epsilon: 0.1
 
 eval:
   log_interval: 1 # 10 num of iters
@@ -49,8 +50,8 @@ policy:
 
   sacd:
     entropy_alpha: 0.5
-    automatic_entropy_tuning: True
-    target_entropy: 0.6 # the ratio: target_entropy = ratio * log(|A|)
+    automatic_entropy_tuning: False
+    target_entropy: None # the ratio: target_entropy = ratio * log(|A|)
     alpha_lr: 0.0003
 
   eaacd:
@@ -59,6 +60,8 @@ policy:
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.0003
     split_q: True
+    min_coefficient: 0.01
+    max_coefficient: 3.0
 
   DAgger:
     loss_type: CE

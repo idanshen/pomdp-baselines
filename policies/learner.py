@@ -292,6 +292,7 @@ class Learner:
         num_iters,
         num_init_rollouts_pool,
         num_rollouts_per_iter,
+        epsilon=0.1,
         num_updates_per_iter=None,
         sampled_seq_len=None,
         sample_weight_baseline=None,
@@ -343,6 +344,7 @@ class Learner:
         self.num_iters = num_iters
         self.num_init_rollouts_pool = num_init_rollouts_pool
         self.num_rollouts_per_iter = num_rollouts_per_iter
+        self.epsilon = epsilon
 
         total_rollouts = num_init_rollouts_pool + num_iters * num_rollouts_per_iter
         self.n_env_steps_total = self.max_trajectory_len * total_rollouts
@@ -594,8 +596,7 @@ class Learner:
                 else:
                     raise NotImplementedError
 
-                epsilon = 0.1
-                if random_actions or np.random.random() < epsilon:
+                if random_actions or np.random.random() < self.epsilon:
                     # action = teacher_prob_action
                     action = ptu.FloatTensor(
                         [self.train_env.action_space.sample()]

@@ -29,6 +29,8 @@ class EAACD(RLAlgorithmBase):
             action_dim=None,
             state_dim=None,
             teacher_dir=None,
+            min_coefficient=0.01,
+            max_coefficient=3.0,
             split_q=False,
     ):
         super().__init__()
@@ -43,6 +45,8 @@ class EAACD(RLAlgorithmBase):
         # self.cross_entropy_sumsq = 0
         # self.cross_entropy_count = 0
 
+        self.min_coefficent = min_coefficient
+        self.max_coefficent = max_coefficient
         if self.coefficient_tuning == "Target":
             assert target_coefficient is not None
             self.target_coefficient = float(target_coefficient)
@@ -265,9 +269,9 @@ class EAACD(RLAlgorithmBase):
                 min_next_q_teacher_target = torch.min(next_q1_teacher, next_q2_teacher)
 
                 if markov_critic:
-                    min_next_q_teacher_target -= (teacher_next_log_probs)  # (T+1, B, A)
+                    min_next_q_teacher_target += (teacher_next_log_probs)  # (T+1, B, A)
                 else:
-                    min_next_q_teacher_target -= (teacher_log_probs)  # (T+1, B, A)
+                    min_next_q_teacher_target += (teacher_log_probs)  # (T+1, B, A)
 
                 # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
                 min_next_q_teacher_target = (new_probs * min_next_q_teacher_target).sum(
@@ -278,8 +282,7 @@ class EAACD(RLAlgorithmBase):
                 )
 
                 # q_target: (T, B, 1)
-                q_teacher_target = (
-                                               1.0 - dones) * gamma * min_next_q_teacher_target  # next q TODO: do we need the 1-done here?
+                q_teacher_target = (1.0 - dones) * gamma * min_next_q_teacher_target  # next q TODO: do we need the 1-done here?
                 q_env_target = rewards + (1.0 - dones) * gamma * min_next_q_env_target  # next q
 
                 if not markov_critic:
@@ -508,7 +511,7 @@ class EAACD(RLAlgorithmBase):
             min_next_q_teacher_target = torch.min(next_q1_teacher, next_q2_teacher)
 
             policy_loss_q = -min_next_q_env_target
-            policy_loss_q += self.coefficient * min_next_q_teacher_target
+            policy_loss_q -= self.coefficient * min_next_q_teacher_target
             policy_loss_q += log_probs
             policy_loss_t = -self.coefficient * teacher_log_probs
 
@@ -615,7 +618,7 @@ class EAACD(RLAlgorithmBase):
 
         return policy_loss, additional_outputs
 
-    def update_others(self, additional_outputs, markov_critic, markov_actor, critic, actor, observs, actions, rewards):
+    def update_others(self, additional_outputs, markov_critic, markov_actor, critic, actor, observs, actions, rewards, reward_std):
         assert 'negative_entropy' in additional_outputs
         assert 'negative_cross_entropy' in additional_outputs
         current_entropy = -additional_outputs['negative_entropy'].mean().item()
@@ -629,6 +632,7 @@ class EAACD(RLAlgorithmBase):
         # self.cross_entropy_std = sqrt((self.cross_entropy_sumsq/self.cross_entropy_count) - (self.cross_entropy_mean*self.cross_entropy_mean))
 
         objective_difference = 0.0
+        normalized_obj_difference = 0.0
         if self.coefficient_tuning == "Target":
             coefficient_loss = self.log_coefficient.exp() * (current_cross_entropy - self.target_coefficient)
             self.coefficient_optim.zero_grad()
@@ -638,8 +642,9 @@ class EAACD(RLAlgorithmBase):
         if self.coefficient_tuning == "EIPO":
             # obj_aproximation = self.approximate_objective_difference(markov_critic, markov_actor, critic, actor, observs, actions, rewards)
             objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
-            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * objective_difference, -4,
-                                              -0.7)
+            normalized_obj_difference = objective_difference / reward_std
+            self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * normalized_obj_difference, np.log(self.min_coefficent),
+                                              np.log(self.max_coefficent))
             self.coefficient = self.log_coefficient.exp().item()
 
         output_dict = {"cross_entropy": current_cross_entropy,
@@ -647,6 +652,7 @@ class EAACD(RLAlgorithmBase):
                        "coefficient": self.coefficient}
         if self.coefficient_tuning == "EIPO":
             output_dict["objective_difference"] = objective_difference
+            output_dict["normalized_objective_difference"] = normalized_obj_difference
             # output_dict["objective_difference_approx"] = obj_aproximation
             output_dict["obj_est_main"] = self.obj_est_main
             output_dict["obj_est_aux"] = self.obj_est_aux

@@ -19,6 +19,7 @@ train:
   batch_size: 30 # to tune based on sampled_seq_len
   sampled_seq_len: -1 # -1 is all, or positive integer
   sample_weight_baseline: 0.0
+  epsilon: 0.1
 
 eval:
   log_interval: 5 # 10 num of iters
@@ -57,6 +58,8 @@ policy:
     coefficient_tuning: EIPO # Can be Fixed, Target, EIPO
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.0003
+    min_coefficient: 0.01
+    max_coefficient: 3.0
 
   DAgger:
     entropy_alpha: 0.01

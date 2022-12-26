@@ -243,7 +243,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
                     additional_outputs[k] = value
 
             other_info = self.algo.update_others(additional_outputs, markov_critic=self.Markov_Critic, markov_actor=self.Markov_Actor, critic=self.critic,
-                                                 actor=self.actor, observs=observs, actions=actions, rewards=rewards)
+                                                 actor=self.actor, observs=observs, actions=actions, rewards=rewards, reward_std=reward_std)
             outputs.update(other_info)
 
         return outputs

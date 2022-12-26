@@ -21,6 +21,7 @@ train:
   num_updates_per_iter: 500
   batch_size: 256 # to tune based on sampled_seq_len
   data_collection_method: only_student
+  epsilon: 0.1
 
 eval:
   log_interval: 5 # 10 num of iters
@@ -55,6 +56,8 @@ policy:
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.0003
     split_q: True
+    min_coefficient: 0.01
+    max_coefficient: 3.0
 
   DAgger:
     loss_type: CE
