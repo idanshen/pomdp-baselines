@@ -165,7 +165,8 @@ class MemoryEnv(MiniGridEnv):
             done = True
             info['reached_goal'] = True
         if tuple(self.agent_pos) == self.failure_pos:
-            reward = 0
+            reward = -self._reward()
+            # reward = 0
             done = True
 
         return obs, reward, done, info
