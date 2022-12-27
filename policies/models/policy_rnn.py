@@ -137,16 +137,27 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
                 return_log_prob=return_log_prob,
             )
         else:
-            current_action_tuple, current_internal_state = self.algo.aux_act(
-                critic=self.critic,
-                markov_critic=False,
-                prev_internal_state=prev_internal_state,
-                prev_action=prev_action,
-                reward=reward,
-                obs=obs,
-                deterministic=deterministic,
-                return_log_prob=return_log_prob,
-            )
+            if self.algo_name == "eaacd":
+                current_action_tuple, current_internal_state = self.algo.aux_act(
+                    critic=self.critic,
+                    markov_critic=False,
+                    prev_internal_state=prev_internal_state,
+                    prev_action=prev_action,
+                    reward=reward,
+                    obs=obs,
+                    deterministic=deterministic,
+                    return_log_prob=return_log_prob,
+                )
+            else:
+                curr_actor = self.actor["aux"]
+                current_action_tuple, current_internal_state = curr_actor.act(
+                    prev_internal_state=prev_internal_state,
+                    prev_action=prev_action,
+                    reward=reward,
+                    obs=obs,
+                    deterministic=deterministic,
+                    return_log_prob=return_log_prob,
+                )
 
         return current_action_tuple, current_internal_state
 

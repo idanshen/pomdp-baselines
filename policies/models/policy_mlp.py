@@ -92,7 +92,15 @@ class ModelFreeOffPolicy_MLP(nn.Module):
                 return_log_prob=return_log_prob,
             )
         else:
-            return self.algo.aux_act(obs=obs, critic=self.critic, markov_critic=True, deterministic=deterministic, return_log_prob=return_log_prob)
+            if self.algo_name == "eaacd":
+                return self.algo.aux_act(obs=obs, critic=self.critic, markov_critic=True, deterministic=deterministic, return_log_prob=return_log_prob)
+            else:
+                curr_actor = self.policy["aux"]
+                return curr_actor.act(
+                    obs=obs,
+                    deterministic=deterministic,
+                    return_log_prob=return_log_prob,
+                )
 
     def report_grad_norm(self):
         # may add qf1, policy, etc.
