@@ -334,15 +334,16 @@ class ADVISORd(RLAlgorithmBase):
             env_loss = (new_probs * env_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
             CE_loss = -torch.sum(torch.exp(teacher_log_probs) * torch.log(new_probs), dim=-1, keepdim=True) # (T+1,B,1)
 
-            if markov_actor:
-                aux_probs, aux_log_probs = actor["aux"](observs)
-            else:
-                aux_probs, aux_log_probs = actor["aux"](
-                    prev_actions=actions, rewards=rewards, observs=observs
-                )  # (T+1, B, A).
+            with torch.no_grad():
+                if markov_actor:
+                    aux_probs, aux_log_probs = actor["aux"](observs)
+                else:
+                    aux_probs, aux_log_probs = actor["aux"](
+                        prev_actions=actions, rewards=rewards, observs=observs
+                    )  # (T+1, B, A).
 
-            kl_div = torch.sum(teacher_log_probs.exp() * (teacher_log_probs - aux_log_probs), axis=-1, keepdim=True)
-            coefficient = torch.exp(-self.temprature * kl_div)
+                kl_div = torch.sum(teacher_log_probs.exp() * (teacher_log_probs - aux_log_probs), axis=-1, keepdim=True)
+                coefficient = torch.exp(-self.temprature * kl_div)
             policy_loss = coefficient * CE_loss + (1.0 - coefficient) * env_loss
 
         if not markov_critic:

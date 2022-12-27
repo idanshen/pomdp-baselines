@@ -727,8 +727,9 @@ class Learner:
                         teacher_log_probs=ptu.get_numpy(torch.cat(teacher_log_prob_list, dim=0)) if teacher_log_prob_list is not None else None,  # (L, dim)
                         teacher_next_log_probs=ptu.get_numpy(torch.cat(teacher_next_log_prob_list, dim=0)) if teacher_next_log_prob_list is not None else None,  # (L, dim)
                     )
+                    acc = np.mean([np.sum(np.abs(torch.exp(i).cpu().numpy() - j.cpu().numpy()))<0.01 for i, j in zip(teacher_log_prob_list, act_list)])
                     print(
-                        f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f}"
+                        f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f} acc: {acc:.2f}"
                     )
                     self._n_env_steps_total += steps
                     collected_steps += steps
@@ -833,7 +834,7 @@ class Learner:
                         action, _, _, _ = self.agent.act(
                             obs, deterministic=deterministic
                         )
-
+                    #
                     # if self.teacher is not None:
                     #     if self.teacher == "oracle":
                     #         teacher_action = ptu.FloatTensor(
@@ -847,7 +848,8 @@ class Learner:
                     #         _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
                     # else:
                     #     teacher_log_prob_action = None
-
+                    # action = teacher_prob_action
+                    #
                     # observe reward and next obs
                     next_obs, reward, done, info = utl.env_step(
                         self.eval_env, action.squeeze(dim=0)
