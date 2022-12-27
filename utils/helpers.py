@@ -10,6 +10,34 @@ import torchkit.pytorch_utils as ptu
 from gym.spaces import Box, Discrete, Tuple
 from itertools import product
 import policies.models as md
+from ruamel.yaml import YAML
+import glob
+
+
+def load_teacher(teacher_dir: str, state_dim, act_dim):
+    assert teacher_dir is not None
+    files = glob.glob(teacher_dir + "*.yml")
+    assert len(files) == 1
+    config_file = files[0]
+    yaml = YAML()
+    v = yaml.load(open(config_file))
+
+    agent_class, rnn_encoder_type = parse_seq_model(
+        v['policy']['seq_model'],
+        v['policy']['seq_model'] if 'seperate' in v['policy'] else True)
+    teacher = agent_class(
+        encoder=rnn_encoder_type,
+        obs_dim=state_dim,
+        action_dim=act_dim,
+        image_encoder_fn=lambda: None,
+        **v['policy'],
+    ).to(ptu.device)
+    models = glob.glob(teacher_dir + "save/*")
+    model_path = sorted(models)[-1]
+    teacher.load_state_dict(torch.load(model_path, map_location=ptu.device))
+    for param in teacher.parameters():
+        param.requires_grad = False
+    return teacher.policy
 
 
 def get_grad_norm(model):

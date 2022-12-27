@@ -65,3 +65,9 @@ policy:
 
   DAgger:
     loss_type: CE
+
+  advisord:
+    temprature: 1.0
+
+  elfd:
+    min_v: 10

@@ -51,7 +51,7 @@ if FLAGS.data_collection_method is not None:
 seq_model, algo = v["policy"]["seq_model"], v["policy"]["algo_name"]
 data_collection_method = v["train"]["data_collection_method"]
 assert seq_model in ["mlp", "lstm", "gru", "lstm-mlp", "gru-mlp"]
-assert algo in ["td3", "sac", "sacd", "ppo", 'eaacd', 'DAgger']
+assert algo in ["td3", "sac", "sacd", "ppo", 'eaacd', 'DAgger', 'advisord', 'elfd']
 assert data_collection_method in ["only_student", "only_teacher", "based_on_coefficient_update",
                                         "beta_student_teacher", "beta_student_aux", "start_student_than_teacher",
                                         "start_beta_student_aux_than_teacher", "all", "both"]

@@ -98,7 +98,7 @@ class CrossingEnv(MiniGridEnv):
             **kwargs,
         )
         self._graph: Optional[nx.DiGraph] = None
-        self.compact_obs = False
+        self.compact_obs = True
         self.tile_size = 6
         # Redefine the observation space to be the compact state.
         _obs = self.reset()

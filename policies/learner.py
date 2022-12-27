@@ -277,11 +277,11 @@ class Learner:
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
-        if kwargs["algo_name"] in ["eaacd", "DAgger"]:
+        if kwargs["algo_name"] in ["eaacd", "DAgger", "advisord", "elfd"]:
             if kwargs['teacher_dir'] == 'oracle':
                 self.teacher = "oracle"
             else:
-                self.teacher = EAACD.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
+                self.teacher = utl.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
         else:
             self.teacher = None
 
