@@ -164,7 +164,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             observs=observs,
             next_observs=next_observs,
             teacher_log_probs=teacher_log_probs,
-            states=states
+            states=states,
+            dones=dones
         )
 
         # update policy network

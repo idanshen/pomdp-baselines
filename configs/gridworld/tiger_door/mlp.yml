@@ -57,5 +57,8 @@ policy:
     min_coefficient: 0.01
     max_coefficient: 3.0
 
-  qlearning:
-    empty: None
+  advisord:
+    temprature: 1.0
+
+  elfd:
+    min_v: 10000

@@ -83,17 +83,19 @@ class ELFd(RLAlgorithmBase):
         _, probs, log_probs = actor(observ, return_log_prob=True)
         return probs, log_probs  # (T+1, B, dim), (T+1, B, dim)
 
-    def calculate_follower_values(self, markov_actor, markov_critic, actor, critic, observs, next_observs, actions, rewards):
+    @torch.no_grad()
+    def calculate_follower_values(self, markov_actor, markov_critic, actor, critic, observs, next_observs, actions, rewards, dones):
         if markov_actor:
             curr_obs_probs, curr_obs_log_probs = actor["aux"](observs)
             curr_obs_q1, curr_obs_q2 = critic["aux"](observs)
             min_curr_obs_q = torch.min(curr_obs_q1, curr_obs_q2)
             curr_obs_values = (curr_obs_probs * min_curr_obs_q).sum(dim=-1, keepdims=True)
 
-            next_obs_probs, next_obs_probs = actor["aux"](next_observs)
+            next_obs_probs, next_obs_log_probs = actor["aux"](next_observs)
             next_obs_q1, next_obs_q2 = critic["aux"](next_observs)
             min_next_obs_q = torch.min(next_obs_q1, next_obs_q2)
             next_obs_values = (next_obs_probs * min_next_obs_q).sum(dim=-1, keepdims=True)
+            next_obs_values = next_obs_values * (1.0 - dones)  # Last state get only -v(s_t) without +v(s_t+1)
         else:
             probs, log_probs = actor["aux"](
                 prev_actions=actions,
@@ -110,7 +112,7 @@ class ELFd(RLAlgorithmBase):
             values = (probs * min_obs_q).sum(dim=-1, keepdims=True)
             curr_obs_values = values[:-1]
             next_obs_values = values[1:]
-            next_obs_values[:-1] = torch.zeros_like(next_obs_values[-1]) # Last state get only -v(s_t) without +v(s_t+1)
+            next_obs_values = next_obs_values * (1.0 - dones)  # Last state get only -v(s_t) without +v(s_t+1)
 
         return curr_obs_values, next_obs_values
 
@@ -222,9 +224,12 @@ class ELFd(RLAlgorithmBase):
             )
 
             if not markov_critic:
-                min_next_q_target = min_next_q_target[1:]  # (T, B, 1)
-                rewards_aug = rewards[1:]  # (T, B, 1)
-                dones = dones[1:]
+                dones_n = torch.clone(dones[1:])  # (T, B, 1)
+                rewards_aug = torch.clone(rewards[1:])  # (T, B, 1)
+                min_next_q_target = min_next_q_target[1:]
+            else:
+                rewards_aug = torch.clone(rewards)
+                dones_n = torch.clone(dones)
 
             if key == "main":  # Augment reward with value function of the follower
                 values_curr_obs, values_next_obs = self.calculate_follower_values(markov_actor=markov_actor,
@@ -234,11 +239,12 @@ class ELFd(RLAlgorithmBase):
                                                                                   observs=observs,
                                                                                   next_observs=next_observs,
                                                                                   actions=actions,
-                                                                                  rewards=rewards)
+                                                                                  rewards=rewards,
+                                                                                  dones=dones)
                 rewards_aug += values_next_obs - values_curr_obs
 
             # q_target: (T, B, 1)
-            q_target = rewards_aug + (1.0 - dones) * gamma * min_next_q_target  # next q
+            q_target = rewards_aug + (1.0 - dones_n) * gamma * min_next_q_target  # next q
 
         if markov_critic:
             q1_pred, q2_pred = critic[key](observs)
@@ -295,6 +301,7 @@ class ELFd(RLAlgorithmBase):
             rewards=None,
             states=None,
             teacher_log_probs=None,
+            dones=None,
             **kwargs
     ):
         main_policy_loss, main_additional_ouputs = self._actor_loss(
@@ -311,6 +318,7 @@ class ELFd(RLAlgorithmBase):
             rewards=rewards,
             states=states,
             teacher_log_probs=teacher_log_probs,
+            dones=dones,
             **kwargs
         )
         aux_policy_loss, aux_additional_ouputs = self._actor_loss(
@@ -327,9 +335,10 @@ class ELFd(RLAlgorithmBase):
             rewards=rewards,
             states=states,
             teacher_log_probs=teacher_log_probs,
+            dones=dones,
             **kwargs
         )
-        return {"main_loss": main_policy_loss, "aux_loss": aux_policy_loss}, main_additional_ouputs
+        return {"main_loss": main_policy_loss, "aux_loss": aux_policy_loss}, {**main_additional_ouputs, **aux_additional_ouputs}
 
     def _actor_loss(
             self,
@@ -346,6 +355,7 @@ class ELFd(RLAlgorithmBase):
             rewards=None,
             states=None,
             teacher_log_probs=None,
+            dones=None,
             **kwargs
     ):
         if key == "aux":  # Follower policy is trained used pure Imitation Learning loss (CE)
@@ -390,7 +400,8 @@ class ELFd(RLAlgorithmBase):
                                                                               observs=observs,
                                                                               next_observs=next_observs,
                                                                               actions=actions,
-                                                                              rewards=rewards)
+                                                                              rewards=rewards,
+                                                                              dones=dones)
             mask = torch.zeros_like(values_curr_obs)
             mask[values_curr_obs > self.min_v] = 1.0
 
@@ -411,16 +422,20 @@ class ELFd(RLAlgorithmBase):
             additional_outputs['negative_entropy'] = (new_probs * log_probs).sum(axis=-1, keepdims=True)
             additional_outputs['negative_cross_entropy'] = (new_probs * teacher_log_probs).sum(axis=-1,
                                                                                                keepdims=True)
-
+        if key == "aux":
+            additional_outputs['aux_accuracy'] = (torch.max(new_probs, dim=-1)[1] == torch.max(torch.exp(teacher_log_probs), dim=-1)[1]).unsqueeze(dim=-1)
         return policy_loss, additional_outputs
 
     def update_others(self, additional_outputs, **kwargs):
         assert 'negative_entropy' in additional_outputs
         assert 'negative_cross_entropy' in additional_outputs
+        assert 'aux_accuracy' in additional_outputs
         current_entropy = -additional_outputs['negative_entropy'].mean().item()
         current_cross_entropy = -additional_outputs['negative_cross_entropy'].mean().item()
+        aux_accuracy = additional_outputs['aux_accuracy'].cpu().numpy().mean().item()
         output_dict = {"cross_entropy": current_cross_entropy,
-                       "policy_entropy": current_entropy}
+                       "policy_entropy": current_entropy,
+                       'aux_accuracy': aux_accuracy}
         return output_dict
 
     def get_acting_policy_key(self):

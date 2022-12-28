@@ -231,6 +231,7 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
             rewards=rewards,
             states=states,
             teacher_log_probs=teacher_log_probs,
+            dones=dones,
             masks=masks
         )
 
