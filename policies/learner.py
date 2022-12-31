@@ -9,6 +9,7 @@ from torch.nn import functional as F
 import gym
 
 from envs.gridworld.env_wrap import EnvWrapper
+from envs.mujoco.env_wrap import MujocoEnvWrapper
 from .models import AGENT_CLASSES, AGENT_ARCHS
 from torchkit.networks import ImageEncoder
 
@@ -25,7 +26,6 @@ from utils import helpers as utl
 from torchkit import pytorch_utils as ptu
 from utils import evaluation as utl_eval
 from utils import logger
-from .rl import EAACD
 
 CFG_TO_RENDER_TYPE = {
     "partial": "partial_state",
@@ -69,7 +69,8 @@ class Learner:
             "rmdp",
             "generalize",
             "atari",
-            "gridworld"
+            "gridworld",
+            "mujoco"
         ]
         self.env_type = env_type
         self.save_states = save_states
@@ -229,6 +230,31 @@ class Learner:
             self.max_rollouts_per_task = 1
             self.max_trajectory_len = self.train_env._max_episode_steps
 
+        elif self.env_type == "mujoco":
+            import envs.mujoco
+
+
+            assert num_eval_tasks > 0
+            assert obseravibility in CFG_TO_RENDER_TYPE.keys()
+            if obseravibility == "full":
+                partial = False
+            elif obseravibility == "partial":
+                partial = True
+            else:
+                raise ValueError("Mujoco env currently support only vector state space")
+
+            self.train_env = MujocoEnvWrapper(gym.make(env_name), partial=partial)
+            self.train_env.seed(self.seed)
+            self.train_env.action_space.np_random.seed(self.seed)  # crucial
+
+            self.eval_env = self.train_env
+            self.eval_env.seed(self.seed + 1)
+
+            self.train_tasks = []
+            self.eval_tasks = num_eval_tasks * [None]
+
+            self.max_rollouts_per_task = 1
+            self.max_trajectory_len = self.train_env._max_episode_steps
         else:
             raise ValueError
 
@@ -472,7 +498,8 @@ class Learner:
         collected_steps = 0
         while (collected_rollouts < num_rollouts) or (collected_steps < min_steps):
             steps = 0
-
+            T1 = np.random.randint(0, 30)
+            T2 = np.random.randint(T1+30, 100)
             if self.data_collection_method in ["start_student_than_teacher", "start_beta_student_aux_than_teacher"]:
                 switch_step = np.random.randint(self.max_trajectory_len)
 
@@ -509,7 +536,7 @@ class Learner:
                 else:
                     teacher_log_prob_list = None
                     teacher_next_log_prob_list = None
-
+            obs_list = []
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
@@ -598,8 +625,17 @@ class Learner:
 
                 if random_actions or np.random.random() < self.epsilon:
                     # action = teacher_prob_action
+                    if steps < T1:
+                        # a = self.train_env.action_space.sample()
+                        a, _, _, _ = self.agent.act(obs, deterministic=False)
+                        a = [a.item()]
+                    elif steps < T2:
+                        a = [- (np.random.random()/5.0 + 0.8)]
+                    else:
+                        a = [np.random.random()/5.0 + 0.8]
                     action = ptu.FloatTensor(
-                        [self.train_env.action_space.sample()]
+                        # [self.train_env.action_space.sample()]
+                        [a]
                     )  # (1, A) for continuous action, (1) for discrete action
                     if not self.act_continuous:
                         action = F.one_hot(
@@ -673,6 +709,7 @@ class Learner:
                     reward = torch.tanh(reward)
 
                 if self.agent_arch == AGENT_ARCHS.Markov:
+                    obs_list.append(obs)
                     self.policy_storage.add_sample(
                         observation=ptu.get_numpy(obs.squeeze(dim=0)),
                         action=ptu.get_numpy(
@@ -888,6 +925,11 @@ class Learner:
                         success_rate[task_idx] = 1.0  # ever once reach
                     elif (
                         self.env_type == "gridworld"
+                        and info["reached_goal"]
+                    ):
+                        success_rate[task_idx] = 1.0  # ever once reach
+                    elif (
+                        self.env_type == "mujoco"
                         and info["reached_goal"]
                     ):
                         success_rate[task_idx] = 1.0  # ever once reach
@@ -1145,7 +1187,16 @@ class Learner:
             # logger.record_tabular(
             #     "metrics/total_steps_eval_worst", total_steps_eval_worst.mean()
             # )
-
+        elif self.env_type == "mujoco":
+            returns_eval, success_rate_eval, _, total_steps_eval = self.evaluate(self.eval_tasks, deterministic=True)
+            returns_eval = returns_eval.squeeze(-1)
+            logger.record_tabular("metrics/return_eval_avg", returns_eval.mean())
+            logger.record_tabular(
+                "metrics/total_steps_eval_avg", total_steps_eval.mean()
+            )
+            logger.record_tabular(
+                "metrics/success_rate_eval", np.mean(success_rate_eval)
+            )
         else:
             raise ValueError
 

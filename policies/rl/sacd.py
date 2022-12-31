@@ -114,7 +114,6 @@ class SACD(RLAlgorithmBase):
                 )  # (T+1, B, A)
 
             min_next_q_target = torch.min(next_q1, next_q2)
-
             min_next_q_target += self.alpha_entropy * (-new_log_probs)  # (T+1, B, A)
 
             # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)

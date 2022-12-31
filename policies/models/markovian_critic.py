@@ -50,7 +50,7 @@ class Critic_Markovian(nn.Module):
     def forward(self, observs, *inputs):
         embedded_observs = self._get_obs_embedding(observs)
 
-        q1 = self.qf1(embedded_observs)
-        q2 = self.qf2(embedded_observs)
+        q1 = self.qf1(embedded_observs, *inputs)
+        q2 = self.qf2(embedded_observs, *inputs)
 
         return q1, q2
