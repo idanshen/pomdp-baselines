@@ -576,15 +576,23 @@ class Learner:
                     else:
                         collect_from_policy = False
                 elif self.data_collection_method == "all":
-                    i = collected_rollouts % 3
-                    if i == 0:
-                        collect_from_policy = False
-                    elif i == 1:
-                        collect_from_policy = True
-                        self.agent.algo.current_policy = "aux"
+                    if self.agent.algo_name == "eaacd":
+                        i = collected_rollouts % 3
+                        if i == 0:
+                            collect_from_policy = False
+                        elif i == 1:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "aux"
+                        else:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "main"
                     else:
-                        collect_from_policy = True
-                        self.agent.algo.current_policy = "main"
+                        i = collected_rollouts % 2
+                        if i == 0:
+                            collect_from_policy = False
+                        elif i == 1:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "main"
                 elif self.data_collection_method == "both":
                     i = collected_rollouts % 2
                     if i == 0:
