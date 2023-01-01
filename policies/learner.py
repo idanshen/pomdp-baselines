@@ -303,7 +303,7 @@ class Learner:
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
-        if kwargs["algo_name"] in ["eaacd", "DAgger", "advisord", "elfd"]:
+        if kwargs["algo_name"] in ["eaacd", "DAgger", "advisord", "elfd", "eaac", "DAggerc"]:
             if kwargs['teacher_dir'] == 'oracle':
                 self.teacher = "oracle"
             else:
@@ -498,8 +498,8 @@ class Learner:
         collected_steps = 0
         while (collected_rollouts < num_rollouts) or (collected_steps < min_steps):
             steps = 0
-            T1 = np.random.randint(0, 30)
-            T2 = np.random.randint(T1+30, 100)
+            # T1 = np.random.randint(0, 30)
+            # T2 = np.random.randint(T1+30, 100)
             if self.data_collection_method in ["start_student_than_teacher", "start_beta_student_aux_than_teacher"]:
                 switch_step = np.random.randint(self.max_trajectory_len)
 
@@ -554,7 +554,11 @@ class Learner:
                         ).float()  # (1, A)
                         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
                     else:
-                        teacher_prob_action, _, teacher_log_prob_action, _ = self.teacher["main"].act(state, return_log_prob=True)
+                        if self.agent.algo.continuous_action:
+                            teacher_action, _, _, _ = self.teacher["main"].act(state, return_log_prob=True)
+                            teacher_log_prob_action = teacher_action # Not really, just so it will be saved, need to clean this code in the future
+                        else:
+                            teacher_prob_action, _, teacher_log_prob_action, _ = self.teacher["main"].act(state, return_log_prob=True)
                 else:
                     teacher_log_prob_action = None
 
@@ -625,17 +629,17 @@ class Learner:
 
                 if random_actions or np.random.random() < self.epsilon:
                     # action = teacher_prob_action
-                    if steps < T1:
-                        # a = self.train_env.action_space.sample()
-                        a, _, _, _ = self.agent.act(obs, deterministic=False)
-                        a = [a.item()]
-                    elif steps < T2:
-                        a = [- (np.random.random()/5.0 + 0.8)]
-                    else:
-                        a = [np.random.random()/5.0 + 0.8]
+                    # if steps < T1:
+                    #     # a = self.train_env.action_space.sample()
+                    #     a, _, _, _ = self.agent.act(obs, deterministic=False)
+                    #     a = [a.item()]
+                    # elif steps < T2:
+                    #     a = [- (np.random.random()/5.0 + 0.8)]
+                    # else:
+                    #     a = [np.random.random()/5.0 + 0.8]
                     action = ptu.FloatTensor(
-                        # [self.train_env.action_space.sample()]
-                        [a]
+                        [self.train_env.action_space.sample()]
+                        # [a]
                     )  # (1, A) for continuous action, (1) for discrete action
                     if not self.act_continuous:
                         action = F.one_hot(
@@ -656,7 +660,10 @@ class Learner:
                     else:
                         action, _, _, _ = self.agent.act(obs, deterministic=False)
                 else:  # collect from teacher
-                    action = teacher_prob_action
+                    if self.agent.algo.continuous_action:
+                        action = teacher_action
+                    else:
+                        action = teacher_prob_action
 
                 # 3. Take action, observe reward, next state and next obs
                 next_obs, reward, done, info = utl.env_step(
@@ -677,7 +684,11 @@ class Learner:
                             ).float()  # (1, A)
                             teacher_log_prob_next_action = torch.clip(torch.log(teacher_prob_next_action), -18.0, 18.0)
                         else:
-                            _, _, teacher_log_prob_next_action, _ = self.teacher["main"].act(next_state, return_log_prob=True)
+                            if self.agent.algo.continuous_action:
+                                teacher_action, _, _, _ = self.teacher["main"].act(state, return_log_prob=True)
+                                teacher_log_prob_next_action = teacher_action  # Not really, just so it will be saved, need to clean this code in the future
+                            else:
+                                _, _, teacher_log_prob_next_action, _ = self.teacher["main"].act(state, return_log_prob=True)
                     else:
                         teacher_log_prob_next_action = torch.zeros(1, self.act_dim,
                                                                    device=teacher_log_prob_action.device).float()

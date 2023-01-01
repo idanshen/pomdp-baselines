@@ -154,6 +154,9 @@ class Continuous_MountainCarEnv(gym.Env):
         self.observation_space = spaces.Box(
             low=self.low_state, high=self.high_state, dtype=np.float32
         )
+        self.partial_observation_space = spaces.Box(
+            low=np.array([-self.max_speed], dtype=np.float32), high=np.array([-self.max_speed], dtype=np.float32), dtype=np.float32
+        )
 
     def step(self, action: np.ndarray):
 
@@ -180,12 +183,11 @@ class Continuous_MountainCarEnv(gym.Env):
         )
 
         info = {"reached_goal": False}
-        reward = -1.2
+        reward = 0
         if terminated:
-            reward = 500.0
+            reward = 100.0
             info["reached_goal"] = True
-        reward += self._height(position)
-        # reward -= math.pow(action[0], 2) * 0.1
+        reward -= math.pow(action[0], 2) * 0.1
 
         self.state = np.array([position, velocity], dtype=np.float32)
 
@@ -202,6 +204,9 @@ class Continuous_MountainCarEnv(gym.Env):
         if self.render_mode == "human":
             self.render()
         return np.array(self.state, dtype=np.float32)
+
+    def obscure_state(self, state):
+        return np.array([state[1]])  # velocity only
 
     def _height(self, xs):
         return np.sin(3 * xs) * 0.45 + 0.55

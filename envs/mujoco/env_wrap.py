@@ -29,10 +29,7 @@ class MujocoEnvWrapper(gym.Env):
         # Reset the state, and the running total reward
         return_state, state = self.reset()
         if return_state.shape != self.observation_space.shape:
-            assert len(np.unique(self.observation_space.high)) == 1 and len(np.unique(self.observation_space.low)) == 1
-            self.observation_space = gym.spaces.Box(low=np.ones(return_state.shape) * np.unique(self.observation_space.low),
-                                                    high=np.ones(return_state.shape) * np.unique(self.observation_space.high),
-                                                    shape=return_state.shape)
+            self.observation_space = self.env.partial_observation_space
         # Number of actions
         action_shape = self.env.action_space.shape
         assert len(action_shape) <= 1  # scalar or vector actions
