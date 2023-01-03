@@ -39,7 +39,7 @@ class Actor_RNN(nn.Module):
         self.image_encoder = image_encoder
         if self.image_encoder is None:
             self.observ_embedder = utl.FeatureExtractor(
-                obs_dim, observ_embedding_size, F.relu
+                obs_dim[0], observ_embedding_size, F.relu
             )
         else:  # for pixel observation, use external encoder
             assert observ_embedding_size == 0
@@ -81,7 +81,7 @@ class Actor_RNN(nn.Module):
         ## 3. build another obs branch
         if self.image_encoder is None:
             self.current_observ_embedder = utl.FeatureExtractor(
-                obs_dim, observ_embedding_size, F.relu
+                obs_dim[0], observ_embedding_size, F.relu
             )
 
         ## 4. build policy

@@ -882,7 +882,7 @@ class Learner:
                         action, _, _, _ = self.agent.act(
                             obs, deterministic=deterministic
                         )
-                    #
+
                     # if self.teacher is not None:
                     #     if self.teacher == "oracle":
                     #         teacher_action = ptu.FloatTensor(
@@ -893,11 +893,16 @@ class Learner:
                     #         ).float()  # (1, A)
                     #         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
                     #     else:
-                    #         _, _, teacher_log_prob_action, _ = self.teacher.act(state, return_log_prob=True)
+                    #         if self.agent.algo.continuous_action:
+                    #             teacher_action, _, _, _ = self.teacher["main"].act(state, return_log_prob=True)
+                    #             teacher_log_prob_action = teacher_action  # Not really, just so it will be saved, need to clean this code in the future
+                    #         else:
+                    #             _, _, teacher_log_prob_action, _ = self.teacher["main"].act(state,
+                    #                                                                              return_log_prob=True)
                     # else:
                     #     teacher_log_prob_action = None
-                    # action = teacher_prob_action
-                    #
+                    # action = teacher_log_prob_action
+
                     # observe reward and next obs
                     next_obs, reward, done, info = utl.env_step(
                         self.eval_env, action.squeeze(dim=0)

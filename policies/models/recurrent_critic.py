@@ -37,7 +37,7 @@ class Critic_RNN(nn.Module):
         self.image_encoder = image_encoder
         if self.image_encoder is None:
             self.observ_embedder = utl.FeatureExtractor(
-                obs_dim, observ_embedding_size, F.relu
+                obs_dim[0], observ_embedding_size, F.relu
             )
         else:  # for pixel observation, use external encoder
             assert observ_embedding_size == 0
@@ -76,7 +76,7 @@ class Critic_RNN(nn.Module):
         if self.algo.continuous_action and self.image_encoder is None:
             # for vector-based continuous action problems
             self.current_shortcut_embedder = utl.FeatureExtractor(
-                obs_dim + action_dim, shortcut_embedding_size, F.relu
+                obs_dim[0] + action_dim, shortcut_embedding_size, F.relu
             )
         elif self.algo.continuous_action and self.image_encoder is not None:
             # for image-based continuous action problems
