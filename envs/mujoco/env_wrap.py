@@ -13,7 +13,7 @@ class MujocoEnvWrapper(gym.Env):
     def __init__(self, env, partial=False, observation_type=None):
         # Inscribe the environment and some of the parameters.
         self.env = env
-        self._max_episode_steps = self.env._max_episode_steps
+        self._max_episode_steps = self.env.env._max_episode_steps
         self.action_space = self.env.action_space
         self.observation_space = self.env.observation_space
         self.state_space = self.env.observation_space
