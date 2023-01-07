@@ -71,8 +71,8 @@ class SAC(RLAlgorithmBase):
 
     @staticmethod
     def forward_actor(actor, observ):
-        new_actions, _, _, log_probs = actor(observ, return_log_prob=True)
-        return new_actions, log_probs  # (T+1, B, dim), (T+1, B, 1)
+        new_actions, mean, log_std, log_probs = actor(observ, return_log_prob=True)
+        return new_actions, mean, log_std, log_probs  # (T+1, B, dim), (T+1, B, 1)
 
     def critic_loss(
         self,
@@ -94,10 +94,10 @@ class SAC(RLAlgorithmBase):
         with torch.no_grad():
             # first next_actions from current policy,
             if markov_actor:
-                new_actions, new_log_probs = actor["main"](next_observs if markov_critic else observs)
+                new_actions, new_mean, new_log_std, new_log_probs = actor["main"](next_observs if markov_critic else observs)
             else:
                 # (T+1, B, dim) including reaction to last obs
-                new_actions, new_log_probs = actor["main"](
+                new_actions, new_mean, new_log_std, new_log_probs = actor["main"](
                     prev_actions=actions,
                     rewards=rewards,
                     observs=next_observs if markov_critic else observs,
@@ -162,9 +162,9 @@ class SAC(RLAlgorithmBase):
         **kwargs,
     ):
         if markov_actor:
-            new_actions, log_probs = actor["main"](observs)
+            new_actions, mean, log_std, log_probs = actor["main"](observs)
         else:
-            new_actions, log_probs = actor["main"](
+            new_actions, mean, log_std, log_probs = actor["main"](
                 prev_actions=actions, rewards=rewards, observs=observs
             )  # (T+1, B, A)
 
@@ -192,12 +192,17 @@ class SAC(RLAlgorithmBase):
         additional_outputs = {}
         # -> negative entropy (T+1, B, 1)
         additional_outputs['negative_entropy'] = (torch.exp(log_probs) * log_probs).sum(axis=-1, keepdims=True)
+        additional_outputs['std'] = torch.exp(log_std)
+        additional_outputs['abs_mean'] = torch.abs(mean)
 
         return {"main_loss": policy_loss}, additional_outputs
 
     def update_others(self, additional_outputs, **kwargs):
         assert 'negative_entropy' in additional_outputs
         current_log_probs = additional_outputs['negative_entropy'].mean().item()
+        current_std = additional_outputs['std'].mean().item()
+        current_abs_mean = additional_outputs['abs_mean'].mean().item()
+
         if self.automatic_entropy_tuning:
             alpha_entropy_loss = -self.log_alpha_entropy.exp() * (
                 current_log_probs + self.target_entropy
@@ -208,4 +213,4 @@ class SAC(RLAlgorithmBase):
             self.alpha_entropy_optim.step()
             self.alpha_entropy = self.log_alpha_entropy.exp().item()
 
-        return {"policy_entropy": -current_log_probs, "alpha": self.alpha_entropy}
+        return {"policy_entropy": -current_log_probs, "mean_std": current_std, "average_abs_mean": current_abs_mean, "alpha": self.alpha_entropy}

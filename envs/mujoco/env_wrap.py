@@ -13,10 +13,16 @@ class MujocoEnvWrapper(gym.Env):
     def __init__(self, env, partial=False, observation_type=None):
         # Inscribe the environment and some of the parameters.
         self.env = env
-        self._max_episode_steps = self.env.env._max_episode_steps
+        self._max_episode_steps = self.env._max_episode_steps
         self.action_space = self.env.action_space
-        self.observation_space = self.env.observation_space
-        self.state_space = self.env.observation_space
+        if type(self.env.observation_space) is gym.spaces.dict.Dict:
+            self.dict_obs = True
+            self.observation_space = self.env.observation_space["observation"]
+            self.state_space = self.env.observation_space["observation"]
+        else:
+            self.dict_obs = False
+            self.observation_space = self.env.observation_space
+            self.state_space = self.env.observation_space
 
         self.partial = partial
 
@@ -28,6 +34,10 @@ class MujocoEnvWrapper(gym.Env):
 
         # Reset the state, and the running total reward
         return_state, state = self.reset()
+        # if self.dict_obs:
+        #     if return_state["observation"].shape != self.observation_space.shape:
+        #         self.observation_space = self.env.partial_observation_space["observation"]
+        # else:
         if return_state.shape != self.observation_space.shape:
             self.observation_space = self.env.partial_observation_space
         # Number of actions
@@ -43,6 +53,8 @@ class MujocoEnvWrapper(gym.Env):
         # Reset the state, and the running total reward
         # start_state = torch.tensor(self.env.reset())
         start_state = self.env.reset()
+        if self.dict_obs:
+            start_state = start_state["observation"]
         self.state = start_state  # Keep track of state, why not?
         self.total_true_reward = 0.0
         self.counter = 0.0
@@ -60,6 +72,8 @@ class MujocoEnvWrapper(gym.Env):
         # Step the environment.
         try:
             state, reward, is_done, info = self.env.step(action)
+            if self.dict_obs:
+                state = state["observation"]
         except Exception as err:
             print(err)
             print('Error in iterating environment.')

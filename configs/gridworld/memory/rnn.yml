@@ -1,4 +1,4 @@
-seed: 1
+seed: 2
 cuda: 0 # use_gpu
 env:
   env_type: gridworld
@@ -65,3 +65,9 @@ policy:
 
   DAgger:
     loss_type: CE
+
+  advisord:
+    temprature: 1.0
+
+  elfd:
+    min_v: 10000

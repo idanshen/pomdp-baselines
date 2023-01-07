@@ -607,15 +607,23 @@ class Learner:
                     else:
                         collect_from_policy = False
                 elif self.data_collection_method == "all":
-                    i = collected_rollouts % 3
-                    if i == 0:
-                        collect_from_policy = False
-                    elif i == 1:
-                        collect_from_policy = True
-                        self.agent.algo.current_policy = "aux"
+                    if self.agent.algo_name == "eaacd":
+                        i = collected_rollouts % 3
+                        if i == 0:
+                            collect_from_policy = False
+                        elif i == 1:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "aux"
+                        else:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "main"
                     else:
-                        collect_from_policy = True
-                        self.agent.algo.current_policy = "main"
+                        i = collected_rollouts % 2
+                        if i == 0:
+                            collect_from_policy = False
+                        elif i == 1:
+                            collect_from_policy = True
+                            self.agent.algo.current_policy = "main"
                 elif self.data_collection_method == "both":
                     i = collected_rollouts % 2
                     if i == 0:
@@ -628,18 +636,8 @@ class Learner:
                     raise NotImplementedError
 
                 if random_actions or np.random.random() < self.epsilon:
-                    # action = teacher_prob_action
-                    # if steps < T1:
-                    #     # a = self.train_env.action_space.sample()
-                    #     a, _, _, _ = self.agent.act(obs, deterministic=False)
-                    #     a = [a.item()]
-                    # elif steps < T2:
-                    #     a = [- (np.random.random()/5.0 + 0.8)]
-                    # else:
-                    #     a = [np.random.random()/5.0 + 0.8]
                     action = ptu.FloatTensor(
                         [self.train_env.action_space.sample()]
-                        # [a]
                     )  # (1, A) for continuous action, (1) for discrete action
                     if not self.act_continuous:
                         action = F.one_hot(
@@ -775,7 +773,7 @@ class Learner:
                         teacher_log_probs=ptu.get_numpy(torch.cat(teacher_log_prob_list, dim=0)) if teacher_log_prob_list is not None else None,  # (L, dim)
                         teacher_next_log_probs=ptu.get_numpy(torch.cat(teacher_next_log_prob_list, dim=0)) if teacher_next_log_prob_list is not None else None,  # (L, dim)
                     )
-                    acc = np.mean([np.sum(np.abs(torch.exp(i).cpu().numpy() - j.cpu().numpy()))<0.01 for i, j in zip(teacher_log_prob_list, act_list)])
+                    acc = 0.0  # np.mean([np.sum(np.abs(torch.exp(i).cpu().numpy() - j.cpu().numpy()))<0.01 for i, j in zip(teacher_log_prob_list, act_list)])
                     print(
                         f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f} acc: {acc:.2f}"
                     )
