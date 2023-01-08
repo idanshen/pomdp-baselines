@@ -576,7 +576,7 @@ class Learner:
                     else:
                         collect_from_policy = False
                 elif self.data_collection_method == "all":
-                    if self.agent.algo_name == "eaacd":
+                    if self.agent.algo_name in ["eaacd", "elfd"]:
                         i = collected_rollouts % 3
                         if i == 0:
                             collect_from_policy = False

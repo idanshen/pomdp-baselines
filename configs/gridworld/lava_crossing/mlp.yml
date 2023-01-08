@@ -3,7 +3,7 @@ cuda: 0 # use_gpu
 env:
   env_type: gridworld
   env_name: MiniGrid-LavaCrossingS15N10-v0
-  obseravibility: image_partial
+  obseravibility: image_full
   num_eval_tasks: 40
 
 train:
@@ -16,21 +16,21 @@ train:
   num_iters: 300 # number meta-training iterates
   num_init_rollouts_pool: 30 # 80 #  before training
   num_rollouts_per_iter: 5  # 1 #
-  buffer_size: 1e6 # or 1e6? old belief
+  buffer_size: 1e5 # or 1e6? old belief
 
   num_updates_per_iter: 500
   batch_size: 256 # to tune based on sampled_seq_len
   epsilon: 0.1
 
 eval:
-  log_interval: 5 # 10 num of iters
+  log_interval: 2 # 10 num of iters
   save_interval: 1 # -1
   log_tensorboard: true
 
 policy:
   seq_model: mlp
   algo_name: sacd # [td3, sac]
-  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/gridworld/MiniGrid/LavaGapS7/Markovian_sacd/alpha-0.1/gamma-0.9/New_Expert/
+  teacher_dir: oracle
 
   dqn_layers: [128, 128]
   policy_layers: [128, 128]
@@ -59,3 +59,6 @@ policy:
 
   DAgger:
     loss_type: CE
+
+  elfd:
+    min_v: 100000

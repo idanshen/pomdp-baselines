@@ -131,8 +131,8 @@ class SimpleReplayBuffer(ReplayBuffer):
         self._size = min(self._size + step, self._max_replay_buffer_size)
 
     def sample_data(self, indices):
-        self.reward_mean = self.r_sum / self._top
-        self.reward_std = sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
+        self.reward_mean = 0.0 # self.r_sum / self._top
+        self.reward_std = 0.0 # sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
         return dict(
             obs=self._observations[indices],
             act=self._actions[indices],

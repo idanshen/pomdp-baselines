@@ -4,13 +4,13 @@ env:
   env_type: gridworld
   env_name: MiniGrid-LavaCrossingS15N10-v0
   obseravibility: image_partial
-  num_eval_tasks: 20
+  num_eval_tasks: 60
   save_states: True
 
 train:
   # original rl training steps: num_iters * updates_per_iter = 1.5M
     # now makes it same as env steps
-  num_iters: 300 # 38000 # number meta-training iterates
+  num_iters: 800 # 38000 # number meta-training iterates
   num_init_rollouts_pool: 30 # 80 #  before training
   num_rollouts_per_iter: 5  # 1 #
   buffer_size: 1e6 # or 1e6? old belief
@@ -70,4 +70,4 @@ policy:
     temprature: 1.0
 
   elfd:
-    min_v: 10
+    min_v: 10000

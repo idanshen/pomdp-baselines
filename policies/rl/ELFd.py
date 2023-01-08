@@ -112,7 +112,7 @@ class ELFd(RLAlgorithmBase):
             values = (probs * min_obs_q).sum(dim=-1, keepdims=True)
             curr_obs_values = values[:-1]
             next_obs_values = values[1:]
-            next_obs_values = next_obs_values * (1.0 - dones)  # Last state get only -v(s_t) without +v(s_t+1)
+            next_obs_values = next_obs_values * (1.0 - dones[1:])  # Last state get only -v(s_t) without +v(s_t+1)
 
         return curr_obs_values, next_obs_values
 
