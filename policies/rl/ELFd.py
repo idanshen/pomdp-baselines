@@ -113,6 +113,7 @@ class ELFd(RLAlgorithmBase):
             curr_obs_values = values[:-1]
             next_obs_values = values[1:]
             next_obs_values = next_obs_values * (1.0 - dones[1:])  # Last state get only -v(s_t) without +v(s_t+1)
+            next_obs_values[-1] = 0.0  # Even if there is no done flag
 
         return curr_obs_values, next_obs_values
 
