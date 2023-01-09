@@ -300,6 +300,9 @@ class Learner:
             state_dim=self.state_dim[0],
             **kwargs,
         ).to(ptu.device)
+
+        if "load_weights" in kwargs:
+            self.agent.load_state_dict(torch.load(kwargs["load_weights"], map_location=ptu.device))
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
