@@ -26,13 +26,15 @@ class AntEnv(MujocoEnv):
         )  # make it happy, not suicidal
 
         reached_goal = False
-        if goal_reward > -0.1:
+        if goal_reward > -0.15:
             reached_goal = True
+            goal_reward += 1.0
 
         ctrl_cost = 0.1 * np.square(action).sum()
-        contact_cost = (
-                0.5 * 1e-3 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
-        )
+        contact_cost = 0.0
+        #         (
+        #         0.5 * 1e-3 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
+        # )
         survive_reward = 0.0
         reward = goal_reward - ctrl_cost - contact_cost + survive_reward
 

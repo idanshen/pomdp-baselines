@@ -122,8 +122,11 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
             touch_values = self.data.sensordata[self._touch_sensor_id] > 0.0
         elif self.touch_get_obs == "log":
             touch_values = np.log(self.data.sensordata[self._touch_sensor_id] + 1.0)
+        # observation = np.concatenate(
+        #     [robot_qpos, robot_qvel, object_qvel, achieved_goal, desired_goal, touch_values]
+        # )
         observation = np.concatenate(
-            [robot_qpos, robot_qvel, object_qvel, achieved_goal, desired_goal, touch_values]
+            [robot_qpos, robot_qvel, object_qvel, achieved_goal, desired_goal]
         )
 
         return {
@@ -250,13 +253,21 @@ class MujocoPyManipulateTouchSensorsEnv(MujocoPyManipulateEnv):
         elif self.touch_get_obs == "log":
             touch_values = np.log(self.sim.data.sensordata[self._touch_sensor_id] + 1.0)
 
+        # observation = np.concatenate(
+        #     [
+        #         robot_qpos,
+        #         robot_qvel,
+        #         object_qvel,
+        #         achieved_goal,
+        #         touch_values,
+        #     ]
+        # )
         observation = np.concatenate(
             [
                 robot_qpos,
                 robot_qvel,
                 object_qvel,
                 achieved_goal,
-                touch_values,
             ]
         )
 

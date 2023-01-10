@@ -132,7 +132,11 @@ def get_base_manipulate_env(HandEnvClass: Union[MujocoHandEnv, MujocoPyHandEnv])
                 d_pos, d_rot = self._goal_distance(achieved_goal, goal)
                 # We weigh the difference in position to avoid that `d_pos` (in meters) is completely
                 # dominated by `d_rot` (in radians).
-                return -(10.0 * d_pos + d_rot)
+                reward = -(10.0 * d_pos + d_rot)
+                success = self._is_success(achieved_goal, goal)
+                if success:
+                    reward += 1.0
+                return reward
 
         # RobotEnv methods
         # ----------------------------

@@ -191,7 +191,7 @@ class SAC(RLAlgorithmBase):
 
         additional_outputs = {}
         # -> negative entropy (T+1, B, 1)
-        additional_outputs['negative_entropy'] = (torch.exp(log_probs) * log_probs).sum(axis=-1, keepdims=True)
+        additional_outputs['negative_entropy'] = log_probs
         additional_outputs['std'] = torch.exp(log_std)
         additional_outputs['abs_mean'] = torch.abs(mean)
 
