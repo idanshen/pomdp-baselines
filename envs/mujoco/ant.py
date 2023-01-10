@@ -11,6 +11,7 @@ class AntEnv(MujocoEnv):
             xml_path = "ant.xml"
         self._goal = np.array([-1.0, 1.0])
         self._max_episode_steps = max_episode_steps
+        self.noise_coeff = 1.0
         super().__init__(
             xml_path,
             frame_skip=5,
@@ -57,6 +58,13 @@ class AntEnv(MujocoEnv):
                 self.sim.data.qvel.flat,
             ]
         )
+
+    def obscure_state(self, state):
+        if state[0] < 0.0:
+            state[:2] = state[:2] + self.np_random.uniform(
+                size=self.model.nq - 2, low=self.noise_coeff*state[0], high=self.noise_coeff*state[0]
+            )
+        return state
 
     def reset_model(self):
         qpos = np.copy(self.init_qpos)

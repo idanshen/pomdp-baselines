@@ -555,7 +555,7 @@ class Learner:
                         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
                     else:
                         if self.agent.algo.continuous_action:
-                            teacher_action, _, _, _ = self.teacher["main"].act(state, return_log_prob=True)
+                            teacher_action, _, _, _ = self.teacher["main"].act(state, deterministic=True, return_log_prob=False)
                             teacher_log_prob_action = teacher_action # Not really, just so it will be saved, need to clean this code in the future
                         else:
                             teacher_prob_action, _, teacher_log_prob_action, _ = self.teacher["main"].act(state, return_log_prob=True)
@@ -683,7 +683,7 @@ class Learner:
                             teacher_log_prob_next_action = torch.clip(torch.log(teacher_prob_next_action), -18.0, 18.0)
                         else:
                             if self.agent.algo.continuous_action:
-                                teacher_action, _, _, _ = self.teacher["main"].act(state, return_log_prob=True)
+                                teacher_action, _, _, _ = self.teacher["main"].act(state, deterministic=True, return_log_prob=False)
                                 teacher_log_prob_next_action = teacher_action  # Not really, just so it will be saved, need to clean this code in the future
                             else:
                                 _, _, teacher_log_prob_next_action, _ = self.teacher["main"].act(state, return_log_prob=True)
@@ -892,7 +892,7 @@ class Learner:
                     #         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
                     #     else:
                     #         if self.agent.algo.continuous_action:
-                    #             teacher_action, _, _, _ = self.teacher["main"].act(state, return_log_prob=True)
+                    #             teacher_action, _, _, _ = self.teacher["main"].act(state, deterministic=True, return_log_prob=False)
                     #             teacher_log_prob_action = teacher_action  # Not really, just so it will be saved, need to clean this code in the future
                     #         else:
                     #             _, _, teacher_log_prob_action, _ = self.teacher["main"].act(state,

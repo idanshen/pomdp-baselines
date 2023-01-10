@@ -92,7 +92,7 @@ class MujocoEnvWrapper(gym.Env):
         if self.partial:
             # Return type is flag used in WL code to return render for vanilla RL library.  manually overwrite the
             # none flag to indicate that this behaviour should be used.  Will break all other code...
-            return_state = self.env.obscure_state(state)
+            return_state = self.env.obscure_state(np.copy(state))
             info['state'] = state
         else:
             return_state = state

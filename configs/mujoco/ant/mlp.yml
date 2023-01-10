@@ -4,7 +4,7 @@ env:
   env_type: mujoco
   env_name: AntGoal-v0
   obseravibility: full
-  num_eval_tasks: 40
+  num_eval_tasks: 400
 
 train:
   # sample complexity: BAMDP horizon * (num_init_rollouts_pool * num_train_tasks
@@ -30,10 +30,10 @@ eval:
 policy:
   seq_model: mlp
   algo_name: sacd # [td3, sac]
-  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/AntGoal-v0/Markovian_sac/alpha-0.1/gamma-0.9/New_Expert/
+  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/AntGoal-v0/Markovian_sac/alpha-0.1/gamma-0.9/01-07:11-29:40.98/
 
-  dqn_layers: [128, 128]
-  policy_layers: [128, 128]
+  dqn_layers: [512, 256]
+  policy_layers: [512, 256]
   lr: 0.0003
   gamma: 0.9
   tau: 0.005
