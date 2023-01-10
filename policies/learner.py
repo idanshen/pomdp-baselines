@@ -12,6 +12,7 @@ from envs.gridworld.env_wrap import EnvWrapper
 from envs.mujoco.env_wrap import MujocoEnvWrapper
 from .models import AGENT_CLASSES, AGENT_ARCHS
 from torchkit.networks import ImageEncoder
+from utils import vector
 
 # Markov policy
 from buffers.simple_replay_buffer import SimpleReplayBuffer
@@ -57,6 +58,7 @@ class Learner:
         eval_envs=None,
         worst_percentile=None,
         save_states=True,
+        num_train_envs=1,
         obseravibility="full",
         **kwargs
     ):
@@ -74,6 +76,7 @@ class Learner:
         ]
         self.env_type = env_type
         self.save_states = save_states
+        self.num_train_envs = num_train_envs
 
         if self.env_type == "meta":  # meta tasks: using varibad wrapper
             from envs.meta.make_env import make_env
@@ -243,9 +246,9 @@ class Learner:
             else:
                 raise ValueError("Mujoco env currently support only vector state space")
 
-            self.train_env = MujocoEnvWrapper(gym.make(env_name), partial=partial)
+            self.train_env = vector.AsyncVectorEnv([lambda: MujocoEnvWrapper(gym.make(env_name), partial=partial)] * self.num_train_envs)
             self.train_env.seed(self.seed)
-            self.train_env.action_space.np_random.seed(self.seed)  # crucial
+            # self.train_env.action_space.np_random.seed(self.seed)  # crucial
 
             self.eval_env = self.train_env
             self.eval_env.seed(self.seed + 1)
@@ -254,7 +257,7 @@ class Learner:
             self.eval_tasks = num_eval_tasks * [None]
 
             self.max_rollouts_per_task = 1
-            self.max_trajectory_len = self.train_env._max_episode_steps
+            self.max_trajectory_len = 100 # self.train_env._max_episode_steps
         else:
             raise ValueError
 
@@ -263,12 +266,20 @@ class Learner:
             # continuous action space
             self.act_dim = self.train_env.action_space.shape[0]
             self.act_continuous = True
-        else:
-            assert self.train_env.action_space.__class__.__name__ == "Discrete"
+        elif self.train_env.action_space.__class__.__name__ == "Discrete":
             self.act_dim = self.train_env.action_space.n
             self.act_continuous = False
-        self.obs_dim = self.train_env.observation_space.shape  # include 1-dim done
-        self.state_dim = self.train_env.state_space.shape
+        else:
+            assert self.train_env.action_space.__class__.__name__ == "Tuple"
+            if self.train_env.action_space.spaces[0].__class__.__name__ == "Box":
+                # continuous action space
+                self.act_dim = self.train_env.action_space.spaces[0].shape[0]
+                self.act_continuous = True
+            elif self.train_env.action_space.spaces[0].__class__.__name__ == "Discrete":
+                self.act_dim = self.train_env.action_space.spaces[0].n
+                self.act_continuous = False
+        self.obs_dim = self.train_env.observation_space.shape[1:]  # include 1-dim done
+        self.state_dim = self.train_env.state_space.shape[1:] # TODO: can be a problem
 
         logger.log("obs_dim", self.obs_dim, "act_dim", self.act_dim)
 
@@ -323,8 +334,8 @@ class Learner:
         num_rollouts_per_iter,
         epsilon=0.1,
         num_updates_per_iter=None,
-        sampled_seq_len=None,
-        sample_weight_baseline=None,
+        sampled_seq_len=-1,
+        sample_weight_baseline=0.0,
         buffer_type=None,
         **kwargs
     ):
@@ -336,38 +347,38 @@ class Learner:
         # if int, it means absolute value; if float, it means the multiplier of collected env steps
         self.num_updates_per_iter = num_updates_per_iter
 
-        if self.agent_arch == AGENT_ARCHS.Markov:
-            self.policy_storage = SimpleReplayBuffer(
-                max_replay_buffer_size=int(buffer_size),
-                observation_dim=self.obs_dim,
-                state_dim=self.state_dim,
-                teacher_action_dim=self.act_dim,
-                action_dim=self.act_dim if self.act_continuous else 1,  # save memory
-                max_trajectory_len=self.max_trajectory_len,
-                add_timeout=False,  # no timeout storage
-            )
+        # if self.agent_arch == AGENT_ARCHS.Markov:
+        #     self.policy_storage = SimpleReplayBuffer(
+        #         max_replay_buffer_size=int(buffer_size),
+        #         observation_dim=self.obs_dim,
+        #         state_dim=self.state_dim,
+        #         teacher_action_dim=self.act_dim,
+        #         action_dim=self.act_dim if self.act_continuous else 1,  # save memory
+        #         max_trajectory_len=self.max_trajectory_len,
+        #         add_timeout=False,  # no timeout storage
+        #     )
+        #
+        # else:  # memory, memory-markov
+        if sampled_seq_len == -1:
+            sampled_seq_len = self.max_trajectory_len
 
-        else:  # memory, memory-markov
-            if sampled_seq_len == -1:
-                sampled_seq_len = self.max_trajectory_len
+        if buffer_type is None or buffer_type == SeqReplayBuffer.buffer_type:
+            buffer_class = SeqReplayBuffer
+        elif buffer_type == RAMEfficient_SeqReplayBuffer.buffer_type:
+            buffer_class = RAMEfficient_SeqReplayBuffer
+        logger.log(buffer_class)
 
-            if buffer_type is None or buffer_type == SeqReplayBuffer.buffer_type:
-                buffer_class = SeqReplayBuffer
-            elif buffer_type == RAMEfficient_SeqReplayBuffer.buffer_type:
-                buffer_class = RAMEfficient_SeqReplayBuffer
-            logger.log(buffer_class)
-
-            self.policy_storage = buffer_class(
-                max_replay_buffer_size=int(buffer_size),
-                observation_dim=self.obs_dim,
-                action_dim=self.act_dim if self.act_continuous else 1,  # save memory
-                teacher_action_dim=self.act_dim,
-                sampled_seq_len=sampled_seq_len,
-                sample_weight_baseline=sample_weight_baseline,
-                observation_type=self.train_env.observation_space.dtype,
-                state_dim=self.state_dim if self.save_states else None,
-                state_type=self.train_env.observation_space.dtype,  # TODO: fix later
-            )
+        self.policy_storage = buffer_class(
+            max_replay_buffer_size=int(buffer_size),
+            observation_dim=self.obs_dim,
+            action_dim=self.act_dim if self.act_continuous else 1,  # save memory
+            teacher_action_dim=self.act_dim,
+            sampled_seq_len=sampled_seq_len,
+            sample_weight_baseline=sample_weight_baseline,
+            observation_type=self.train_env.observation_space.dtype,
+            state_dim=self.state_dim if self.save_states else None,
+            state_type=self.train_env.observation_space.dtype,  # TODO: fix later
+        )
 
         self.batch_size = batch_size
         self.num_iters = num_iters
@@ -495,7 +506,7 @@ class Learner:
         :param min_steps: minimum number of steps to collect
         :param random_actions: whether to use policy to sample actions, or randomly sample action space
         """
-
+        t = time.time()
         before_env_steps = self._n_env_steps_total
         collected_rollouts = 0
         collected_steps = 0
@@ -515,31 +526,30 @@ class Learner:
                 obs = ptu.from_numpy(obs)  # reset
                 state = ptu.from_numpy(state)
 
-            obs = obs.reshape(1, *obs.shape)
-            state = state.reshape(1, *state.shape)
+            # obs = obs.reshape(1, *obs.shape)
+            # state = state.reshape(1, *state.shape)
             done_rollout = False
 
-            if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
-                # temporary storage
-                obs_list, act_list, rew_list, next_obs_list, term_list = (
-                    [],
-                    [],
-                    [],
-                    [],
-                    [],
-                )
+            # temporary storage
+            obs_list, act_list, rew_list, next_obs_list, term_list = (
+                [],
+                [],
+                [],
+                [],
+                [],
+            )
 
-                if self.save_states:
-                    state_list, next_state_list = [], []
-                else:
-                    state_list, next_state_list = None, None
-                if self.teacher is not None:
-                    teacher_log_prob_list = []
-                    teacher_next_log_prob_list = []
-                else:
-                    teacher_log_prob_list = None
-                    teacher_next_log_prob_list = None
-            obs_list = []
+            if self.save_states:
+                state_list, next_state_list = [], []
+            else:
+                state_list, next_state_list = None, None
+            if self.teacher is not None:
+                teacher_log_prob_list = []
+                teacher_next_log_prob_list = []
+            else:
+                teacher_log_prob_list = None
+                teacher_next_log_prob_list = None
+
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
@@ -639,9 +649,7 @@ class Learner:
                     raise NotImplementedError
 
                 if random_actions or np.random.random() < self.epsilon:
-                    action = ptu.FloatTensor(
-                        [self.train_env.action_space.sample()]
-                    )  # (1, A) for continuous action, (1) for discrete action
+                    action = ptu.FloatTensor(self.train_env.action_space.sample())  # (1, A) for continuous action, (1) for discrete action
                     if not self.act_continuous:
                         action = F.one_hot(
                             action.long(), num_classes=self.act_dim
@@ -697,7 +705,7 @@ class Learner:
                     teacher_log_prob_next_action = None
 
                 # 5. Determine terminal flag per environment
-                done_rollout = False if ptu.get_numpy(done[0][0]) == 0.0 else True
+                done_rollout = False if ptu.get_numpy(done[0]) == 0.0 else True
                 steps += 1
 
                 if self.env_type == "meta" and "is_goal_state" in dir(self.train_env.unwrapped):
@@ -710,85 +718,87 @@ class Learner:
                 else:
                     # term ignore time-out scenarios, but record early stopping
                     term = (
-                        False
+                        [[False]]*self.num_train_envs
                         if "TimeLimit.truncated" in info
                            or steps >= self.max_trajectory_len
-                        else done_rollout
+                        else [[done_rollout]]*self.num_train_envs
                     )
 
                 # 6. Save current tuple to replay data or trajectory list
                 if self.reward_clip and self.env_type == "atari":
                     reward = torch.tanh(reward)
 
-                if self.agent_arch == AGENT_ARCHS.Markov:
-                    obs_list.append(obs)
-                    self.policy_storage.add_sample(
-                        observation=ptu.get_numpy(obs.squeeze(dim=0)),
-                        action=ptu.get_numpy(
-                            action.squeeze(dim=0)
-                            if self.act_continuous
-                            else torch.argmax(
-                                action.squeeze(dim=0), dim=-1, keepdims=True
-                            )  # (1,)
-                        ),
-                        reward=ptu.get_numpy(reward.squeeze(dim=0)),
-                        terminal=np.array([term], dtype=float),
-                        next_observation=ptu.get_numpy(next_obs.squeeze(dim=0)),
-                        state=ptu.get_numpy(state.squeeze(dim=0)) if self.save_states else None,
-                        next_state=ptu.get_numpy(next_state.squeeze(dim=0)) if self.save_states else None,
-                        teacher_log_prob=ptu.get_numpy(teacher_log_prob_action.squeeze(dim=0)) if teacher_log_prob_action is not None else None,
-                        teacher_next_log_prob=ptu.get_numpy(teacher_log_prob_next_action.squeeze(dim=0)) if teacher_log_prob_next_action is not None else None,
-                    )
-                else:  # append tensors to temporary storage
-                    obs_list.append(obs)  # (1, dim)
-                    act_list.append(action)  # (1, dim)
-                    rew_list.append(reward)  # (1, dim)
-                    term_list.append(term)  # bool
-                    next_obs_list.append(next_obs)  # (1, dim)
-                    if self.save_states:
-                        state_list.append(state)
-                        next_state_list.append(next_state)
-                    if self.teacher is not None:
-                        teacher_log_prob_list.append(teacher_log_prob_action)
-                        teacher_next_log_prob_list.append(teacher_log_prob_next_action)
+                # if self.agent_arch == AGENT_ARCHS.Markov:
+                #     obs_list.append(obs)
+                #     self.policy_storage.add_sample(
+                #         observation=ptu.get_numpy(obs.squeeze(dim=0)),
+                #         action=ptu.get_numpy(
+                #             action.squeeze(dim=0)
+                #             if self.act_continuous
+                #             else torch.argmax(
+                #                 action.squeeze(dim=0), dim=-1, keepdims=True
+                #             )  # (1,)
+                #         ),
+                #         reward=ptu.get_numpy(reward.squeeze(dim=0)),
+                #         terminal=np.array([term], dtype=float),
+                #         next_observation=ptu.get_numpy(next_obs.squeeze(dim=0)),
+                #         state=ptu.get_numpy(state.squeeze(dim=0)) if self.save_states else None,
+                #         next_state=ptu.get_numpy(next_state.squeeze(dim=0)) if self.save_states else None,
+                #         teacher_log_prob=ptu.get_numpy(teacher_log_prob_action.squeeze(dim=0)) if teacher_log_prob_action is not None else None,
+                #         teacher_next_log_prob=ptu.get_numpy(teacher_log_prob_next_action.squeeze(dim=0)) if teacher_log_prob_next_action is not None else None,
+                #     )
+                # else:  # append tensors to temporary storage
+                obs_list.append(obs.view(-1, *obs.shape))  # (1, dim)
+                act_list.append(action.view(-1, *action.shape))  # (1, dim)
+                rew_list.append(reward.T.view(-1, *reward.T.shape))  # (1, dim)
+                term_list.append(np.array(term))  # bool
+                next_obs_list.append(next_obs.view(-1, *next_obs.shape))  # (1, dim)
+                if self.save_states:
+                    state_list.append(state.view(-1, *state.shape))
+                    next_state_list.append(next_state.view(-1, *next_state.shape))
+                if self.teacher is not None:
+                    teacher_log_prob_list.append(teacher_log_prob_action.view(-1, *teacher_log_prob_action.shape))
+                    teacher_next_log_prob_list.append(teacher_log_prob_next_action.view(-1, *teacher_log_prob_next_action.shape))
 
                 # 7. set: obs <- next_obs
                 obs = next_obs.clone()
                 state = next_state.clone()
 
-            if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
-                if len(obs_list) > 1:
-                    # add collected sequence to buffer
-                    act_buffer = torch.cat(act_list, dim=0)  # (L, dim)
-                    if not self.act_continuous:
-                        act_buffer = torch.argmax(
-                            act_buffer, dim=-1, keepdims=True
-                        )  # (L, 1)
+            # if self.agent_arch in [AGENT_ARCHS.Memory, AGENT_ARCHS.Memory_Markov]:
+            assert len(obs_list) >= 1
+            # add collected sequence to buffer
+            act_buffer = torch.cat(act_list, dim=0)  # (L, dim)
+            if not self.act_continuous:
+                act_buffer = torch.argmax(
+                    act_buffer, dim=-1, keepdims=True
+                )  # (L, 1)
 
-                    self.policy_storage.add_episode(
-                        observations=ptu.get_numpy(torch.cat(obs_list, dim=0)),  # (L, dim)
-                        actions=ptu.get_numpy(act_buffer),  # (L, dim)
-                        rewards=ptu.get_numpy(torch.cat(rew_list, dim=0)),  # (L, dim)
-                        terminals=np.array(term_list).reshape(-1, 1),  # (L, 1)
-                        next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)),  # (L, dim)
-                        states=ptu.get_numpy(torch.cat(state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
-                        next_states=ptu.get_numpy(torch.cat(next_state_list, dim=0)) if next_state_list is not None else None,  # (L, dim)
-                        teacher_log_probs=ptu.get_numpy(torch.cat(teacher_log_prob_list, dim=0)) if teacher_log_prob_list is not None else None,  # (L, dim)
-                        teacher_next_log_probs=ptu.get_numpy(torch.cat(teacher_next_log_prob_list, dim=0)) if teacher_next_log_prob_list is not None else None,  # (L, dim)
-                    )
-                    acc = 0.0  # np.mean([np.sum(np.abs(torch.exp(i).cpu().numpy() - j.cpu().numpy()))<0.01 for i, j in zip(teacher_log_prob_list, act_list)])
-                    print(
-                        f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum().item():.2f} acc: {acc:.2f}"
-                    )
-                    self._n_env_steps_total += steps
-                    collected_steps += steps
-                    self._n_rollouts_total += 1
-                    collected_rollouts += 1
-            else:
-                self._n_env_steps_total += steps
-                collected_steps += steps
-                self._n_rollouts_total += 1
-                collected_rollouts += 1
+            for i in range(self.num_train_envs):
+                self.policy_storage.add_episode(
+                    observations=ptu.get_numpy(torch.cat(obs_list, dim=0)[:,i,:]),  # (L, dim)
+                    actions=ptu.get_numpy(act_buffer[:,i,:]),  # (L, dim)
+                    rewards=ptu.get_numpy(torch.cat(rew_list, dim=0)[:,i,:]),  # (L, dim)
+                    terminals=np.array(term_list)[:,i,:],  # (L, 1)
+                    next_observations=ptu.get_numpy(torch.cat(next_obs_list, dim=0)[:,i,:]),  # (L, dim)
+                    states=ptu.get_numpy(torch.cat(state_list, dim=0)[:,i,:]) if next_state_list is not None else None,  # (L, dim)
+                    next_states=ptu.get_numpy(torch.cat(next_state_list, dim=0)[:,i,:]) if next_state_list is not None else None,  # (L, dim)
+                    teacher_log_probs=ptu.get_numpy(torch.cat(teacher_log_prob_list, dim=0)[:,i,:]) if teacher_log_prob_list is not None else None,  # (L, dim)
+                    teacher_next_log_probs=ptu.get_numpy(torch.cat(teacher_next_log_prob_list, dim=0)[:,i,:]) if teacher_next_log_prob_list is not None else None,  # (L, dim)
+                )
+            acc = 0.0  # np.mean([np.sum(np.abs(torch.exp(i).cpu().numpy() - j.cpu().numpy()))<0.01 for i, j in zip(teacher_log_prob_list, act_list)])
+            print(
+                f"steps: {steps} term: {term} ret: {torch.cat(rew_list, dim=0).sum(dim=0).mean().item():.2f} acc: {acc:.2f}"
+            )
+            self._n_env_steps_total += self.num_train_envs*steps
+            collected_steps += self.num_train_envs*steps
+            self._n_rollouts_total += self.num_train_envs
+            collected_rollouts += self.num_train_envs
+            # else:
+            #     self._n_env_steps_total += steps
+            #     collected_steps += steps
+            #     self._n_rollouts_total += 1
+            #     collected_rollouts += 1
+        print("time took:", str(time.time()-t))
         return self._n_env_steps_total - before_env_steps
 
     def sample_rl_batch(self, batch_size):

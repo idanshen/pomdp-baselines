@@ -5,6 +5,7 @@ env:
   env_name: HandManipulatePen_ContinuousTouchSensors-v1
   obseravibility: full
   num_eval_tasks: 120
+  num_train_envs: 5
 
 train:
   # sample complexity: BAMDP horizon * (num_init_rollouts_pool * num_train_tasks

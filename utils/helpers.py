@@ -79,11 +79,11 @@ def env_step(env, action):
     next_obs, reward, done, info = env.step(action)
 
     # move to torch
-    next_obs = ptu.from_numpy(next_obs).view(-1, *next_obs.shape)
-    reward = ptu.FloatTensor([reward]).view(-1, 1)
-    done = ptu.from_numpy(np.array(done, dtype=int)).view(-1, 1)
+    next_obs = ptu.from_numpy(next_obs)
+    reward = ptu.FloatTensor([reward])
+    done = ptu.from_numpy(np.array(done, dtype=int))
     if 'state' in info:
-        info['state'] = ptu.from_numpy(info['state']).view(-1, *info['state'].shape)
+        info['state'] = ptu.from_numpy(info['state'])
 
     return next_obs, reward, done, info
 

@@ -67,8 +67,8 @@ class SeqReplayBuffer:
         # See _compute_valid_starts function for details
         self._valid_starts = np.zeros((max_replay_buffer_size), dtype=np.float32)
 
-        assert sampled_seq_len >= 2
-        assert sample_weight_baseline >= 0.0
+        # assert sampled_seq_len >= 2
+        # assert sample_weight_baseline >= 0.0
         self._sampled_seq_len = sampled_seq_len
         self._sample_weight_baseline = sample_weight_baseline
 
@@ -193,9 +193,15 @@ class SeqReplayBuffer:
 
         return np.random.choice(valid_starts_indices, size=batch_size, p=sample_weights)
 
+    def random_batch(self, batch_size):
+        """batch of unordered transitions"""
+        # assert self.can_sample_batch(batch_size)
+        indices = np.random.randint(0, self._top, batch_size)
+        return self._sample_data(indices)
+
     def _sample_data(self, indices):
-        self.reward_mean = self.r_sum / self._top
-        self.reward_std = sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
+        self.reward_mean = 0.0 # self.r_sum / self._top
+        self.reward_std = 0.0 # sqrt((self.r_sumsq/self._top) - (self.reward_mean*self.reward_mean))
         return_dict = dict(
             obs=self._observations[indices],
             act=self._actions[indices],
