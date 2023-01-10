@@ -29,13 +29,14 @@ class VectorEnv(gym.Env):
         Action space of a single environment.
     """
 
-    def __init__(self, num_envs, observation_space, state_space, action_space):
+    def __init__(self, num_envs, observation_space, state_space, action_space, max_episode_steps):
         super(VectorEnv, self).__init__()
         self.num_envs = num_envs
         self.is_vector_env = True
         self.observation_space = batch_space(observation_space, n=num_envs)
         self.state_space = batch_space(state_space, n=num_envs)
         self.action_space = Tuple((action_space,) * num_envs)
+        self._max_episode_steps = max_episode_steps
 
         self.closed = False
         self.viewer = None

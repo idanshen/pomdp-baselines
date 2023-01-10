@@ -169,8 +169,8 @@ os.makedirs(os.path.join(logger.get_dir(), "save"))
 
 yaml = YAML(typ='safe', pure=True)
 cfg = yaml.load(Path(f"{log_folder}/variant_{pid}.yml"))
-wandb.init(project="test-project", entity="tsrl", config=cfg, mode="disabled")
-# wandb.init(project="test-project", entity="tsrl", config=cfg)
+# wandb.init(project="test-project", entity="tsrl", config=cfg, mode="disabled")
+wandb.init(project="test-project", entity="tsrl", config=cfg)
 
 # start training
 learner = Learner(

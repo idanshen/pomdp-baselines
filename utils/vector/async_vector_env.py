@@ -95,6 +95,7 @@ class AsyncVectorEnv(VectorEnv):
         self.copy = copy
         dummy_env = env_fns[0]()
         self.metadata = dummy_env.metadata
+        max_episode_steps = dummy_env._max_episode_steps
 
         if (observation_space is None) or (action_space is None):
             observation_space = observation_space or dummy_env.observation_space
@@ -107,6 +108,7 @@ class AsyncVectorEnv(VectorEnv):
             observation_space=observation_space,
             state_space=state_space,
             action_space=action_space,
+            max_episode_steps=max_episode_steps,
         )
 
         if self.shared_memory:

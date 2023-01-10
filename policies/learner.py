@@ -253,11 +253,13 @@ class Learner:
             self.eval_env = self.train_env
             self.eval_env.seed(self.seed + 1)
 
+            self.dummy_env = MujocoEnvWrapper(gym.make(env_name), partial=partial)
+
             self.train_tasks = []
             self.eval_tasks = num_eval_tasks * [None]
 
             self.max_rollouts_per_task = 1
-            self.max_trajectory_len = 100 # self.train_env._max_episode_steps
+            self.max_trajectory_len = self.train_env._max_episode_steps
         else:
             raise ValueError
 
@@ -378,6 +380,8 @@ class Learner:
             observation_type=self.train_env.observation_space.dtype,
             state_dim=self.state_dim if self.save_states else None,
             state_type=self.train_env.observation_space.dtype,  # TODO: fix later
+            HER=True,
+            dummy_env=self.dummy_env,
         )
 
         self.batch_size = batch_size
@@ -506,7 +510,7 @@ class Learner:
         :param min_steps: minimum number of steps to collect
         :param random_actions: whether to use policy to sample actions, or randomly sample action space
         """
-        t = time.time()
+        # t = time.time()
         before_env_steps = self._n_env_steps_total
         collected_rollouts = 0
         collected_steps = 0
@@ -798,7 +802,7 @@ class Learner:
             #     collected_steps += steps
             #     self._n_rollouts_total += 1
             #     collected_rollouts += 1
-        print("time took:", str(time.time()-t))
+        # print("time took:", str(time.time()-t))
         return self._n_env_steps_total - before_env_steps
 
     def sample_rl_batch(self, batch_size):
@@ -839,9 +843,9 @@ class Learner:
 
         num_episodes = self.max_rollouts_per_task  # k
         # max_trajectory_len = k*H
-        returns_per_episode = np.zeros((len(tasks), num_episodes))
-        success_rate = np.zeros(len(tasks))
-        total_steps = np.zeros(len(tasks))
+        returns_per_episode = np.zeros((len(tasks) // self.num_train_envs, num_episodes))
+        success_rate = np.zeros(len(tasks) // self.num_train_envs)
+        total_steps = np.zeros(len(tasks) // self.num_train_envs)
 
         if self.env_type == "meta":
             num_steps_per_episode = self.eval_env.unwrapped._max_episode_steps  # H
@@ -856,7 +860,7 @@ class Learner:
             num_steps_per_episode = self.eval_env._max_episode_steps
             observations = None
 
-        for task_idx, task in enumerate(tasks):
+        for task_idx in range(len(tasks) // self.num_train_envs):
             step = 0
 
             if self.env_type == "meta" and self.eval_env.n_tasks is not None:
@@ -868,15 +872,16 @@ class Learner:
                 obs = ptu.from_numpy(obs)  # reset
                 state = ptu.from_numpy(state)
 
-            obs = obs.reshape(1, *obs.shape)
-            state = state.reshape(1, state.shape[-1])
+            # obs = obs.reshape(1, *obs.shape)
+            # state = state.reshape(1, state.shape[-1])
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # assume initial reward = 0.0
                 action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy)
 
             for episode_idx in range(num_episodes):
-                running_reward = 0.0
+                running_reward = np.zeros(self.num_train_envs)
+                running_success = np.zeros(self.num_train_envs)
                 # obs_list = [obs]
                 # action_list = [action]
                 # img_list = [self.eval_env.env.special_render()]
@@ -920,13 +925,13 @@ class Learner:
                     )
 
                     # add raw reward
-                    running_reward += reward.item()
+                    running_reward += ptu.get_numpy(reward).squeeze()
                     # clip reward if necessary for policy inputs
                     if self.reward_clip and self.env_type == "atari":
                         reward = torch.tanh(reward)
 
                     step += 1
-                    done_rollout = False if ptu.get_numpy(done[0][0]) == 0.0 else True
+                    done_rollout = False if ptu.get_numpy(done[0]) == 0.0 else True
 
                     if self.env_type == "meta":
                         observations[task_idx, step, :] = ptu.get_numpy(
@@ -957,9 +962,11 @@ class Learner:
                         success_rate[task_idx] = 1.0  # ever once reach
                     elif (
                         self.env_type == "mujoco"
-                        and info["reached_goal"]
                     ):
-                        success_rate[task_idx] = 1.0  # ever once reach
+                        for i, res in enumerate(info["reached_goal"]):
+                            if res:
+                                running_success[i] = 1.0
+                        # success_rate[task_idx] = np.mean(info["reached_goal"])  # ever once reach
                     elif "success" in info and info["success"] == True:  # keytodoor
                         success_rate[task_idx] = 1.0
 
@@ -970,7 +977,8 @@ class Learner:
                         # for early stopping meta episode like Ant-Dir
                         break
 
-                returns_per_episode[task_idx, episode_idx] = running_reward
+                returns_per_episode[task_idx, episode_idx] = np.mean(running_reward)
+                success_rate[task_idx] = np.mean(running_success)
             total_steps[task_idx] = step
         self.agent.train()
 

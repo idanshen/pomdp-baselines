@@ -15,6 +15,8 @@ class SeqReplayBuffer:
         sampled_seq_len: int,
         sample_weight_baseline: float,
         state_dim=None,
+        HER=False,
+        dummy_env=None,
         **kwargs
     ):
         """
@@ -73,6 +75,11 @@ class SeqReplayBuffer:
         self._sample_weight_baseline = sample_weight_baseline
 
         self.clear()
+
+        self.HER = HER
+        if HER:
+            assert dummy_env is not None
+            self.dummy_env = dummy_env
 
         # reward statistics
         self.r_sum = 0
@@ -135,8 +142,30 @@ class SeqReplayBuffer:
         self._size = min(self._size + seq_len, self._max_replay_buffer_size)
 
         # update statistics
-        self.r_sum += rewards.sum()
-        self.r_sumsq += (rewards ** 2).sum()
+        # self.r_sum += rewards.sum()
+        # self.r_sumsq += (rewards ** 2).sum()
+
+        if self.HER and np.random.random() < 0.5:
+            obs_aug, next_obs_aug, rewards_aug = self.dummy_env.env.relabel_rewards(observations, next_observations)
+            indices = list(
+                np.arange(self._top, self._top + seq_len) % self._max_replay_buffer_size
+            )
+
+            self._observations[indices] = obs_aug
+            self._actions[indices] = actions
+            self._teacher_log_probs[indices] = teacher_log_probs
+            self._teacher_next_log_probs[indices] = teacher_next_log_probs
+            self._rewards[indices] = rewards_aug
+            self._terminals[indices] = terminals
+            self._next_observations[indices] = next_obs_aug
+            if self._save_states:
+                self._states[indices] = states
+                self._next_states[indices] = next_states
+
+            self._valid_starts[indices] = self._compute_valid_starts(seq_len)
+
+            self._top = (self._top + seq_len) % self._max_replay_buffer_size
+            self._size = min(self._size + seq_len, self._max_replay_buffer_size)
 
     def _compute_valid_starts(self, seq_len):
         valid_starts = np.ones((seq_len), dtype=float)
@@ -196,7 +225,7 @@ class SeqReplayBuffer:
     def random_batch(self, batch_size):
         """batch of unordered transitions"""
         # assert self.can_sample_batch(batch_size)
-        indices = np.random.randint(0, self._top, batch_size)
+        indices = np.random.randint(0, self._size, batch_size)
         return self._sample_data(indices)
 
     def _sample_data(self, indices):

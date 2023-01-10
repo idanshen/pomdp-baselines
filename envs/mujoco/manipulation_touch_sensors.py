@@ -135,6 +135,17 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
             "desired_goal": desired_goal.copy(),
         }
 
+    def relabel_rewards(self, obs, next_obs):
+        new_desired_goal = obs[-1, -14:-7]
+        rewards = []
+        for i in range(obs.shape[0]):
+            rewards.append(self.compute_reward(obs[i,-14:-7], new_desired_goal, None))
+        obs_aug = np.copy(obs)
+        obs_aug[:,-7:] = new_desired_goal
+        next_obs_aug = np.copy(next_obs)
+        next_obs_aug[:,-7:] = new_desired_goal
+        return obs_aug, next_obs_aug, np.array([rewards]).T
+
 
 class MujocoPyManipulateTouchSensorsEnv(MujocoPyManipulateEnv):
     def __init__(
