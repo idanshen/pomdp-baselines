@@ -37,7 +37,6 @@ def plot_robustness_ablation():
 
     fig, axes = plt.subplots(1, 1, figsize=(30, 5))
 
-
     axes.set_title("Lava Crossing")
     sns.lineplot(ax=axes, data=crossing_df, x="env steps", y="success rate", hue="method")
     axes.get_legend().remove()
@@ -91,11 +90,13 @@ def plot_main_res():
     crossing_df = pd.read_csv(os.path.join(cache_dir_path_crossing, "processed.csv"))
     dfs = [tiger_door_df, memory_df, crossing_df]
     titles = ['Tiger Door', 'Memory', 'Lava Crossing']
+    IL_res = [0.5, 0.5, 0.88]
     fig, axes = plt.subplots(1, 4, figsize=(30, 5))
 
     for i in range(3):
         axes[i].set_title(titles[i])
         sns.lineplot(ax=axes[i], data=dfs[i], x="env steps", y="success rate", hue="method")
+        axes[i].axhline(IL_res[i], ls='--', c="gray", label="IL")
         axes[i].get_legend().remove()
         box = axes[i].get_position()
         axes[i].set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
@@ -106,13 +107,14 @@ def plot_main_res():
     axes[3].set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
 
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc='lower center', ncol=3, columnspacing=10)
+    fig.legend(handles, labels, loc='lower center', ncol=4, columnspacing=10)
 
     plt.show()
     print("done")
 
 
 if __name__ == "__main__":
-  plot_data_collection()
-  # plot_robustness_ablation()
-  # plot_sac_ablation()
+    plot_main_res()
+    # plot_data_collection()
+    # plot_robustness_ablation()
+    # plot_sac_ablation()
