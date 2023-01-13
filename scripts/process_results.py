@@ -10,12 +10,14 @@ import glob
 from tqdm import *
 
 if __name__ == "__main__":
-  max_steps = 90000
+  max_steps = 40000
   interval_size = 2000
 
   all_runs = []
 
-  cache_dir_path = ".cache/data_collection_ablation/MiniGrid-TigerDoorEnv-v0"
+  cache_dir_path = ".cache/robustness_ablation/MiniGrid-LavaCrossingS15N10-v0"
+
+  # cache_dir_path = ".cache/data_collection_ablation/MiniGrid-TigerDoorEnv-v0"
   # cache_dir_path = ".cache/data_collection_ablation/MiniGrid-LavaCrossingS15N10-v0"
 
   # cache_dir_path = ".cache/main_res/MiniGrid-TigerDoorEnv-v0"

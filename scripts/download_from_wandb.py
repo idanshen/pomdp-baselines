@@ -9,7 +9,7 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "data_collection_ablation"
+    dir_name = "robustness_ablation"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
@@ -17,9 +17,9 @@ if __name__ == "__main__":
         "MiniGrid-LavaCrossingS15N10-v0"
     ]
     data_collection_methods = [
-        "only_student",
+        # "only_student",
         "all",
-        "start_beta_student_aux_than_teacher",
+        # "start_beta_student_aux_than_teacher",
     ]
     algo_names = [
         # "advisord",
@@ -31,18 +31,21 @@ if __name__ == "__main__":
         # "Target",
         # "Fixed"
     ]
+
+    initial_coefficients = [0.01, 0.3, 0.6, 1]
     os.makedirs(".cache", exist_ok=True)
     script_name = os.path.splitext(os.path.basename(__file__))[0]
     cache_dir_path = f".cache/{dir_name}"
     os.makedirs(cache_dir_path, exist_ok=True)
 
-    for env_name, method, algo, tuning in (itertools.product(envs, data_collection_methods, algo_names, tuning_methods)):
-        runs = api.runs("tsrl/old results",
+    for env_name, method, algo, tuning, init_coeff in (itertools.product(envs, data_collection_methods, algo_names, tuning_methods, initial_coefficients)):
+        runs = api.runs("tsrl/ablation",
                         filters={
                             "config.env.env_name": env_name,
                             "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
                             "config.policy.eaacd.coefficient_tuning": tuning,
+                            "config.policy.eaacd.initial_coefficient": init_coeff,
                         })
 
         # if algo == "advisord":
@@ -57,7 +60,7 @@ if __name__ == "__main__":
         # else:
         #     raise ValueError
 
-        title = method
+        title = str(init_coeff)
 
         cache_path = os.path.join(cache_dir_path, env_name, title)
         os.makedirs(cache_path, exist_ok=True)

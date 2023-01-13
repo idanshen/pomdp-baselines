@@ -11,6 +11,27 @@ script_name = os.path.splitext(os.path.basename(__file__))[0]
 sns.set(font_scale=1.5)
 
 
+def plot_robustness_ablation():
+    cache_dir_path_crossing = ".cache/robustness_ablation/MiniGrid-LavaCrossingS15N10-v0"
+    crossing_df = pd.read_csv(os.path.join(cache_dir_path_crossing, "processed.csv"))
+
+    fig, axes = plt.subplots(1, 1, figsize=(30, 5))
+
+
+    axes.set_title("Lava Crossing")
+    sns.lineplot(ax=axes, data=crossing_df, x="env steps", y="success rate", hue="method")
+    axes.get_legend().remove()
+    box = axes.get_position()
+    axes.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
+    axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
+
+    handles, labels = axes.get_legend_handles_labels()
+    fig.legend(handles, labels, loc='lower center', ncol=4)
+
+    plt.show()
+    print("done")
+
+
 def plot_data_collection():
     cache_dir_path_tiger_door = ".cache/data_collection_ablation/MiniGrid-TigerDoorEnv-v0"
     tiger_door_df = pd.read_csv(os.path.join(cache_dir_path_tiger_door, "processed.csv"))
@@ -72,4 +93,5 @@ def plot_main_res():
 
 
 if __name__ == "__main__":
-  plot_data_collection()
+  # plot_data_collection()
+  plot_robustness_ablation()
