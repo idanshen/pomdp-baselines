@@ -23,3 +23,5 @@ policies/wandb/
 .idea/
 wandb/
 /mujoco/
+
+nohup.out
