@@ -3,8 +3,9 @@ cuda: 0 # use_gpu
 env:
   env_type: mujoco
   env_name: AntGoal-v0
-  obseravibility: full
-  num_eval_tasks: 120
+  obseravibility: partial
+  num_eval_tasks: 1000
+  num_train_envs: 60
 
 train:
   # sample complexity: BAMDP horizon * (num_init_rollouts_pool * num_train_tasks
@@ -13,7 +14,7 @@ train:
     # 1.5k iters -> 4.55M steps (17 gpu hrs, 31 cpu hrs)
   # original rl training steps: num_iters * updates_per_iter = 1.5M
     # now makes it same as env steps
-  num_iters: 7200 # number meta-training iterates
+  num_iters: 100000 # number meta-training iterates
   num_init_rollouts_pool: 100 # 80 #  before training
   num_rollouts_per_iter: 10  # 1 #
   buffer_size: 4e6 # or 1e6? old belief
@@ -21,10 +22,11 @@ train:
   num_updates_per_iter: 1000
   batch_size: 1024 # to tune based on sampled_seq_len
   epsilon: 0.1
+  HER: False
 
 eval:
   log_interval: 30 # 10 num of iters
-  save_interval: 2 # -1
+  save_interval: 1 # -1
   log_tensorboard: true
 
 policy:

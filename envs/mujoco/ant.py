@@ -1,7 +1,7 @@
 import numpy as np
-
+from gym import spaces
 from .mujoco_env import MujocoEnv
-
+from collections import deque
 
 class AntEnv(MujocoEnv):
     def __init__(self, use_low_gear_ratio=False, max_episode_steps=100):
@@ -12,11 +12,15 @@ class AntEnv(MujocoEnv):
         self._goal = np.array([-1.0, 1.0])
         self._max_episode_steps = max_episode_steps
         self.noise_coeff = 1.0
+        self.state_queue = deque([np.array([0.0, 0.0])]*10, 10)
         super().__init__(
             xml_path,
             frame_skip=5,
             automatically_set_obs_and_action_space=True,
         )
+        self.partial_observation_space = spaces.Box(
+                    -np.inf, np.inf, shape=(47,), dtype="float64"
+                )
 
     def step(self, action):
         self.do_simulation(action, self.frame_skip)
@@ -63,10 +67,15 @@ class AntEnv(MujocoEnv):
 
     def obscure_state(self, state):
         if state[0] < 0.0:
-            state[:2] = state[:2] + self.np_random.uniform(
-                size=self.model.nq - 2, low=self.noise_coeff*state[0], high=self.noise_coeff*state[0]
+            new_loc = state[:2] + self.np_random.uniform(
+                size=2, low=self.noise_coeff*state[0], high=self.noise_coeff*state[0]
             )
-        return state
+        else:
+            new_loc = state[:2]
+        self.state_queue.pop()
+        self.state_queue.appendleft(new_loc)
+        obs = np.concatenate([np.hstack(self.state_queue), state[2:]])
+        return obs
 
     def reset_model(self):
         qpos = np.copy(self.init_qpos)
