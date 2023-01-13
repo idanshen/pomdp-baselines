@@ -616,7 +616,7 @@ class EAACD(RLAlgorithmBase):
         if self.coefficient_tuning == "EIPO":
             # obj_aproximation = self.approximate_objective_difference(markov_critic, markov_actor, critic, actor, observs, actions, rewards)
             objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
-            normalized_obj_difference = objective_difference / reward_std
+            normalized_obj_difference = objective_difference / 1.0
             self.log_coefficient = torch.clip(self.log_coefficient + self.coefficient_lr * normalized_obj_difference, np.log(self.min_coefficent),
                                               np.log(self.max_coefficent))
             self.coefficient = self.log_coefficient.exp().item()

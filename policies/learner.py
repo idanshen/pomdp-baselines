@@ -293,6 +293,7 @@ class Learner:
         num_init_rollouts_pool,
         num_rollouts_per_iter,
         epsilon=0.1,
+        eval_epsilon=0.0,
         num_updates_per_iter=None,
         sampled_seq_len=None,
         sample_weight_baseline=None,
@@ -345,6 +346,7 @@ class Learner:
         self.num_init_rollouts_pool = num_init_rollouts_pool
         self.num_rollouts_per_iter = num_rollouts_per_iter
         self.epsilon = epsilon
+        self.eval_epsilon = eval_epsilon
 
         total_rollouts = num_init_rollouts_pool + num_iters * num_rollouts_per_iter
         self.n_env_steps_total = self.max_trajectory_len * total_rollouts
@@ -830,18 +832,29 @@ class Learner:
                 # action_list = [action]
                 # img_list = [self.eval_env.env.special_render()]
                 for _ in range(num_steps_per_episode):
-                    if self.agent_arch == AGENT_ARCHS.Memory:
-                        (action, _, _, _), internal_state = self.agent.act(
-                            prev_internal_state=internal_state,
-                            prev_action=action,
-                            reward=reward,
-                            obs=obs,
-                            deterministic=deterministic,
-                        )
+
+                    if np.random.random() < self.eval_epsilon:
+                        # action = teacher_prob_action
+                        action = ptu.FloatTensor(
+                            [self.train_env.action_space.sample()]
+                        )  # (1, A) for continuous action, (1) for discrete action
+                        if not self.act_continuous:
+                            action = F.one_hot(
+                                action.long(), num_classes=self.act_dim
+                            ).float()  # (1, A)
                     else:
-                        action, _, _, _ = self.agent.act(
-                            obs, deterministic=deterministic
-                        )
+                        if self.agent_arch == AGENT_ARCHS.Memory:
+                            (action, _, _, _), internal_state = self.agent.act(
+                                prev_internal_state=internal_state,
+                                prev_action=action,
+                                reward=reward,
+                                obs=obs,
+                                deterministic=deterministic,
+                            )
+                        else:
+                            action, _, _, _ = self.agent.act(
+                                obs, deterministic=deterministic
+                            )
                     #
                     # if self.teacher is not None:
                     #     if self.teacher == "oracle":
