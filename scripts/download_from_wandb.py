@@ -9,43 +9,46 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "robustness_ablation"
+    dir_name = "sac_ablation"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
         # "MiniGrid-MemoryS11-v0",
-        "MiniGrid-LavaCrossingS15N10-v0"
+        # "MiniGrid-LavaCrossingS15N10-v0",
+        "AntGoal-v0"
     ]
     data_collection_methods = [
-        # "only_student",
-        "all",
+        "only_student",
+        # "all",
         # "start_beta_student_aux_than_teacher",
     ]
     algo_names = [
         # "advisord",
-        "eaacd",
+        # "eaacd",
+        # "eaac",
+        "sac",
     ]
 
     tuning_methods = [
-        "EIPO",
+        # "EIPO",
         # "Target",
-        # "Fixed"
+        "Fixed"
     ]
 
-    initial_coefficients = [0.01, 0.3, 0.6, 1]
+    # initial_coefficients = [0.01, 0.3, 0.6, 1]
     os.makedirs(".cache", exist_ok=True)
     script_name = os.path.splitext(os.path.basename(__file__))[0]
     cache_dir_path = f".cache/{dir_name}"
     os.makedirs(cache_dir_path, exist_ok=True)
 
-    for env_name, method, algo, tuning, init_coeff in (itertools.product(envs, data_collection_methods, algo_names, tuning_methods, initial_coefficients)):
-        runs = api.runs("tsrl/ablation",
+    for env_name, method, algo, tuning in (itertools.product(envs, data_collection_methods, algo_names, tuning_methods)):
+        runs = api.runs("tsrl/test-project",
                         filters={
                             "config.env.env_name": env_name,
                             "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
-                            "config.policy.eaacd.coefficient_tuning": tuning,
-                            "config.policy.eaacd.initial_coefficient": init_coeff,
+                            "config.policy.eaac.coefficient_tuning": tuning,
+                            # "config.policy.eaacd.initial_coefficient": init_coeff,
                         })
 
         # if algo == "advisord":
@@ -60,7 +63,7 @@ if __name__ == "__main__":
         # else:
         #     raise ValueError
 
-        title = str(init_coeff)
+        title = tuning
 
         cache_path = os.path.join(cache_dir_path, env_name, title)
         os.makedirs(cache_path, exist_ok=True)

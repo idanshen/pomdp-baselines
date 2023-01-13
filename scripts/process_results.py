@@ -10,12 +10,14 @@ import glob
 from tqdm import *
 
 if __name__ == "__main__":
-  max_steps = 40000
-  interval_size = 2000
+  max_steps = 7700000
+  interval_size = 100000
 
   all_runs = []
 
-  cache_dir_path = ".cache/robustness_ablation/MiniGrid-LavaCrossingS15N10-v0"
+  cache_dir_path = ".cache/sac_ablation/AntGoal-v0"
+
+  # cache_dir_path = ".cache/robustness_ablation/MiniGrid-LavaCrossingS15N10-v0"
 
   # cache_dir_path = ".cache/data_collection_ablation/MiniGrid-TigerDoorEnv-v0"
   # cache_dir_path = ".cache/data_collection_ablation/MiniGrid-LavaCrossingS15N10-v0"
@@ -41,7 +43,7 @@ if __name__ == "__main__":
           "metrics/success_rate_eval": "success rate"})
       raw_run_df = raw_run_df[raw_run_df["env steps"] <= max_steps]
       # raw_run_df = raw_run_df.append(pd.DataFrame({"env steps": max_steps, "success rate": raw_run_df["success rate"].values[-1]}, index={raw_run_df.index[-1]}))
-      raw_run_df = raw_run_df.append(pd.DataFrame({"env_step": max_steps, "success_rate": 1.0}, index={raw_run_df.index[-1]}))
+      # raw_run_df = raw_run_df.append(pd.DataFrame({"env_step": max_steps, "success_rate": 1.0}, index={raw_run_df.index[-1]}))
 
       raw_run_df["env steps"] = pd.cut(raw_run_df['env steps'],
                                       bins=np.linspace(0, max_steps, max_steps // interval_size +1),
