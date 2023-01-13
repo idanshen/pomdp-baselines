@@ -150,18 +150,18 @@ class Actor_RNN(nn.Module):
         return actions
 
     @torch.no_grad()
-    def get_initial_info(self):
+    def get_initial_info(self, batch_size=1):
         # here we assume batch_size = 1
 
         ## here we set the ndim = 2 for action and reward for compatibility
-        prev_action = ptu.zeros((1, self.action_dim)).float()
-        reward = ptu.zeros((1, 1)).float()
+        prev_action = ptu.zeros((batch_size, self.action_dim)).float()
+        reward = ptu.zeros((batch_size, 1)).float()
 
-        hidden_state = ptu.zeros((self.num_layers, 1, self.rnn_hidden_size)).float()
+        hidden_state = ptu.zeros((self.num_layers, batch_size, self.rnn_hidden_size)).float()
         if self.encoder == GRU_name:
             internal_state = hidden_state
         else:
-            cell_state = ptu.zeros((self.num_layers, 1, self.rnn_hidden_size)).float()
+            cell_state = ptu.zeros((self.num_layers, batch_size, self.rnn_hidden_size)).float()
             internal_state = (hidden_state, cell_state)
 
         return prev_action, reward, internal_state
@@ -190,6 +190,7 @@ class Actor_RNN(nn.Module):
             observs=obs,
             initial_internal_state=prev_internal_state,
         )
+
         # 2. another branch for current obs
         curr_embed = self._get_shortcut_obs_embedding(obs)  # (1, B, dim)
 

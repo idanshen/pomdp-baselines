@@ -108,8 +108,8 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         self.actor_target = deepcopy(self.actor)
 
     @torch.no_grad()
-    def get_initial_info(self, key):
-        return self.actor["main"].get_initial_info()
+    def get_initial_info(self, key, batch_size):
+        return self.actor["main"].get_initial_info(batch_size)
 
     @torch.no_grad()
     def act(

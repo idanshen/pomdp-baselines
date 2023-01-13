@@ -19,7 +19,7 @@ register(
     id=f"HandManipulatePen_ContinuousTouchSensors-v1",
     entry_point="envs.mujoco.manipulation_touch_sensors:MujocoHandPenTouchSensorsEnv",
     kwargs={
-            "target_position": "random",
+            "target_position": "ignore",
             "target_rotation": "xyz",
             "touch_get_obs": "sensordata",
             "reward_type": "Dense",

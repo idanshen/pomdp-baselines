@@ -94,6 +94,9 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
                 ),
             )
         )
+        self.partial_observation_space = spaces.Box(
+                    -np.inf, np.inf, shape=self.obscure_state(obs["observation"]).shape, dtype="float64"
+                )
 
     def _render_callback(self):
         super()._render_callback()
@@ -134,6 +137,23 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
             "achieved_goal": achieved_goal.copy(),
             "desired_goal": desired_goal.copy(),
         }
+
+    def obscure_state(self, obs):
+        robot_qpos_qvel = obs[:48]
+        desired_goal = obs[-7:]
+        touch_values = []  # get touch sensor readings. if there is one, set value to 1
+
+        if self.touch_get_obs == "sensordata":
+            touch_values = self.data.sensordata[self._touch_sensor_id]
+        elif self.touch_get_obs == "boolean":
+            touch_values = self.data.sensordata[self._touch_sensor_id] > 0.0
+        elif self.touch_get_obs == "log":
+            touch_values = np.log(self.data.sensordata[self._touch_sensor_id] + 1.0)
+
+        observation = np.concatenate(
+            [robot_qpos_qvel, desired_goal, touch_values]
+        )
+        return observation
 
     def relabel_rewards(self, obs, next_obs):
         new_desired_goal = obs[-1, -14:-7]

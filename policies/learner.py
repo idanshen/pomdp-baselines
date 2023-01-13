@@ -246,7 +246,7 @@ class Learner:
             else:
                 raise ValueError("Mujoco env currently support only vector state space")
 
-            self.train_env = vector.AsyncVectorEnv([lambda: MujocoEnvWrapper(gym.make(env_name), partial=partial)] * self.num_train_envs)
+            self.train_env = vector.AsyncVectorEnv([lambda: MujocoEnvWrapper(gym.make(env_name), partial=partial, normalize_obs=False)] * self.num_train_envs)
             self.train_env.seed(self.seed)
             # self.train_env.action_space.np_random.seed(self.seed)  # crucial
 
@@ -336,6 +336,7 @@ class Learner:
         num_rollouts_per_iter,
         epsilon=0.1,
         num_updates_per_iter=None,
+        HER=False,
         sampled_seq_len=-1,
         sample_weight_baseline=0.0,
         buffer_type=None,
@@ -380,7 +381,7 @@ class Learner:
             observation_type=self.train_env.observation_space.dtype,
             state_dim=self.state_dim if self.save_states else None,
             state_type=self.train_env.observation_space.dtype,  # TODO: fix later
-            HER=True,
+            HER=HER,
             dummy_env=self.dummy_env,
         )
 
@@ -557,7 +558,7 @@ class Learner:
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # get hidden state at timestep=0, None for markov
                 # NOTE: assume initial reward = 0.0 (no need to clip)
-                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy)
+                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy, self.num_train_envs)
 
             while not done_rollout:
                 # 1. Collect teacher action for the current state
@@ -662,6 +663,8 @@ class Learner:
                     # policy takes hidden state as input for memory-based actor,
                     # while takes obs for markov actor
                     if self.agent_arch == AGENT_ARCHS.Memory:
+                        if reward.shape[-1] != 1:
+                            reward = reward.T
                         (action, _, log_prob, _), internal_state = self.agent.act(
                             prev_internal_state=internal_state,
                             prev_action=action,
@@ -687,7 +690,7 @@ class Learner:
                 # 4. Collect teacher action for the next state. If last state than append vector of zeroes.
                 # TODO: can be done in more efficient way in the next iteration
                 if self.teacher is not None:
-                    if not done.item():
+                    if not done[0].item():
                         if self.teacher == "oracle":
                             teacher_next_action = ptu.FloatTensor(
                                 [self.train_env.env.query_expert()[0]]
@@ -703,7 +706,7 @@ class Learner:
                             else:
                                 _, _, teacher_log_prob_next_action, _ = self.teacher["main"].act(state, return_log_prob=True)
                     else:
-                        teacher_log_prob_next_action = torch.zeros(1, self.act_dim,
+                        teacher_log_prob_next_action = torch.zeros(self.num_train_envs, self.act_dim,
                                                                    device=teacher_log_prob_action.device).float()
                 else:
                     teacher_log_prob_next_action = None
@@ -877,7 +880,7 @@ class Learner:
 
             if self.agent_arch == AGENT_ARCHS.Memory:
                 # assume initial reward = 0.0
-                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy)
+                action, reward, internal_state = self.agent.get_initial_info(self.agent.algo.current_policy, self.num_train_envs)
 
             for episode_idx in range(num_episodes):
                 running_reward = np.zeros(self.num_train_envs)
@@ -887,6 +890,8 @@ class Learner:
                 # img_list = [self.eval_env.env.special_render()]
                 for _ in range(num_steps_per_episode):
                     if self.agent_arch == AGENT_ARCHS.Memory:
+                        if reward.shape[-1] != 1:
+                            reward = reward.T
                         (action, _, _, _), internal_state = self.agent.act(
                             prev_internal_state=internal_state,
                             prev_action=action,

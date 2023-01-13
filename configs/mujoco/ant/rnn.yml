@@ -5,17 +5,17 @@ env:
   env_name: AntGoal-v0
   obseravibility: full
   num_eval_tasks: 40
-  save_states: True
+  num_train_envs: 5
 
 train:
   # original rl training steps: num_iters * updates_per_iter = 1.5M
     # now makes it same as env steps
   num_iters: 3600 # 38000 # number meta-training iterates
   num_init_rollouts_pool: 30 # 80 #  before training
-  num_rollouts_per_iter: 5  # 1 #
+  num_rollouts_per_iter: 10  # 1 #
   buffer_size: 2e6 # or 1e6? old belief
 
-  num_updates_per_iter: 500
+  num_updates_per_iter: 1000
   batch_size: 128 # to tune based on sampled_seq_len
   sampled_seq_len: 10 # -1 is all, or positive integer
   sample_weight_baseline: 0.0

@@ -9,12 +9,49 @@ from gym.spaces.box import Box as Continuous
 from copy import deepcopy
 
 
+class RunningMeanStd(object):
+    def __init__(self, epsilon=1e-4, shape=()):
+        """
+        calulates the running mean and std of a data stream
+        https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm
+        :param epsilon: (float) helps with arithmetic issues
+        :param shape: (tuple) the shape of the data stream's output
+        """
+        self.mean = np.zeros(shape, 'float64')
+        self.var = np.ones(shape, 'float64')
+        self.count = epsilon
+
+    def update(self, arr):
+        batch_mean = np.mean(arr, axis=0)
+        batch_var = np.var(arr, axis=0)
+        batch_count = arr.shape[0]
+        self.update_from_moments(batch_mean, batch_var, batch_count)
+
+    def update_from_moments(self, batch_mean, batch_var, batch_count):
+        delta = batch_mean - self.mean
+        tot_count = self.count + batch_count
+
+        new_mean = self.mean + delta * batch_count / tot_count
+        m_a = self.var * self.count
+        m_b = batch_var * batch_count
+        m_2 = m_a + m_b + np.square(delta) * self.count * batch_count / (self.count + batch_count)
+        new_var = m_2 / (self.count + batch_count)
+
+        new_count = batch_count + self.count
+
+        self.mean = new_mean
+        self.var = new_var
+        self.count = new_count
+
+
 class MujocoEnvWrapper(gym.Env):
-    def __init__(self, env, partial=False, observation_type=None):
+    def __init__(self, env, partial=False, observation_type=None, normalize_obs=False):
         # Inscribe the environment and some of the parameters.
         self.env = env
         self._max_episode_steps = self.env._max_episode_steps
         self.action_space = self.env.action_space
+        self.norm_obs = False
+
         if type(self.env.observation_space) is gym.spaces.dict.Dict:
             self.dict_obs = True
             self.observation_space = self.env.observation_space["observation"]
@@ -49,6 +86,20 @@ class MujocoEnvWrapper(gym.Env):
         # Running total reward (set to 0.0 at resets).
         self.total_true_reward = 0.0
 
+        self.epsilon = 1e-6
+        self.norm_obs = normalize_obs
+        if self.norm_obs:
+            self.obs_rms = RunningMeanStd(shape=self.observation_space.shape)
+
+    def normalize_obs(self, obs: np.ndarray) -> np.ndarray:
+        """
+        Normalize observations using this VecNormalize's observations statistics.
+        Calling this method does not update statistics.
+        """
+        if self.norm_obs:
+            obs = (obs - self.obs_rms.mean) / np.sqrt(self.obs_rms.var + self.epsilon)
+        return obs
+
     def reset(self):
         # Reset the state, and the running total reward
         # start_state = torch.tensor(self.env.reset())
@@ -66,6 +117,7 @@ class MujocoEnvWrapper(gym.Env):
             return_state = start_state
             state = start_state
 
+        return_state = self.normalize_obs(return_state)
         return return_state, state
 
     def step(self, action):
@@ -98,4 +150,12 @@ class MujocoEnvWrapper(gym.Env):
             return_state = state
             info['state'] = state
 
+        if self.norm_obs:
+            self.obs_rms.update(return_state)
+        return_state = self.normalize_obs(return_state)
+
         return return_state, float(reward), is_done, info
+
+    def seed(self, seed=None):
+        np.random.seed(seed=seed)
+        return self.env.seed(seed)
