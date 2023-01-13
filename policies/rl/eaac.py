@@ -432,6 +432,8 @@ class EAAC(RLAlgorithmBase):
             self.coefficient_optim.zero_grad()
             coefficient_loss.backward()
             self.coefficient_optim.step()
+            with torch.no_grad():
+                self.log_coefficient.clamp_(np.log(self.min_coefficent), np.log(self.max_coefficent))
             self.coefficient = self.log_coefficient.exp().item()
         if self.coefficient_tuning == "EIPO":
             objective_difference = self.estimate_objective_difference()  # J(pi_{E+I}) - J(pi_{E})
