@@ -21,7 +21,7 @@ train:
   sample_weight_baseline: 0.0
   data_collection_method: only_student
   epsilon: 0.1
-  eval_epsilon: 0.02
+  eval_epsilon: 0.0
 
 eval:
   log_interval: 1 # 10 num of iters
@@ -57,12 +57,12 @@ policy:
 
   eaacd:
     initial_coefficient: 0.01
-    coefficient_tuning: EIPO # Can be Fixed, Target, EIPO
-    target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
+    coefficient_tuning: Target # Can be Fixed, Target, EIPO
+    target_coefficient: 0.3 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.003
     split_q: True
     min_coefficient: 0.01
-    max_coefficient: 6.0
+    max_coefficient: 3.0
 
   DAgger:
     loss_type: CE
