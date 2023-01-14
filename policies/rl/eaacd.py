@@ -608,7 +608,7 @@ class EAACD(RLAlgorithmBase):
         objective_difference = 0.0
         normalized_obj_difference = 0.0
         if self.coefficient_tuning == "Target":
-            coefficient_loss = self.log_coefficient.exp() * (current_cross_entropy - self.target_coefficient)
+            coefficient_loss = -self.log_coefficient.exp() * (current_cross_entropy - self.target_coefficient)
             self.coefficient_optim.zero_grad()
             coefficient_loss.backward()
             self.coefficient_optim.step()
