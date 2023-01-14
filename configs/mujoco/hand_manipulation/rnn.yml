@@ -21,7 +21,7 @@ train:
   sample_weight_baseline: 0.0
   data_collection_method: only_student
   epsilon: 0.1
-  HER: False
+  HER: True
 
 eval:
   log_interval: 30 # 10 num of iters

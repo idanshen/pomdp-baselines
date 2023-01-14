@@ -14,7 +14,7 @@ train:
     # 1.5k iters -> 4.55M steps (17 gpu hrs, 31 cpu hrs)
   # original rl training steps: num_iters * updates_per_iter = 1.5M
     # now makes it same as env steps
-  num_iters: 100000 # number meta-training iterates
+  num_iters: 10000 # number meta-training iterates
   num_init_rollouts_pool: 100 # 80 #  before training
   num_rollouts_per_iter: 10  # 1 #
   buffer_size: 4e6 # or 1e6? old belief
@@ -25,7 +25,7 @@ train:
   HER: False
 
 eval:
-  log_interval: 30 # 10 num of iters
+  log_interval: 15 # 10 num of iters
   save_interval: 1 # -1
   log_tensorboard: true
 
@@ -52,10 +52,11 @@ policy:
     alpha_lr: 0.0003
 
   eaac:
+    entropy_alpha: 0.1
     initial_coefficient: 0.3
     coefficient_tuning: Target # Can be Fixed, Target, EIPO
-    target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
-    coefficient_lr: 0.0003
+    target_coefficient: 0.0 # Relevant for 'Target' coefficient tuning
+    coefficient_lr: 0.0001
     split_q: True
     min_coefficient: 0.01
     max_coefficient: 3.0
