@@ -90,12 +90,17 @@ def plot_main_res():
     crossing_df = pd.read_csv(os.path.join(cache_dir_path_crossing, "processed.csv"))
     dfs = [tiger_door_df, memory_df, crossing_df]
     titles = ['Tiger Door', 'Memory', 'Lava Crossing']
+    hue_order = [
+        "Ours",
+        "COSIL",
+        "ADVISOR",
+    ]
     IL_res = [0.5, 0.5, 0.88]
     fig, axes = plt.subplots(1, 4, figsize=(30, 5))
 
     for i in range(3):
         axes[i].set_title(titles[i])
-        sns.lineplot(ax=axes[i], data=dfs[i], x="env steps", y="success rate", hue="method")
+        sns.lineplot(ax=axes[i], data=dfs[i], x="env steps", y="success rate", hue="method", hue_order=hue_order)
         axes[i].axhline(IL_res[i], ls='--', c="gray", label="IL")
         axes[i].get_legend().remove()
         box = axes[i].get_position()
