@@ -319,8 +319,8 @@ class Learner:
         logger.log(self.agent)
 
         self.reward_clip = reward_clip  # for atari
-        if kwargs["algo_name"] in ["eaacd", "DAgger", "advisord", "elfd", "eaac", "DAggerc"]:
-        # if kwargs["algo_name"] in ["eaacd", "DAgger", "advisord", "elfd", "eaac", "DAggerc", "sac"]:
+        if kwargs["algo_name"] in ["eaacd", "DAgger", "advisord", "advisorc", "elfd", "eaac", "DAggerc"]:
+        # if kwargs["algo_name"] in ["eaacd", "DAgger", "advisord", "advisorc", "elfd", "eaac", "DAggerc", "sac"]:
             if kwargs['teacher_dir'] == 'oracle':
                 self.teacher = "oracle"
             else:

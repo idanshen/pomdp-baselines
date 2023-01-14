@@ -4,6 +4,7 @@ from .sacd import SACD
 from .eaacd import EAACD
 from .dagger import DAgger
 from .ADVISORd import ADVISORd
+from .ADVISORc import ADVISORc
 from .ELFd import ELFd
 from .daggerc import DAggerc
 from .eaac import EAAC
@@ -15,6 +16,7 @@ RL_ALGORITHMS = {
     EAACD.name: EAACD,
     DAgger.name: DAgger,
     ADVISORd.name: ADVISORd,
+    ADVISORc.name: ADVISORc,
     ELFd.name: ELFd,
     DAggerc.name: DAggerc,
     EAAC.name: EAAC

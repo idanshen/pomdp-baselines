@@ -61,7 +61,7 @@ policy:
     min_coefficient: 0.01
     max_coefficient: 3.0
 
-  advisord:
+  advisorc:
     temprature: 1.0
 
   elfd:
