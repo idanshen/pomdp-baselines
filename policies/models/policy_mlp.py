@@ -53,7 +53,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
 
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              action_dim=action_dim,
-                                             state_dim=self.state_dim)
+                                             obs_dim=self.obs_dim)
 
         # Markov q networks
         self.critic = torch.nn.ModuleDict({key: Critic_Markovian(

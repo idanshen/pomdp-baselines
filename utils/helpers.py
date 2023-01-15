@@ -13,6 +13,8 @@ import policies.models as md
 from ruamel.yaml import YAML
 import glob
 
+from torchkit.networks import ImageEncoder
+
 
 def load_teacher(teacher_dir: str, state_dim, act_dim):
     assert teacher_dir is not None
@@ -25,11 +27,19 @@ def load_teacher(teacher_dir: str, state_dim, act_dim):
     agent_class, rnn_encoder_type = parse_seq_model(
         v['policy']['seq_model'],
         v['policy']['seq_model'] if 'seperate' in v['policy'] else True)
+
+    if 'image_encoder' in v['policy']:  # catch, keytodoor
+        image_encoder_fn = lambda: ImageEncoder(
+            image_shape=state_dim, **v['policy']['image_encoder']
+        )
+    else:
+        image_encoder_fn = lambda: None
+
     teacher = agent_class(
         encoder=rnn_encoder_type,
         obs_dim=state_dim,
         action_dim=act_dim,
-        image_encoder_fn=lambda: None,
+        image_encoder_fn=image_encoder_fn,
         **v['policy'],
     ).to(ptu.device)
     models = glob.glob(teacher_dir + "save/*")
@@ -37,7 +47,7 @@ def load_teacher(teacher_dir: str, state_dim, act_dim):
     teacher.load_state_dict(torch.load(model_path, map_location=ptu.device))
     for param in teacher.parameters():
         param.requires_grad = False
-    return teacher.policy
+    return teacher.policy, teacher.critic
 
 
 def get_grad_norm(model):

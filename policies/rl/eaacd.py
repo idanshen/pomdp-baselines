@@ -27,7 +27,7 @@ class EAACD(RLAlgorithmBase):
             target_coefficient=None,
             coefficient_lr=3e-4,
             action_dim=None,
-            state_dim=None,
+            obs_dim=None,
             teacher_dir=None,
             min_coefficient=0.01,
             max_coefficient=3.0,

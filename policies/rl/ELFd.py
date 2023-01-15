@@ -24,11 +24,12 @@ class ELFd(RLAlgorithmBase):
             self,
             min_v=0.0,
             action_dim=None,
-            state_dim=None,
-            teacher_dir=None,
+            obs_dim=None,
+            imitation_policy_dir=None,
     ):
         super().__init__()
         self.action_dim = action_dim
+        self.imitation_policy, self.imitation_critic = utl.load_teacher(imitation_policy_dir, state_dim=obs_dim, act_dim=action_dim)
         self.min_v = min_v
 
     def build_actor(self, input_size, action_dim, hidden_sizes, **kwargs):
@@ -42,13 +43,7 @@ class ELFd(RLAlgorithmBase):
             hidden_sizes=hidden_sizes,
             **kwargs,
         )
-        aux_actor = CategoricalPolicy(
-            obs_dim=input_size,
-            action_dim=action_dim,
-            hidden_sizes=hidden_sizes,
-            **kwargs,
-        )
-        actors = nn.ModuleDict({"main_actor": main_actor, "aux_actor": aux_actor})
+        actors = nn.ModuleDict({"main_actor": main_actor})
         return actors
 
     def build_critic(self, hidden_sizes, input_size=None, obs_dim=None, action_dim=None):
@@ -65,13 +60,7 @@ class ELFd(RLAlgorithmBase):
         main_qf2 = FlattenMlp(
             input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
         )
-        aux_qf1 = FlattenMlp(
-            input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-        )
-        aux_qf2 = FlattenMlp(
-            input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-        )
-        qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2, "aux_qf1": aux_qf1, "aux_qf2": aux_qf2})
+        qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2})
         return qfs
 
     def select_action(self, actor, observ, deterministic: bool, return_log_prob: bool):
@@ -86,13 +75,13 @@ class ELFd(RLAlgorithmBase):
     @torch.no_grad()
     def calculate_follower_values(self, markov_actor, markov_critic, actor, critic, observs, next_observs, actions, rewards, dones):
         if markov_actor:
-            curr_obs_probs, curr_obs_log_probs = actor["aux"](observs)
-            curr_obs_q1, curr_obs_q2 = critic["aux"](observs)
+            curr_obs_probs, curr_obs_log_probs = self.imitation_policy["main"](observs)
+            curr_obs_q1, curr_obs_q2 = self.imitation_critic["main"](observs)
             min_curr_obs_q = torch.min(curr_obs_q1, curr_obs_q2)
             curr_obs_values = (curr_obs_probs * min_curr_obs_q).sum(dim=-1, keepdims=True)
 
-            next_obs_probs, next_obs_log_probs = actor["aux"](next_observs)
-            next_obs_q1, next_obs_q2 = critic["aux"](next_observs)
+            next_obs_probs, next_obs_log_probs = self.imitation_policy["main"](next_observs)
+            next_obs_q1, next_obs_q2 = self.imitation_critic["main"](next_observs)
             min_next_obs_q = torch.min(next_obs_q1, next_obs_q2)
             next_obs_values = (next_obs_probs * min_next_obs_q).sum(dim=-1, keepdims=True)
             next_obs_values = next_obs_values * (1.0 - dones)  # Last state get only -v(s_t) without +v(s_t+1)
@@ -155,27 +144,7 @@ class ELFd(RLAlgorithmBase):
                                                          teacher_log_probs=teacher_log_probs,
                                                          teacher_next_log_probs=teacher_next_log_probs,
                                                          **kwargs)
-        aux_qf1_loss, aux_qf2_loss = self._critic_loss("aux",
-                                                         markov_actor=markov_actor,
-                                                         markov_critic=markov_critic,
-                                                         actor=actor,
-                                                         actor_target=actor_target,
-                                                         critic=critic,
-                                                         critic_target=critic_target,
-                                                         observs=observs,
-                                                         actions=actions,
-                                                         rewards=rewards,
-                                                         dones=dones,
-                                                         gamma=gamma,
-                                                         next_observs=next_observs,
-                                                         states=states,
-                                                         next_states=next_states,
-                                                         teacher_log_probs=teacher_log_probs,
-                                                         teacher_next_log_probs=teacher_next_log_probs,
-                                                         **kwargs)
-        loss_dict_q1 = {"main_loss": main_qf1_loss, "aux_loss": aux_qf1_loss}
-        loss_dict_q2 = {"main_loss": main_qf2_loss, "aux_loss": aux_qf2_loss}
-        return loss_dict_q1, loss_dict_q2
+        return {"main_loss": main_qf1_loss}, {"main_loss": main_qf2_loss}
 
     def _critic_loss(
             self,
@@ -232,17 +201,16 @@ class ELFd(RLAlgorithmBase):
                 rewards_aug = torch.clone(rewards)
                 dones_n = torch.clone(dones)
 
-            if key == "main":  # Augment reward with value function of the follower
-                values_curr_obs, values_next_obs = self.calculate_follower_values(markov_actor=markov_actor,
-                                                                                  markov_critic=markov_critic,
-                                                                                  actor=actor,
-                                                                                  critic=critic,
-                                                                                  observs=observs,
-                                                                                  next_observs=next_observs,
-                                                                                  actions=actions,
-                                                                                  rewards=rewards,
-                                                                                  dones=dones)
-                rewards_aug += values_next_obs - values_curr_obs
+            values_curr_obs, values_next_obs = self.calculate_follower_values(markov_actor=markov_actor,
+                                                                              markov_critic=markov_critic,
+                                                                              actor=actor,
+                                                                              critic=critic,
+                                                                              observs=observs,
+                                                                              next_observs=next_observs,
+                                                                              actions=actions,
+                                                                              rewards=rewards,
+                                                                              dones=dones)
+            rewards_aug += gamma * values_next_obs - values_curr_obs
 
             # q_target: (T, B, 1)
             q_target = rewards_aug + (1.0 - dones_n) * gamma * min_next_q_target  # next q
@@ -322,24 +290,7 @@ class ELFd(RLAlgorithmBase):
             dones=dones,
             **kwargs
         )
-        aux_policy_loss, aux_additional_ouputs = self._actor_loss(
-            "aux",
-            markov_actor=markov_actor,
-            markov_critic=markov_critic,
-            actor=actor,
-            actor_target=actor_target,
-            critic=critic,
-            critic_target=critic_target,
-            observs=observs,
-            next_observs=next_observs,
-            actions=actions,
-            rewards=rewards,
-            states=states,
-            teacher_log_probs=teacher_log_probs,
-            dones=dones,
-            **kwargs
-        )
-        return {"main_loss": main_policy_loss, "aux_loss": aux_policy_loss}, {**main_additional_ouputs, **aux_additional_ouputs}
+        return {"main_loss": main_policy_loss}, main_additional_ouputs
 
     def _actor_loss(
             self,
@@ -359,57 +310,45 @@ class ELFd(RLAlgorithmBase):
             dones=None,
             **kwargs
     ):
-        if key == "aux":  # Follower policy is trained used pure Imitation Learning loss (CE)
-            if markov_actor:
-                new_probs, log_probs = actor[key](observs)
-            else:
-                new_probs, log_probs = actor[key](
-                    prev_actions=actions, rewards=rewards, observs=observs
-                )  # (T+1, B, A).
-
-            policy_loss = -torch.sum(torch.exp(teacher_log_probs) * torch.log(new_probs), dim=1).unsqueeze(dim=1)
-            if not markov_critic:
-                policy_loss = policy_loss[:-1]  # (T,B,1) remove the last obs
+        if markov_actor:
+            new_probs, log_probs = actor[key](observs)
         else:
-            if markov_actor:
-                new_probs, log_probs = actor[key](observs)
-            else:
-                new_probs, log_probs = actor[key](
-                    prev_actions=actions, rewards=rewards, observs=observs
-                )  # (T+1, B, A).
+            new_probs, log_probs = actor[key](
+                prev_actions=actions, rewards=rewards, observs=observs
+            )  # (T+1, B, A).
 
-            if markov_critic:
-                q1, q2 = critic[key](observs)
-            else:
-                q1, q2 = critic[key](
-                    prev_actions=actions,
-                    rewards=rewards,
-                    observs=observs,
-                    current_actions=new_probs,
-                )  # (T+1, B, A)
+        if markov_critic:
+            q1, q2 = critic[key](observs)
+        else:
+            q1, q2 = critic[key](
+                prev_actions=actions,
+                rewards=rewards,
+                observs=observs,
+                current_actions=new_probs,
+            )  # (T+1, B, A)
 
-            min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
-            env_loss = -min_q_new_actions
-            env_loss += log_probs
-            env_loss = (new_probs * env_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
-            CE_loss = -torch.sum(torch.exp(teacher_log_probs) * torch.log(new_probs), dim=-1, keepdim=True) # (T+1,B,1)
+        min_q_new_actions = torch.min(q1, q2)  # (T+1,B,A)
+        env_loss = -min_q_new_actions
+        env_loss += log_probs
+        env_loss = (new_probs * env_loss).sum(axis=-1, keepdims=True)  # (T+1,B,1)
+        CE_loss = -torch.sum(torch.exp(teacher_log_probs) * torch.log(new_probs), dim=-1, keepdim=True) # (T+1,B,1)
 
-            values_curr_obs, values_next_obs = self.calculate_follower_values(markov_actor=markov_actor,
-                                                                              markov_critic=markov_critic,
-                                                                              actor=actor,
-                                                                              critic=critic,
-                                                                              observs=observs,
-                                                                              next_observs=next_observs,
-                                                                              actions=actions,
-                                                                              rewards=rewards,
-                                                                              dones=dones)
-            mask = torch.zeros_like(values_curr_obs)
-            mask[values_curr_obs > self.min_v] = 1.0
+        values_curr_obs, values_next_obs = self.calculate_follower_values(markov_actor=markov_actor,
+                                                                          markov_critic=markov_critic,
+                                                                          actor=actor,
+                                                                          critic=critic,
+                                                                          observs=observs,
+                                                                          next_observs=next_observs,
+                                                                          actions=actions,
+                                                                          rewards=rewards,
+                                                                          dones=dones)
+        mask = torch.zeros_like(values_curr_obs)
+        mask[values_curr_obs > self.min_v] = 1.0
 
-            if not markov_critic:
-                env_loss = env_loss[:-1]  # (T,B,1) remove the last obs
-                CE_loss = CE_loss[:-1]  # (T,B,1) remove the last obs
-            policy_loss = env_loss + mask * CE_loss
+        if not markov_critic:
+            env_loss = env_loss[:-1]  # (T,B,1) remove the last obs
+            CE_loss = CE_loss[:-1]  # (T,B,1) remove the last obs
+        policy_loss = env_loss + mask * CE_loss
 
         if not markov_actor:
             assert 'masks' in kwargs
@@ -430,18 +369,8 @@ class ELFd(RLAlgorithmBase):
     def update_others(self, additional_outputs, **kwargs):
         assert 'negative_entropy' in additional_outputs
         assert 'negative_cross_entropy' in additional_outputs
-        assert 'aux_accuracy' in additional_outputs
         current_entropy = -additional_outputs['negative_entropy'].mean().item()
         current_cross_entropy = -additional_outputs['negative_cross_entropy'].mean().item()
-        aux_accuracy = additional_outputs['aux_accuracy'].cpu().numpy().mean().item()
         output_dict = {"cross_entropy": current_cross_entropy,
-                       "policy_entropy": current_entropy,
-                       'aux_accuracy': aux_accuracy}
+                       "policy_entropy": current_entropy,}
         return output_dict
-
-    def get_acting_policy_key(self):
-        return self.current_policy
-
-    @property
-    def model_keys(self):
-        return {"actor": ["main", "aux"], "critic": ["main", "aux"]}

@@ -281,7 +281,7 @@ class Learner:
             if kwargs['teacher_dir'] == 'oracle':
                 self.teacher = "oracle"
             else:
-                self.teacher = utl.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
+                self.teacher, _ = utl.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
         else:
             self.teacher = None
 

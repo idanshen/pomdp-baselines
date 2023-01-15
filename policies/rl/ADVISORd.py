@@ -24,7 +24,7 @@ class ADVISORd(RLAlgorithmBase):
             self,
             temprature=1.0,
             action_dim=None,
-            state_dim=None,
+            obs_dim=None,
             teacher_dir=None,
     ):
         super().__init__()
