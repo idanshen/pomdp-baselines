@@ -26,6 +26,7 @@ class ELFd(RLAlgorithmBase):
             action_dim=None,
             obs_dim=None,
             imitation_policy_dir=None,
+            **kwargs
     ):
         super().__init__()
         self.action_dim = action_dim
@@ -86,12 +87,12 @@ class ELFd(RLAlgorithmBase):
             next_obs_values = (next_obs_probs * min_next_obs_q).sum(dim=-1, keepdims=True)
             next_obs_values = next_obs_values * (1.0 - dones)  # Last state get only -v(s_t) without +v(s_t+1)
         else:
-            probs, log_probs = actor["aux"](
+            probs, log_probs = self.imitation_policy["main"](
                 prev_actions=actions,
                 rewards=rewards,
                 observs=observs,
             )  # (T+1, B, A)
-            q1, q2 = critic["aux"](
+            q1, q2 = self.imitation_critic["main"](
                 prev_actions=actions,
                 rewards=rewards,
                 observs=observs,

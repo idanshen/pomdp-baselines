@@ -47,7 +47,10 @@ def load_teacher(teacher_dir: str, state_dim, act_dim):
     teacher.load_state_dict(torch.load(model_path, map_location=ptu.device))
     for param in teacher.parameters():
         param.requires_grad = False
-    return teacher.policy, teacher.critic
+    if rnn_encoder_type == 'lstm':
+        return teacher.actor, teacher.critic
+    else:
+        return teacher.policy, teacher.critic
 
 
 def get_grad_norm(model):

@@ -455,7 +455,7 @@ class Learner:
                 perf = self.log()
                 if (
                     self.save_interval > 0
-                    and self._n_env_steps_total > 0.75 * self.n_env_steps_total
+                    and self._n_env_steps_total > 0.5 * self.n_env_steps_total
                     and current_num_iters % self.save_interval == 0
                 ):
                     # save models in later training stage
