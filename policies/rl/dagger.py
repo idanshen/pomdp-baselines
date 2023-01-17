@@ -9,6 +9,7 @@ from .base import RLAlgorithmBase
 from policies.models.actor import CategoricalPolicy
 from torchkit.networks import FlattenMlp
 import torchkit.pytorch_utils as ptu
+import torch.nn.functional as F
 
 
 class DAgger(RLAlgorithmBase):
@@ -79,7 +80,81 @@ class DAgger(RLAlgorithmBase):
         states=None,
         **kwargs
     ):
-        return {"main_loss": torch.zeros(1, requires_grad=True)}, {"main_loss": torch.zeros(1, requires_grad=True)}
+        # Q^tar(h(t+1), pi(h(t+1))) + H[pi(h(t+1))]
+        with torch.no_grad():
+            # first next_actions from current policy,
+            if markov_actor:
+                new_probs, new_log_probs = actor["main"](next_observs if markov_critic else observs)
+            else:
+                # (T+1, B, dim) including reaction to last obs
+                new_probs, new_log_probs = actor["main"](
+                    prev_actions=actions,
+                    rewards=rewards,
+                    observs=next_observs if markov_critic else observs,
+                )
+
+            if markov_critic:  # (B, A)
+                next_q1, next_q2 = critic_target["main"](next_observs)
+            else:
+                next_q1, next_q2 = critic_target["main"](
+                    prev_actions=actions,
+                    rewards=rewards,
+                    observs=observs,
+                    current_actions=new_probs,
+                )  # (T+1, B, A)
+
+            min_next_q_target = torch.min(next_q1, next_q2)
+
+            # E_{a'\sim \pi}[Q(h',a')], (T+1, B, 1)
+            min_next_q_target = (new_probs * min_next_q_target).sum(
+                dim=-1, keepdims=True
+            )
+
+            # q_target: (T, B, 1)
+            q_target = rewards + (1.0 - dones) * gamma * min_next_q_target  # next q
+            if not markov_critic:
+                q_target = q_target[1:]  # (T, B, 1)
+
+        if markov_critic:
+            q1_pred, q2_pred = critic["main"](observs)
+            action = actions.long()  # (B, 1)
+            q1_pred = q1_pred.gather(dim=-1, index=action)
+            q2_pred = q2_pred.gather(dim=-1, index=action)
+            qf1_loss = F.mse_loss(q1_pred, q_target)  # TD error
+            qf2_loss = F.mse_loss(q2_pred, q_target)  # TD error
+
+        else:
+            # Q(h(t), a(t)) (T, B, 1)
+            q1_pred, q2_pred = critic["main"](
+                prev_actions=actions,
+                rewards=rewards,
+                observs=observs,
+                current_actions=actions[1:],
+            )  # (T, B, A)
+
+            stored_actions = actions[1:]  # (T, B, A)
+            stored_actions = torch.argmax(
+                stored_actions, dim=-1, keepdims=True
+            )  # (T, B, 1)
+            q1_pred = q1_pred.gather(
+                dim=-1, index=stored_actions
+            )  # (T, B, A) -> (T, B, 1)
+            q2_pred = q2_pred.gather(
+                dim=-1, index=stored_actions
+            )  # (T, B, A) -> (T, B, 1)
+
+            # masked Bellman error: masks (T,B,1) ignore the invalid error
+            # this is not equal to masks * q1_pred, cuz the denominator in mean()
+            # 	should depend on masks > 0.0, not a constant B*T
+            assert 'masks' in kwargs
+            masks = kwargs['masks']
+            num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+            q1_pred, q2_pred = q1_pred * masks, q2_pred * masks
+            q_target = q_target * masks
+            qf1_loss = ((q1_pred - q_target) ** 2).sum() / num_valid  # TD error
+            qf2_loss = ((q2_pred - q_target) ** 2).sum() / num_valid  # TD error
+
+        return {"main_loss": qf1_loss}, {"main_loss": qf2_loss}
 
     def actor_loss(
         self,

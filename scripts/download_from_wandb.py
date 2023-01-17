@@ -9,13 +9,14 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "sac_ablation"
+    dir_name = "hand_res"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
         # "MiniGrid-MemoryS11-v0",
         # "MiniGrid-LavaCrossingS15N10-v0",
-        "AntGoal-v0"
+        # "AntGoal-v0"
+        "HandManipulatePen_ContinuousTouchSensors-v1"
     ]
     data_collection_methods = [
         "only_student",
@@ -26,13 +27,15 @@ if __name__ == "__main__":
         # "advisord",
         # "eaacd",
         # "eaac",
-        "sac",
+        # "sac",
+        # "elfd",
+        "DAggerc"
     ]
 
     tuning_methods = [
         # "EIPO",
-        # "Target",
-        "Fixed"
+        "Target",
+        # "Fixed"
     ]
 
     # initial_coefficients = [0.01, 0.3, 0.6, 1]
@@ -45,10 +48,12 @@ if __name__ == "__main__":
         runs = api.runs("tsrl/test-project",
                         filters={
                             "config.env.env_name": env_name,
-                            "config.train.data_collection_method": method,
+                            # "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
-                            "config.policy.eaac.coefficient_tuning": tuning,
-                            # "config.policy.eaacd.initial_coefficient": init_coeff,
+                            # "config.policy.eaacd.coefficient_tuning": tuning,
+                            # "config.policy.eaac.target_coefficient": 1,
+                            "config.env.obseravibility": "partial",
+                            "config.policy.seq_model": 'mlp'
                         })
 
         # if algo == "advisord":
@@ -63,7 +68,7 @@ if __name__ == "__main__":
         # else:
         #     raise ValueError
 
-        title = tuning
+        title = "IL"
 
         cache_path = os.path.join(cache_dir_path, env_name, title)
         os.makedirs(cache_path, exist_ok=True)
