@@ -6,6 +6,7 @@ from .dagger import DAgger
 from .ADVISORd import ADVISORd
 from .ADVISORc import ADVISORc
 from .ELFd import ELFd
+from .ELFc import ELFc
 from .daggerc import DAggerc
 from .eaac import EAAC
 
@@ -18,6 +19,7 @@ RL_ALGORITHMS = {
     ADVISORd.name: ADVISORd,
     ADVISORc.name: ADVISORc,
     ELFd.name: ELFd,
+    ELFc.name: ELFc,
     DAggerc.name: DAggerc,
     EAAC.name: EAAC
 }

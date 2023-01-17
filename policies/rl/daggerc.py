@@ -11,6 +11,7 @@ from .base import RLAlgorithmBase
 from policies.models.actor import CategoricalPolicy, TanhGaussianPolicy
 from torchkit.networks import FlattenMlp
 import torchkit.pytorch_utils as ptu
+import torch.nn.functional as F
 
 
 class DAggerc(RLAlgorithmBase):
@@ -54,7 +55,14 @@ class DAggerc(RLAlgorithmBase):
         main_qf2 = FlattenMlp(
             input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
-        qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2})
+        aux_v1 = FlattenMlp(
+            input_size=obs_dim, output_size=1, hidden_sizes=hidden_sizes
+        )
+        aux_v2 = FlattenMlp(
+            input_size=obs_dim, output_size=1, hidden_sizes=hidden_sizes
+        )
+        # qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2})
+        qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2, "aux_qf1": aux_v1, "aux_qf2": aux_v2})
         return qfs
 
     def select_action(self, actor, observ, deterministic: bool, return_log_prob: bool):
@@ -83,7 +91,76 @@ class DAggerc(RLAlgorithmBase):
         states=None,
         **kwargs
     ):
+        # with torch.no_grad():
+        #     # first next_actions from current policy,
+        #     if markov_actor:
+        #         new_actions, new_mean, new_log_std, new_log_probs = actor["main"](
+        #             next_observs if markov_critic else observs)
+        #     else:
+        #         # (T+1, B, dim) including reaction to last obs
+        #         new_actions, new_mean, new_log_std, new_log_probs = actor["main"](
+        #             prev_actions=actions,
+        #             rewards=rewards,
+        #             observs=next_observs if markov_critic else observs,
+        #         )
+        #
+        #
+        #     if markov_critic:  # (B, 1)
+        #         next_q1, next_q2 = critic_target["main"](next_observs, new_actions)
+        #     else:
+        #         next_q1, next_q2 = critic_target["main"](
+        #             prev_actions=actions,
+        #             rewards=rewards,
+        #             observs=observs,
+        #             current_actions=new_actions,
+        #         )  # (T+1, B, 1)
+        #
+        #     min_next_q_target = torch.min(next_q1, next_q2)
+        #
+        #     # q_target: (T, B, 1)
+        #     q_target = rewards + (1.0 - dones) * gamma * min_next_q_target  # next q
+        #     if not markov_critic:
+        #         q_target = q_target[1:]  # (T, B, 1)
+        #
+        #     # And also current_new_actions for the value function
+        #     if markov_actor:
+        #         new_curr_actions, _, _, _ = actor["main"](observs)
+        #         next_q1, next_q2 = critic_target["main"](observs, new_curr_actions)
+        #     else:
+        #         raise NotImplementedError
+        #     min_curr_q_target = torch.min(next_q1, next_q2)
+        #
+        # if markov_critic:
+        #     q1_pred, q2_pred = critic["main"](observs, actions)
+        #     v1_pred, v2_pred = critic["aux"](observs)
+        #     qf1_loss = F.mse_loss(q1_pred, q_target)  # TD error
+        #     qf2_loss = F.mse_loss(q2_pred, q_target)  # TD error
+        #     v1_loss = F.mse_loss(v1_pred, min_curr_q_target)  # TD error
+        #     v2_loss = F.mse_loss(v2_pred, min_curr_q_target)  # TD error
+        #
+        # else:
+        #     # Q(h(t), a(t)) (T, B, 1)
+        #     q1_pred, q2_pred = critic["main"](
+        #         prev_actions=actions,
+        #         rewards=rewards,
+        #         observs=observs,
+        #         current_actions=actions[1:],
+        #     )  # (T, B, 1)
+        #
+        #     # masked Bellman error: masks (T,B,1) ignore the invalid error
+        #     # this is not equal to masks * q1_pred, cuz the denominator in mean()
+        #     # 	should depend on masks > 0.0, not a constant B*T
+        #     assert 'masks' in kwargs
+        #     masks = kwargs['masks']
+        #     num_valid = torch.clamp(masks.sum(), min=1.0)  # as denominator of loss
+        #     q1_pred, q2_pred = q1_pred * masks, q2_pred * masks
+        #     q_target = q_target * masks
+        #     qf1_loss = ((q1_pred - q_target) ** 2).sum() / num_valid  # TD error
+        #     qf2_loss = ((q2_pred - q_target) ** 2).sum() / num_valid  # TD error
+        #
+        # return {"main_loss": qf1_loss, "aux_loss": v1_loss}, {"main_loss": qf2_loss, "aux_loss": v2_loss}
         return {"main_loss": torch.zeros(1, requires_grad=True)}, {"main_loss": torch.zeros(1, requires_grad=True)}
+
 
     def actor_loss(
         self,
@@ -152,4 +229,5 @@ class DAggerc(RLAlgorithmBase):
 
     @property
     def model_keys(self):
-        return {"actor": ["main"], "critic": ["main"]}
+        return {"actor": ["main"], "critic": ["main", "aux"]}
+        # return {"actor": ["main"], "critic": ["main"]}
