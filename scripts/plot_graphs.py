@@ -25,6 +25,7 @@ def plot_sac_ablation():
     axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
 
     handles, labels = axes.get_legend_handles_labels()
+    labels = ['Only $\pi_R$', '$\pi_R$ and Teacher', 'Ours']
     fig.legend(handles, labels, loc='lower center', ncol=4)
 
     plt.show()
@@ -111,8 +112,10 @@ def plot_main_res():
     memory_df = pd.read_csv(os.path.join(cache_dir_path_memory, "processed.csv"))
     cache_dir_path_crossing = ".cache/main_res/MiniGrid-LavaCrossingS15N10-v0"
     crossing_df = pd.read_csv(os.path.join(cache_dir_path_crossing, "processed.csv"))
-    dfs = [tiger_door_df, memory_df, crossing_df]
-    titles = ['Tiger Door', 'Memory', 'Lava Crossing']
+    cache_dir_path_ant = ".cache/main_res/AntGoal-v0"
+    ant_df = pd.read_csv(os.path.join(cache_dir_path_ant, "processed.csv"))
+    dfs = [tiger_door_df, memory_df, crossing_df, ant_df]
+    titles = ['Tiger Door', 'Memory', 'Lava Crossing', 'Light-Dark Ant']
     hue_order = [
         "Ours",
         "COSIL_best",
@@ -120,10 +123,10 @@ def plot_main_res():
         "ADVISOR",
         "PBRS"
     ]
-    IL_res = [0.5, 0.5, 0.88]
+    IL_res = [0.5, 0.5, 0.88, 0.79]
     fig, axes = plt.subplots(1, 4, figsize=(30, 5))
 
-    for i in range(3):
+    for i in range(4):
         axes[i].set_title(titles[i])
         sns.lineplot(ax=axes[i], data=dfs[i], x="env steps", y="success rate", hue="method", hue_order=hue_order)
         axes[i].axhline(IL_res[i], ls='--', c="gray", label="IL")
@@ -131,10 +134,6 @@ def plot_main_res():
         box = axes[i].get_position()
         axes[i].set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
         axes[i].ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
-
-    axes[3].set_title('Ant')
-    box = axes[3].get_position()
-    axes[3].set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
 
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc='lower center', ncol=6)#, columnspacing=10)
@@ -144,8 +143,8 @@ def plot_main_res():
 
 
 if __name__ == "__main__":
-    plot_hand_results()
-    # plot_main_res()
+    # plot_hand_results()
+    plot_main_res()
     # plot_data_collection()
     # plot_robustness_ablation()
     # plot_sac_ablation()

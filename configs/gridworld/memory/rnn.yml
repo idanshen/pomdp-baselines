@@ -23,7 +23,7 @@ train:
   epsilon: 0.1
 
 eval:
-  log_interval: 1 # 10 num of iters
+  log_interval: 5 # 10 num of iters
   save_interval: 1 # -1
   log_tensorboard: true
 
@@ -65,3 +65,7 @@ policy:
 
   DAgger:
     loss_type: CE
+
+  elfd:
+    imitation_policy_dir: /home/idanshen/pomdp-baselines/gridworld/MiniGrid/MemoryS11/DAgger_lstm/gamma-0.9/len--1/bs-30/freq-500/oar/01-18:14-09:12.36/
+    min_v: 10000

@@ -14,9 +14,9 @@ if __name__ == "__main__":
 
   all_runs = []
 
-  cache_dir_path = ".cache/hand_res/HandManipulatePen_ContinuousTouchSensors-v1"
-  max_steps = 1700000
-  interval_size = 50000
+  # cache_dir_path = ".cache/hand_res/HandManipulatePen_ContinuousTouchSensors-v1"
+  # max_steps = 1700000
+  # interval_size = 50000
 
   # cache_dir_path = ".cache/sac_ablation/AntGoal-v0"
 
@@ -28,7 +28,12 @@ if __name__ == "__main__":
   # cache_dir_path = ".cache/main_res/MiniGrid-TigerDoorEnv-v0"
   # max_steps = 25000
   # interval_size = 2000
-  # cache_dir_path = ".cache/main_res/MiniGrid-MemoryS11-v0"
+  cache_dir_path = ".cache/main_res/MiniGrid-MemoryS11-v0"
+  max_steps = 100000
+  interval_size = 10000
+  # cache_dir_path = ".cache/main_res/AntGoal-v0"
+  # max_steps = 5000000
+  # interval_size = 50000
   # cache_dir_path = ".cache/main_res/MiniGrid-LavaCrossingS15N10-v0"
   # max_steps = 175000
   # interval_size = 8000
@@ -49,7 +54,7 @@ if __name__ == "__main__":
           "metrics/success_rate_eval": "success rate"})
       raw_run_df = raw_run_df[raw_run_df["env steps"] <= max_steps]
       raw_run_df = raw_run_df.append(pd.DataFrame({"env steps": max_steps, "success rate": raw_run_df["success rate"].values[-1]}, index={raw_run_df.index[-1]}))
-      raw_run_df = raw_run_df.append(pd.DataFrame({"env steps": 1, "success rate": 0.0}, index={-1}))
+      # raw_run_df = raw_run_df.append(pd.DataFrame({"env steps": 1, "success rate": 0.0}, index={-1}))
       # raw_run_df = raw_run_df.append(pd.DataFrame({"env_step": max_steps, "success_rate": 1.0}, index={raw_run_df.index[-1]}))
 
       raw_run_df["env steps"] = pd.cut(raw_run_df['env steps'],

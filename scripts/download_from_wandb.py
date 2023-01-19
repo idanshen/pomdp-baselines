@@ -9,14 +9,14 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "hand_res"
+    dir_name = "main_res"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
-        # "MiniGrid-MemoryS11-v0",
+        "MiniGrid-MemoryS11-v0",
         # "MiniGrid-LavaCrossingS15N10-v0",
         # "AntGoal-v0"
-        "HandManipulatePen_ContinuousTouchSensors-v1"
+        # "HandManipulatePen_ContinuousTouchSensors-v1"
     ]
     data_collection_methods = [
         "only_student",
@@ -25,11 +25,13 @@ if __name__ == "__main__":
     ]
     algo_names = [
         # "advisord",
+        # "advisorc",
         # "eaacd",
         # "eaac",
         # "sac",
-        # "elfd",
-        "DAggerc"
+        "elfd",
+        # "DAggerc"
+        # "elfc",
     ]
 
     tuning_methods = [
@@ -51,24 +53,11 @@ if __name__ == "__main__":
                             # "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
                             # "config.policy.eaacd.coefficient_tuning": tuning,
-                            # "config.policy.eaac.target_coefficient": 1,
-                            "config.env.obseravibility": "partial",
-                            "config.policy.seq_model": 'mlp'
+                            # "config.policy.eaac.target_coefficient": -1,
+                            # "config.env.obseravibility": "image_full",
                         })
 
-        # if algo == "advisord":
-        #     title = "ADVISOR"
-        # elif algo == "eaacd":
-        #     if tuning == "EIPO":
-        #         title = "Ours"
-        #     # elif tuning == "Fixed":
-        #     #     title = "ADVISOR"
-        #     else:
-        #         title = "COSIL"
-        # else:
-        #     raise ValueError
-
-        title = "IL"
+        title = "PBRS"
 
         cache_path = os.path.join(cache_dir_path, env_name, title)
         os.makedirs(cache_path, exist_ok=True)
