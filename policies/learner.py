@@ -324,7 +324,7 @@ class Learner:
             if kwargs['teacher_dir'] == 'oracle':
                 self.teacher = "oracle"
             else:
-                self.teacher = utl.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
+                self.teacher, _ = utl.load_teacher(kwargs['teacher_dir'], state_dim=self.state_dim[0], act_dim=self.act_dim)
         else:
             self.teacher = None
 
@@ -466,6 +466,8 @@ class Learner:
 
         last_eval_num_iters = 0
         while self._n_env_steps_total < self.n_env_steps_total:
+            if self._n_env_steps_total > 20000000:
+                self.agent.algo.coefficient = 0.1
             # collect data from num_rollouts_per_iter train tasks:
             env_steps = self.collect_rollouts(num_rollouts=self.num_rollouts_per_iter, min_steps=0.25*self.num_rollouts_per_iter*self.max_trajectory_len)
             logger.log("env steps", self._n_env_steps_total)
@@ -499,7 +501,7 @@ class Learner:
                 perf = self.log()
                 if (
                     self.save_interval > 0
-                    and self._n_env_steps_total > 0.50 * self.n_env_steps_total
+                    and self._n_env_steps_total > 0.10 * self.n_env_steps_total
                     and current_num_iters % self.save_interval == 0
                 ):
                     # save models in later training stage
