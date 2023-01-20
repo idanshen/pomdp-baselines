@@ -31,7 +31,7 @@ policy:
   separate: True
   seq_model: lstm # [lstm, gru]
   algo_name: sacd # [td3, sac,eaacd]
-  teacher_dir: /home/idanshen/pomdp-baselines/mujoco/HalfCheetah-v3/Markovian_DAggerc/gamma-0.9/01-19:20-56:06.93/
+  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HalfCheetah-v3/Markovian_DAggerc/gamma-0.9/01-19:20-56:06.93/
 
   action_embedding_size: 16
   observ_embedding_size: 32
