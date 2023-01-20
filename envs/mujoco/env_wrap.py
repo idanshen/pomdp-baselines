@@ -2,6 +2,7 @@ import gym
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
+from gym import spaces
 from gym.spaces import Box
 
 from gym.spaces.discrete import Discrete
@@ -76,7 +77,14 @@ class MujocoEnvWrapper(gym.Env):
         #         self.observation_space = self.env.partial_observation_space["observation"]
         # else:
         if return_state.shape != self.observation_space.shape:
-            self.observation_space = self.env.partial_observation_space
+            if self.env.spec.id == 'Hopper-v3':
+                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype="float64")
+            elif self.env.spec.id == 'HalfCheetah-v3':
+                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(9,), dtype="float64")
+            elif self.env.spec.id == 'Walker2d-v3':
+                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(9,), dtype="float64")
+            else:
+                self.observation_space = self.env.partial_observation_space
         # Number of actions
         action_shape = self.env.action_space.shape
         assert len(action_shape) <= 1  # scalar or vector actions
@@ -111,7 +119,7 @@ class MujocoEnvWrapper(gym.Env):
         self.counter = 0.0
 
         if self.partial:
-            return_state = self.env.obscure_state(start_state)
+            return_state = self.obscure_state(start_state)
             state = start_state
         else:
             return_state = start_state
@@ -144,7 +152,7 @@ class MujocoEnvWrapper(gym.Env):
         if self.partial:
             # Return type is flag used in WL code to return render for vanilla RL library.  manually overwrite the
             # none flag to indicate that this behaviour should be used.  Will break all other code...
-            return_state = self.env.obscure_state(np.copy(state))
+            return_state = self.obscure_state(np.copy(state))
             info['state'] = state
         else:
             return_state = state
@@ -162,3 +170,14 @@ class MujocoEnvWrapper(gym.Env):
     def seed(self, seed=None):
         np.random.seed(seed=seed)
         return self.env.seed(seed)
+
+    def obscure_state(self, obs):
+        if self.env.spec.id == 'Hopper-v3':
+            return_state = obs[5:].copy()
+        elif self.env.spec.id == 'HalfCheetah-v3':
+            return_state = obs[8:].copy()
+        elif self.env.spec.id == 'Walker2d-v3':
+            return_state = obs[8:].copy()
+        else:
+            return_state = self.env.obscure_state(obs)
+        return return_state

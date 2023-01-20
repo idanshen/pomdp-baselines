@@ -42,7 +42,7 @@ class DAggerc(RLAlgorithmBase):
         return nn.ModuleDict({"main_actor": main_actor})
 
     @staticmethod
-    def build_critic(hidden_sizes, input_size=None, obs_dim=None, action_dim=None):
+    def build_critic(hidden_sizes, input_size=None, obs_dim=1, action_dim=None):
         assert action_dim is not None
         if type(obs_dim) == tuple:
             assert len(obs_dim) == 1
