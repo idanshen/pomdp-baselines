@@ -908,25 +908,25 @@ class Learner:
                             obs, deterministic=deterministic
                         )
 
-                    if self.teacher is not None:
-                        if self.teacher == "oracle":
-                            teacher_action = ptu.FloatTensor(
-                                [self.eval_env.env.query_expert()[0]]
-                            )  # (1, A) for continuous action, (1) for discrete action
-                            teacher_prob_action = F.one_hot(
-                                teacher_action.long(), num_classes=self.act_dim
-                            ).float()  # (1, A)
-                            teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
-                        else:
-                            if self.agent.algo.continuous_action:
-                                teacher_action, _, _, _ = self.teacher["main"].act(state, deterministic=True, return_log_prob=False)
-                                teacher_log_prob_action = teacher_action  # Not really, just so it will be saved, need to clean this code in the future
-                            else:
-                                _, _, teacher_log_prob_action, _ = self.teacher["main"].act(state,
-                                                                                                 return_log_prob=True)
-                    else:
-                        teacher_log_prob_action = None
-                    action = teacher_log_prob_action
+                    # if self.teacher is not None:
+                    #     if self.teacher == "oracle":
+                    #         teacher_action = ptu.FloatTensor(
+                    #             [self.eval_env.env.query_expert()[0]]
+                    #         )  # (1, A) for continuous action, (1) for discrete action
+                    #         teacher_prob_action = F.one_hot(
+                    #             teacher_action.long(), num_classes=self.act_dim
+                    #         ).float()  # (1, A)
+                    #         teacher_log_prob_action = torch.clip(torch.log(teacher_prob_action), -18.0, 18.0)
+                    #     else:
+                    #         if self.agent.algo.continuous_action:
+                    #             teacher_action, _, _, _ = self.teacher["main"].act(state, deterministic=True, return_log_prob=False)
+                    #             teacher_log_prob_action = teacher_action  # Not really, just so it will be saved, need to clean this code in the future
+                    #         else:
+                    #             _, _, teacher_log_prob_action, _ = self.teacher["main"].act(state,
+                    #                                                                              return_log_prob=True)
+                    # else:
+                    #     teacher_log_prob_action = None
+                    # action = teacher_log_prob_action
 
                     # observe reward and next obs
                     next_obs, reward, done, info = utl.env_step(
