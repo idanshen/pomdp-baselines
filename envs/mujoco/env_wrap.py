@@ -152,6 +152,9 @@ class MujocoEnvWrapper(gym.Env):
 
         if self.norm_obs:
             self.obs_rms.update(return_state)
+
+        if 'reached_goal' not in info:
+            info['reached_goal'] = False
         return_state = self.normalize_obs(return_state)
 
         return return_state, float(reward), is_done, info

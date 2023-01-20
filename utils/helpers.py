@@ -6,6 +6,8 @@ import os
 
 import torch
 import torch.nn as nn
+from stable_baselines3 import SAC
+
 import torchkit.pytorch_utils as ptu
 from gym.spaces import Box, Discrete, Tuple
 from itertools import product
@@ -13,10 +15,11 @@ import policies.models as md
 from ruamel.yaml import YAML
 import glob
 
+from policies.models.sb3_wrapper import SB3_Wrapper
 from torchkit.networks import ImageEncoder
 
 
-def load_teacher(teacher_dir: str, state_dim, act_dim):
+def load_teacher(teacher_dir: str, state_dim, act_dim, custom_teacher=None, seed=0):
     assert teacher_dir is not None
     files = glob.glob(teacher_dir + "*.yml")
     assert len(files) == 1
@@ -44,7 +47,14 @@ def load_teacher(teacher_dir: str, state_dim, act_dim):
     ).to(ptu.device)
     models = glob.glob(teacher_dir + "save/*")
     model_path = sorted(models)[-1]
-    teacher.load_state_dict(torch.load(model_path, map_location=ptu.device))
+    if custom_teacher is None:
+        teacher.load_state_dict(torch.load(model_path, map_location=ptu.device))
+    else:
+        if custom_teacher == 'sb3':
+            model = {"main": SB3_Wrapper(SAC.load(model_path, env=None, custom_objects={}, device=ptu.device, buffer_size=1, seed=seed))}
+            return model, None
+        else:
+            raise NotImplementedError
     for param in teacher.parameters():
         param.requires_grad = False
     if rnn_encoder_type == 'lstm':
