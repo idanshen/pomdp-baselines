@@ -18,6 +18,27 @@ def plot_sac_ablation():
     fig, axes = plt.subplots(1, 1, figsize=(30, 5))
 
     # axes.set_title("")
+    sns.lineplot(ax=axes, data=ant_df, x="env steps", y="success rate", hue="method", style="policy")
+    axes.get_legend().remove()
+    box = axes.get_position()
+    axes.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
+    axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
+
+    handles, labels = axes.get_legend_handles_labels()
+    # labels = ['Only $\pi_R$', '$\pi_R$ and Teacher', 'Ours']
+    axes.legend(handles, labels, loc='lower right')#, ncol=4)
+
+    plt.show()
+    print("done")
+
+
+def plot_demo_ablation():
+    cache_dir_path_ant = ".cache/demo_ablation/AntGoal-v0/"
+    ant_df = pd.read_csv(os.path.join(cache_dir_path_ant, "processed.csv"))
+
+    fig, axes = plt.subplots(1, 1, figsize=(30, 5))
+
+    # axes.set_title("")
     sns.lineplot(ax=axes, data=ant_df, x="env steps", y="success rate", hue="method")
     axes.get_legend().remove()
     box = axes.get_position()
@@ -25,8 +46,8 @@ def plot_sac_ablation():
     axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
 
     handles, labels = axes.get_legend_handles_labels()
-    labels = ['Only $\pi_R$', '$\pi_R$ and Teacher', 'Ours']
-    fig.legend(handles, labels, loc='lower center', ncol=4)
+    # labels = ['Only $\pi_R$', '$\pi_R$ and Teacher', 'Ours']
+    axes.legend(handles, labels, loc='lower right', ncol=2)
 
     plt.show()
     print("done")
@@ -144,7 +165,8 @@ def plot_main_res():
 
 if __name__ == "__main__":
     # plot_hand_results()
-    plot_main_res()
+    # plot_main_res()
     # plot_data_collection()
     # plot_robustness_ablation()
     # plot_sac_ablation()
+    plot_demo_ablation()

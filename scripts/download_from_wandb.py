@@ -9,13 +9,13 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "main_res"
+    dir_name = "sac_ablation"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
-        "MiniGrid-MemoryS11-v0",
+        # "MiniGrid-MemoryS11-v0",
         # "MiniGrid-LavaCrossingS15N10-v0",
-        # "AntGoal-v0"
+        "AntGoal-v0"
         # "HandManipulatePen_ContinuousTouchSensors-v1"
     ]
     data_collection_methods = [
@@ -27,17 +27,17 @@ if __name__ == "__main__":
         # "advisord",
         # "advisorc",
         # "eaacd",
-        # "eaac",
+        "eaac",
         # "sac",
-        "elfd",
+        # "elfd",
         # "DAggerc"
         # "elfc",
     ]
 
     tuning_methods = [
         # "EIPO",
-        "Target",
-        # "Fixed"
+        # "Target",
+        "Fixed"
     ]
 
     # initial_coefficients = [0.01, 0.3, 0.6, 1]
@@ -50,14 +50,14 @@ if __name__ == "__main__":
         runs = api.runs("tsrl/test-project",
                         filters={
                             "config.env.env_name": env_name,
-                            # "config.train.data_collection_method": method,
+                            "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
-                            # "config.policy.eaacd.coefficient_tuning": tuning,
-                            # "config.policy.eaac.target_coefficient": -1,
+                            "config.policy.eaac.coefficient_tuning": tuning,
+                            "config.policy.eaac.initial_coefficient": 3,
                             # "config.env.obseravibility": "image_full",
                         })
 
-        title = "PBRS"
+        title = "seperate_main"
 
         cache_path = os.path.join(cache_dir_path, env_name, title)
         os.makedirs(cache_path, exist_ok=True)
