@@ -3,7 +3,7 @@ cuda: 0 # use_gpu
 env:
   env_type: mujoco
   env_name: HalfCheetah-v3
-  obseravibility: partial
+  obseravibility: full
   num_eval_tasks: 120
   num_train_envs: 60
 
@@ -17,7 +17,7 @@ train:
 
   num_updates_per_iter: 1000
   batch_size: 128 # to tune based on sampled_seq_len
-  sampled_seq_len: 100 # -1 is all, or positive integer
+  sampled_seq_len: 20 # -1 is all, or positive integer
   sample_weight_baseline: 0.0
   data_collection_method: only_student
   epsilon: 0.0
@@ -40,7 +40,7 @@ policy:
 
   dqn_layers: [512, 256]
   policy_layers: [512, 256]
-  lr: 0.00001
+  lr: 0.0001
   gamma: 0.9
   tau: 0.005
 

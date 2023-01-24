@@ -1,3 +1,5 @@
+from collections import deque
+
 import gym
 import torch
 import matplotlib.pyplot as plt
@@ -71,6 +73,12 @@ class MujocoEnvWrapper(gym.Env):
         #     self.env.action_space.shape = (self.env.action_space.n, )
 
         # Reset the state, and the running total reward
+        if self.env.spec.id == 'HalfCheetah-v3':
+            self.state_queue = deque([np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])] * 10, 10)
+        elif self.env.spec.id == 'Hopper-v3':
+            self.state_queue = deque([np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])] * 10, 10)
+        elif self.env.spec.id == 'Walker2d-v3':
+            self.state_queue = deque([np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])] * 10, 10)
         return_state, state = self.reset()
         # if self.dict_obs:
         #     if return_state["observation"].shape != self.observation_space.shape:
@@ -78,11 +86,12 @@ class MujocoEnvWrapper(gym.Env):
         # else:
         if return_state.shape != self.observation_space.shape:
             if self.env.spec.id == 'Hopper-v3':
-                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype="float64")
+                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(60,), dtype="float64")
             elif self.env.spec.id == 'HalfCheetah-v3':
-                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(9,), dtype="float64")
+                # self.observation_space = spaces.Box(-np.inf, np.inf, shape=(9,), dtype="float64")  # velocity only
+                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(90,), dtype="float64")  # position only
             elif self.env.spec.id == 'Walker2d-v3':
-                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(9,), dtype="float64")
+                self.observation_space = spaces.Box(-np.inf, np.inf, shape=(90,), dtype="float64")
             else:
                 self.observation_space = self.env.partial_observation_space
         # Number of actions
@@ -173,11 +182,21 @@ class MujocoEnvWrapper(gym.Env):
 
     def obscure_state(self, obs):
         if self.env.spec.id == 'Hopper-v3':
-            return_state = obs[5:].copy()
+            new_loc = obs[5:].copy()
+            self.state_queue.pop()
+            self.state_queue.appendleft(new_loc)
+            return_state = np.hstack(self.state_queue)
         elif self.env.spec.id == 'HalfCheetah-v3':
-            return_state = obs[8:].copy()
+            # return_state = obs[8:].copy()  # velocity only
+            new_loc = obs[:9].copy()  # position only
+            self.state_queue.pop()
+            self.state_queue.appendleft(new_loc)
+            return_state = np.hstack(self.state_queue)
         elif self.env.spec.id == 'Walker2d-v3':
-            return_state = obs[8:].copy()
+            new_loc = obs[8:].copy()
+            self.state_queue.pop()
+            self.state_queue.appendleft(new_loc)
+            return_state = np.hstack(self.state_queue)
         else:
             return_state = self.env.obscure_state(obs)
         return return_state
