@@ -182,7 +182,8 @@ class MujocoEnvWrapper(gym.Env):
 
     def obscure_state(self, obs):
         if self.env.spec.id == 'Hopper-v3':
-            new_loc = obs[5:].copy()
+            # new_loc = obs[5:].copy()
+            new_loc = obs[:6].copy()
             self.state_queue.pop()
             self.state_queue.appendleft(new_loc)
             return_state = np.hstack(self.state_queue)
@@ -193,7 +194,8 @@ class MujocoEnvWrapper(gym.Env):
             self.state_queue.appendleft(new_loc)
             return_state = np.hstack(self.state_queue)
         elif self.env.spec.id == 'Walker2d-v3':
-            new_loc = obs[8:].copy()
+            # new_loc = obs[8:].copy()
+            new_loc = obs[:9].copy()  # position only
             self.state_queue.pop()
             self.state_queue.appendleft(new_loc)
             return_state = np.hstack(self.state_queue)
