@@ -14,6 +14,10 @@ if __name__ == "__main__":
 
   all_runs = []
 
+  cache_dir_path = ".cache/fix_ablation/HandManipulatePen_ContinuousTouchSensors-v1"
+  max_steps = 4000000
+  interval_size = 50000
+
   # cache_dir_path = ".cache/hand_res/HandManipulatePen_ContinuousTouchSensors-v1"
   # max_steps = 1700000
   # interval_size = 50000
@@ -22,9 +26,9 @@ if __name__ == "__main__":
   # max_steps = 5000000
   # interval_size = 50000
 
-  cache_dir_path = ".cache/demo_ablation/AntGoal-v0"
-  max_steps = 7500000
-  interval_size = 50000
+  # cache_dir_path = ".cache/demo_ablation/AntGoal-v0"
+  # max_steps = 7500000
+  # interval_size = 50000
 
   # cache_dir_path = ".cache/robustness_ablation/MiniGrid-LavaCrossingS15N10-v0"
 

@@ -10,6 +10,60 @@ script_name = os.path.splitext(os.path.basename(__file__))[0]
 
 sns.set(font_scale=1.5)
 
+def plot_fix_ablation2():
+    cache_dir_path_ant = ".cache/fix_ablation2/HandManipulatePen_ContinuousTouchSensors-v1/"
+    ant_df = pd.read_csv(os.path.join(cache_dir_path_ant, "processed.csv"))
+    ant_df["coefficient"] = np.clip(ant_df["coefficient"], 0, 2.5)
+    for i in [0.1, 0.3, 0.5, 0.7, 1.0]:
+        ant_df = ant_df.append(pd.DataFrame({"env steps": 1, "coefficient": i, "method": "Fixed, "+str(i)}, index={-1}))
+        ant_df = ant_df.append(pd.DataFrame({"env steps": 4000000, "coefficient": i, "method": "Fixed, "+str(i)}, index={-1}))
+    fig, axes = plt.subplots(1, 1, figsize=(30, 5))
+
+    # axes.set_title("")
+    order = ["TGRL", "Fixed, 0.1", "Fixed, 0.3", "Fixed, 0.5", "Fixed, 0.7", "Fixed, 0.9", "Fixed, 1.0"]
+    # dashes = [False, (2, 2), (2, 2), (2, 2), (2, 2), (2, 2), (2, 2)]
+    ax = sns.lineplot(ax=axes, data=ant_df, x="env steps", y="coefficient", hue="method", hue_order=order)
+    for i in range(1,7):
+        ax.lines[i].set_linestyle("--")
+        ax.lines[i].set_alpha(0.5)
+    # axes.axhline(0.1, ls='--', c="gray", label="0.1")
+    # axes.axhline(0.3, ls='--', c="gray", label="0.3")
+    # axes.axhline(0.5, ls='--', c="gray", label="0.5")
+    # axes.axhline(0.7, ls='--', c="gray", label="0.7")
+    # axes.axhline(1.0, ls='--', c="gray", label="1.0")
+    axes.get_legend().remove()
+    box = axes.get_position()
+    axes.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
+    axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
+
+    handles, labels = axes.get_legend_handles_labels()
+    # labels = ['Only $\pi_R$', '$\pi_R$ and Teacher', 'Ours']
+    # axes.legend(handles, labels, loc='upper right')#, ncol=4)
+
+    plt.show()
+    print("done")
+
+def plot_fix_ablation():
+    cache_dir_path_ant = ".cache/fix_ablation/HandManipulatePen_ContinuousTouchSensors-v1/"
+    ant_df = pd.read_csv(os.path.join(cache_dir_path_ant, "processed.csv"))
+
+    fig, axes = plt.subplots(1, 1, figsize=(30, 5))
+
+    # axes.set_title("")
+    order = ["TGRL", "Fixed, 0.1", "Fixed, 0.3", "Fixed, 0.5", "Fixed, 0.7","Fixed, 0.9", "Fixed, 1.0"]
+    sns.lineplot(ax=axes, data=ant_df, x="env steps", y="success rate", hue="method", hue_order=order)
+    axes.get_legend().remove()
+    box = axes.get_position()
+    axes.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
+    axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
+
+    handles, labels = axes.get_legend_handles_labels()
+    # labels = ['Only $\pi_R$', '$\pi_R$ and Teacher', 'Ours']
+    axes.legend(handles, labels, loc='lower right')#, ncol=4)
+
+    plt.show()
+    print("done")
+
 
 def plot_sac_ablation():
     cache_dir_path_ant = ".cache/sac_ablation/AntGoal-v0/"
@@ -18,7 +72,7 @@ def plot_sac_ablation():
     fig, axes = plt.subplots(1, 1, figsize=(30, 5))
 
     # axes.set_title("")
-    sns.lineplot(ax=axes, data=ant_df, x="env steps", y="success rate", hue="method", style="policy")
+    sns.lineplot(ax=axes, data=ant_df, x="env steps", y="success rate", hue="method", style="policy", hue_order=['shared', 'seperate'])
     axes.get_legend().remove()
     box = axes.get_position()
     axes.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
@@ -67,7 +121,7 @@ def plot_robustness_ablation():
     axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
 
     handles, labels = axes.get_legend_handles_labels()
-    fig.legend(handles, labels, loc='lower center', ncol=4)
+    axes.legend(handles, labels, loc='lower right', ncol=4)
 
     plt.show()
     print("done")
@@ -169,4 +223,5 @@ if __name__ == "__main__":
     # plot_data_collection()
     # plot_robustness_ablation()
     # plot_sac_ablation()
-    plot_demo_ablation()
+    # plot_demo_ablation()
+    plot_fix_ablation2()

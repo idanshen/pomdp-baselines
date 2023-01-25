@@ -9,19 +9,20 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "sac_ablation"
+    dir_name = "fix_ablation"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
         # "MiniGrid-MemoryS11-v0",
         # "MiniGrid-LavaCrossingS15N10-v0",
-        "AntGoal-v0"
-        # "HandManipulatePen_ContinuousTouchSensors-v1"
+        # "AntGoal-v0"
+        "HandManipulatePen_ContinuousTouchSensors-v1"
     ]
     data_collection_methods = [
-        "only_student",
-        # "all",
+        # "only_student",
+        "all",
         # "start_beta_student_aux_than_teacher",
+        # "start_student_than_teacher"
     ]
     algo_names = [
         # "advisord",
@@ -49,15 +50,18 @@ if __name__ == "__main__":
     for env_name, method, algo, tuning in (itertools.product(envs, data_collection_methods, algo_names, tuning_methods)):
         runs = api.runs("tsrl/test-project",
                         filters={
+                            # "config.seed": 2,
+                            # "config.policy.teacher_dir": "/data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.1/gamma-0.9/01-10:12-01:15.62/",
                             "config.env.env_name": env_name,
                             "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
                             "config.policy.eaac.coefficient_tuning": tuning,
-                            "config.policy.eaac.initial_coefficient": 3,
-                            # "config.env.obseravibility": "image_full",
+                            "config.policy.seq_model": 'mlp',
+                            # "config.policy.sac.entropy_alpha": 0.01,
+                            "config.env.obseravibility": "partial",
                         })
 
-        title = "seperate_main"
+        title = "10"
 
         cache_path = os.path.join(cache_dir_path, env_name, title)
         os.makedirs(cache_path, exist_ok=True)
