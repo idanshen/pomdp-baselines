@@ -52,7 +52,7 @@ policy:
     alpha_lr: 0.0003
 
   eaac:
-    initial_coefficient: 0.3
+    initial_coefficient: 2.5
     coefficient_tuning: Fixed # Can be Fixed, Target, EIPO
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
     coefficient_lr: 0.0003
