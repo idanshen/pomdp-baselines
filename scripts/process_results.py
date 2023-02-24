@@ -14,13 +14,23 @@ if __name__ == "__main__":
 
   all_runs = []
 
-  cache_dir_path = ".cache/fix_ablation/HandManipulatePen_ContinuousTouchSensors-v1"
-  max_steps = 4000000
-  interval_size = 50000
-
-  # cache_dir_path = ".cache/hand_res/HandManipulatePen_ContinuousTouchSensors-v1"
-  # max_steps = 1700000
+  # cache_dir_path = ".cache/new_res/Hopper-v3"
+  # max_steps = 2000000
+  # interval_size = 100000
+  # cache_dir_path = ".cache/new_res/HalfCheetah-v3"
+  # max_steps = 5000000
   # interval_size = 50000
+  # cache_dir_path = ".cache/new_res/Walker2d-v3"
+  # max_steps = 4000000
+  # interval_size = 50000
+
+  # cache_dir_path = ".cache/fix_ablation/HandManipulatePen_ContinuousTouchSensors-v1"
+  # max_steps = 4000000
+  # interval_size = 50000
+
+  cache_dir_path = ".cache/hand_res/HandManipulatePen_ContinuousTouchSensors-v1"
+  max_steps = 16000000
+  interval_size = 50000
 
   # cache_dir_path = ".cache/sac_ablation/AntGoal-v0"
   # max_steps = 5000000
@@ -63,7 +73,7 @@ if __name__ == "__main__":
           "z/log_step": "env steps",
           "metrics/success_rate_eval": "success rate"})
       raw_run_df = raw_run_df[raw_run_df["env steps"] <= max_steps]
-      raw_run_df = raw_run_df.append(pd.DataFrame({"env steps": max_steps, "success rate": raw_run_df["success rate"].values[-1]}, index={raw_run_df.index[-1]}))
+      # raw_run_df = raw_run_df.append(pd.DataFrame({"env steps": max_steps, "success rate": raw_run_df["success rate"].values[-1]}, index={raw_run_df.index[-1]}))
       raw_run_df = raw_run_df.append(pd.DataFrame({"env steps": 1, "success rate": 0.0}, index={-1}))
       # raw_run_df = raw_run_df.append(pd.DataFrame({"env_step": max_steps, "success_rate": 1.0}, index={raw_run_df.index[-1]}))
 
@@ -76,4 +86,4 @@ if __name__ == "__main__":
       print(f"Invalid file: {file}")
 
   df = pd.concat(all_runs)
-  df.to_csv(os.path.join(cache_dir_path, "processed.csv"))
+  df.to_csv(os.path.join(cache_dir_path, "processed2.csv"))

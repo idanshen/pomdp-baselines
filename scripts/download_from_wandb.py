@@ -9,29 +9,32 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "fix_ablation"
+    dir_name = "new_res"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
         # "MiniGrid-MemoryS11-v0",
         # "MiniGrid-LavaCrossingS15N10-v0",
         # "AntGoal-v0"
-        "HandManipulatePen_ContinuousTouchSensors-v1"
+        # "HandManipulatePen_ContinuousTouchSensors-v1",
+        # "HalfCheetah-v3",
+        # "Walker2d-v3",
+        "Hopper-v3"
     ]
     data_collection_methods = [
         # "only_student",
-        "all",
+        # "all",
         # "start_beta_student_aux_than_teacher",
-        # "start_student_than_teacher"
+        "start_student_than_teacher"
     ]
     algo_names = [
         # "advisord",
         # "advisorc",
         # "eaacd",
-        "eaac",
+        # "eaac",
         # "sac",
         # "elfd",
-        # "DAggerc"
+        "DAggerc"
         # "elfc",
     ]
 
@@ -55,13 +58,13 @@ if __name__ == "__main__":
                             "config.env.env_name": env_name,
                             "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
-                            "config.policy.eaac.coefficient_tuning": tuning,
-                            "config.policy.seq_model": 'mlp',
+                            # "config.policy.eaac.coefficient_tuning": tuning,
+                            # "config.policy.seq_model": 'mlp',
                             # "config.policy.sac.entropy_alpha": 0.01,
                             "config.env.obseravibility": "partial",
                         })
 
-        title = "10"
+        title = "IL"
 
         cache_path = os.path.join(cache_dir_path, env_name, title)
         os.makedirs(cache_path, exist_ok=True)
