@@ -33,6 +33,7 @@ policy:
   seq_model: mlp
   algo_name: sacd # [td3, sac]
   teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-13:23-24:22.62/
+#  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.1/gamma-0.9/01-10:12-01:15.62/ # Taken from Dagger experiment
 
   dqn_layers: [512, 256, 128]
   policy_layers: [512, 256, 128]
@@ -60,7 +61,7 @@ policy:
     min_coefficient: 0.01
     max_coefficient: 3.0
 
-  advisord:
+  advisorc:
     temprature: 1.0
 
   elfd:

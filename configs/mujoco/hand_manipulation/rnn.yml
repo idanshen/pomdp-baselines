@@ -19,9 +19,9 @@ train:
   batch_size: 128 # to tune based on sampled_seq_len
   sampled_seq_len: 30 # -1 is all, or positive integer
   sample_weight_baseline: 0.0
-  data_collection_method: only_student
+  data_collection_method: start_student_than_teacher
   epsilon: 0.1
-  HER: True
+  HER: False
 
 eval:
   log_interval: 30 # 10 num of iters
@@ -31,8 +31,9 @@ eval:
 policy:
   separate: True
   seq_model: lstm # [lstm, gru]
-  algo_name: sacd # [td3, sac,eaacd]
-  teacher_dir: /home/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-11:18-21:17.66/
+  algo_name: advisorc # [td3, sac,eaacd]
+#  teacher_dir: /home/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-11:18-21:17.66/
+  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-13:23-24:22.62/
 
   action_embedding_size: 16
   observ_embedding_size: 128
@@ -62,3 +63,6 @@ policy:
 
   DAggerc:
     loss_type: L2
+
+  advisorc:
+    temprature: 1.0
