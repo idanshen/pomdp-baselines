@@ -1,11 +1,11 @@
-seed: 1
+seed: 3
 cuda: 0 # use_gpu
 env:
   env_type: mujoco
   env_name: HandManipulatePen_ContinuousTouchSensors-v1
   obseravibility: partial
   num_eval_tasks: 1000
-  num_train_envs: 120
+  num_train_envs: 60
 
 train:
   # original rl training steps: num_iters * updates_per_iter = 1.5M
@@ -19,7 +19,7 @@ train:
   batch_size: 128 # to tune based on sampled_seq_len
   sampled_seq_len: 30 # -1 is all, or positive integer
   sample_weight_baseline: 0.0
-  data_collection_method: start_student_than_teacher
+  data_collection_method: all
   epsilon: 0.1
   HER: False
 
@@ -65,4 +65,4 @@ policy:
     loss_type: L2
 
   advisorc:
-    temprature: 1.0
+    temprature: 0.25

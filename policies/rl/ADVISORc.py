@@ -190,8 +190,8 @@ class ADVISORc(RLAlgorithmBase):
 
         env_loss = -min_q_new_actions
         env_loss += self.alpha_entropy * log_probs
-        CE_loss = torch.norm(new_actions - teacher_log_probs, dim=1).unsqueeze(dim=1)
-        dis = torch.norm(aux_mean.detach() - teacher_log_probs, dim=1).unsqueeze(dim=1)
+        CE_loss = torch.norm(new_actions - teacher_log_probs, dim=-1).unsqueeze(dim=-1)
+        dis = torch.norm(aux_mean.detach() - teacher_log_probs, dim=-1).unsqueeze(dim=-1)
         coefficient = torch.exp(-self.temprature * dis)
         policy_loss_main = coefficient * CE_loss + (1.0 - coefficient) * env_loss
 

@@ -55,14 +55,14 @@ class DAggerc(RLAlgorithmBase):
         main_qf2 = FlattenMlp(
             input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
-        aux_v1 = FlattenMlp(
-            input_size=obs_dim, output_size=1, hidden_sizes=hidden_sizes
-        )
-        aux_v2 = FlattenMlp(
-            input_size=obs_dim, output_size=1, hidden_sizes=hidden_sizes
-        )
+        # aux_v1 = FlattenMlp(
+        #     input_size=obs_dim, output_size=1, hidden_sizes=hidden_sizes
+        # )
+        # aux_v2 = FlattenMlp(
+        #     input_size=obs_dim, output_size=1, hidden_sizes=hidden_sizes
+        # )
         # qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2})
-        qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2, "aux_qf1": aux_v1, "aux_qf2": aux_v2})
+        qfs = nn.ModuleDict({"main_qf1": main_qf1, "main_qf2": main_qf2})#, "aux_qf1": aux_v1, "aux_qf2": aux_v2})
         return qfs
 
     def select_action(self, actor, observ, deterministic: bool, return_log_prob: bool):
@@ -229,5 +229,5 @@ class DAggerc(RLAlgorithmBase):
 
     @property
     def model_keys(self):
-        return {"actor": ["main"], "critic": ["main", "aux"]}
-        # return {"actor": ["main"], "critic": ["main"]}
+        # return {"actor": ["main"], "critic": ["main", "aux"]}
+        return {"actor": ["main"], "critic": ["main"]}
