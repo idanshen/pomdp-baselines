@@ -181,7 +181,7 @@ class EAAC(RLAlgorithmBase):
         else:
             new_actions, mean, log_std, log_probs = actor["main"](
                 prev_actions=actions, rewards=rewards, observs=observs
-            )  # (T+1, B, A)
+            ) # (T+1, B, A)
 
         if markov_critic:
             q1, q2 = critic["main"](observs, new_actions)
@@ -196,7 +196,7 @@ class EAAC(RLAlgorithmBase):
 
         policy_loss_q = -min_q_new_actions
         policy_loss_q += self.alpha_entropy * log_probs
-        policy_loss_t = self.coefficient * torch.norm(new_actions - teacher_log_probs, dim=1).unsqueeze(dim=1)
+        policy_loss_t = self.coefficient * torch.norm(new_actions - teacher_log_probs, dim=-1).unsqueeze(dim=-1)
         if not markov_critic:
             policy_loss_q = policy_loss_q[:-1]  # (T,B,1) remove the last obs
             policy_loss_t = policy_loss_t[:-1]  # (T,B,1) remove the last obs

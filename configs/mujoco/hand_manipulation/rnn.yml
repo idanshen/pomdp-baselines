@@ -31,7 +31,7 @@ eval:
 policy:
   separate: True
   seq_model: lstm # [lstm, gru]
-  algo_name: advisorc # [td3, sac,eaacd]
+  algo_name: eaac # [td3, sac,eaacd]
 #  teacher_dir: /home/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-11:18-21:17.66/
   teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-13:23-24:22.62/
 
@@ -52,7 +52,7 @@ policy:
 #    target_entropy: None # the ratio: target_entropy = ratio * log(|A|)
     alpha_lr: 0.0003
 
-  eaacd:
+  eaac:
     initial_coefficient: 0.3
     coefficient_tuning: Fixed # Can be Fixed, Target, EIPO
     target_coefficient: 1.0 # Relevant for 'Target' coefficient tuning
@@ -63,6 +63,10 @@ policy:
 
   DAggerc:
     loss_type: L2
+
+  elfc:
+    min_v: 10000
+    imitation_policy_dir: /home/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_DAggerc/gamma-0.9/03-16:15-00:26.98/
 
   advisorc:
     temprature: 0.25
