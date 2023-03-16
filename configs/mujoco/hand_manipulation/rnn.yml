@@ -19,7 +19,7 @@ train:
   batch_size: 128 # to tune based on sampled_seq_len
   sampled_seq_len: 30 # -1 is all, or positive integer
   sample_weight_baseline: 0.0
-  data_collection_method: all
+  data_collection_method: both
   epsilon: 0.1
   HER: False
 

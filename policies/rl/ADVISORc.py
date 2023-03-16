@@ -167,7 +167,7 @@ class ADVISORc(RLAlgorithmBase):
             new_aux_actions, aux_mean, _, _ = actor["aux"](
                 prev_actions=actions, rewards=rewards, observs=observs
             )  # (T+1, B, A)
-        policy_loss_aux = torch.norm(new_aux_actions - teacher_log_probs, dim=1).unsqueeze(dim=1)
+        policy_loss_aux = torch.norm(new_aux_actions - teacher_log_probs, dim=-1).unsqueeze(dim=-1)
 
         # Main policy loss
         if markov_actor:
