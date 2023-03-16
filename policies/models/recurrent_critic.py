@@ -24,9 +24,6 @@ class Critic_RNN(nn.Module):
     ):
         super().__init__()
 
-        # if type(obs_dim) == tuple:
-        #     assert len(obs_dim) == 1
-        #     obs_dim = obs_dim[0]
         self.obs_dim = obs_dim
         self.action_dim = action_dim
         self.algo = algo
@@ -172,22 +169,14 @@ class Critic_RNN(nn.Module):
         # 2. another branch for state & **current** action
         if current_actions is None or current_actions.shape[0] == observs.shape[0]:
             # current_actions include last obs's action, i.e. we have a'[T] in reaction to o[T]
-            curr_embed = self._get_shortcut_obs_act_embedding(
-                observs, current_actions
-            )  # (T+1, B, dim)
+            curr_embed = self._get_shortcut_obs_act_embedding(observs, current_actions)  # (T+1, B, dim)
             # 3. joint embeds
-            joint_embeds = torch.cat(
-                (hidden_states, curr_embed), dim=-1
-            )  # (T+1, B, dim)
+            joint_embeds = torch.cat((hidden_states, curr_embed), dim=-1)  # (T+1, B, dim)
         else:
             # current_actions does NOT include last obs's action
-            curr_embed = self._get_shortcut_obs_act_embedding(
-                observs[:-1], current_actions
-            )  # (T, B, dim)
+            curr_embed = self._get_shortcut_obs_act_embedding(observs[:-1], current_actions)  # (T, B, dim)
             # 3. joint embeds
-            joint_embeds = torch.cat(
-                (hidden_states[:-1], curr_embed), dim=-1
-            )  # (T, B, dim)
+            joint_embeds = torch.cat((hidden_states[:-1], curr_embed), dim=-1)  # (T, B, dim)
 
         # 4. q value
         q1 = self.qf1(joint_embeds)
@@ -220,14 +209,10 @@ class Critic_RNN(nn.Module):
         )
 
         # 2. another branch for current obs
-        curr_embed = self._get_shortcut_obs_act_embedding(
-            obs, current_actions
-        )
+        curr_embed = self._get_shortcut_obs_act_embedding(obs, current_actions)
 
         # 3. joint embed
-        joint_embeds = torch.cat(
-            (hidden_state, curr_embed), dim=-1
-        )  # (1, B, dim)
+        joint_embeds = torch.cat((hidden_state, curr_embed), dim=-1)  # (1, B, dim)
         if joint_embeds.dim() == 3:
             joint_embeds = joint_embeds.squeeze(0)  # (B, dim)
 

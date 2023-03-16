@@ -5,6 +5,7 @@ from utils import helpers as utl
 from torchkit.constant import *
 import torchkit.pytorch_utils as ptu
 
+
 class Value_RNN(nn.Module):
     def __init__(
         self,
@@ -18,6 +19,7 @@ class Value_RNN(nn.Module):
         rnn_hidden_size,
         dqn_layers,
         rnn_num_layers,
+        critic_key,
         image_encoder=None,
         **kwargs
     ):
@@ -33,7 +35,7 @@ class Value_RNN(nn.Module):
         self.image_encoder = image_encoder
         if self.image_encoder is None:
             self.observ_embedder = utl.FeatureExtractor(
-                obs_dim, observ_embedding_size, F.relu
+                obs_dim[0], observ_embedding_size, F.relu
             )
         else:  # for pixel observation, use external encoder
             assert observ_embedding_size == 0
@@ -52,7 +54,6 @@ class Value_RNN(nn.Module):
 
         assert encoder in RNNs
         self.encoder = encoder
-        self.num_layers = rnn_num_layers
 
         self.rnn = RNNs[encoder](
             input_size=rnn_input_size,
@@ -73,7 +74,7 @@ class Value_RNN(nn.Module):
         if self.algo.continuous_action and self.image_encoder is None:
             # for vector-based continuous action problems
             self.current_shortcut_embedder = utl.FeatureExtractor(
-                obs_dim, shortcut_embedding_size, F.relu
+                obs_dim[0], shortcut_embedding_size, F.relu
             )
         elif self.algo.continuous_action and self.image_encoder is not None:
             # for image-based continuous action problems
@@ -93,10 +94,12 @@ class Value_RNN(nn.Module):
             raise NotImplementedError
 
         ## 4. build q networks
-        self.vf = self.algo.build_value(
+        self.v_funcs = self.algo.build_value(
             input_size=self.rnn_hidden_size + shortcut_embedding_size,
             hidden_sizes=dqn_layers,
         )
+        self.vf1 = self.q_funcs[critic_key + "_vf1"]
+        self.vf2 = self.q_funcs[critic_key + "_vf2"]
 
     def _get_obs_embedding(self, observs):
         if self.image_encoder is None:  # vector obs
@@ -118,10 +121,8 @@ class Value_RNN(nn.Module):
             # for image-based discrete action problems (not using actions)
             return self.image_encoder(observs)
 
-    def get_hidden_states(
-        self, prev_actions, rewards, observs, initial_internal_state=None
-    ):
-        # all the input have the shape of (1 or T+1, B, *)
+    def get_hidden_states(self, prev_actions, rewards, observs, initial_internal_state=None):
+        # all the input have the shape of (T+1, B, *)
         # get embedding of initial transition
         input_a = self.action_embedder(prev_actions)
         input_r = self.reward_embedder(rewards)
@@ -147,8 +148,6 @@ class Value_RNN(nn.Module):
         assert (
             prev_actions.dim()
             == rewards.dim()
-            == observs.dim()
-            == current_actions.dim()
             == 3
         )
         assert prev_actions.shape[0] == rewards.shape[0] == observs.shape[0]
@@ -172,26 +171,21 @@ class Value_RNN(nn.Module):
             joint_embeds = torch.cat((hidden_states[:-1], curr_embed), dim=-1)  # (T, B, dim)
 
         # 4. q value
-        v = self.vf(joint_embeds)
+        v1 = self.vf1(joint_embeds)
+        v2 = self.vf2(joint_embeds)
 
-        return v  # (T or T+1, B, 1 or A)
+        return v1, v2  # (T or T+1, B, 1 or A)
 
     @torch.no_grad()
-    def predict(
-        self,
-        prev_internal_state,
-        prev_action,
-        reward,
-        obs,
+    def forward_with_internal_state(
+            self,
+            prev_internal_state,
+            prev_action,
+            reward,
+            obs,
     ):
-        # for evaluation (not training), so T = 1
-        assert (
-            prev_action.dim()
-            == reward.dim()
-            == obs.dim()
-            == 3
-        )
-        assert prev_action.shape[0] == reward.shape[0] == obs.shape[0]
+        # for evaluation (not training), so no target actor, and T = 1
+        # a function that generates action, works like a pytorch module
 
         # 1. get hidden state and current internal state
         ## NOTE: in T=1 step rollout (and RNN layers = 1), for GRU they are the same,
@@ -204,8 +198,9 @@ class Value_RNN(nn.Module):
             observs=obs,
             initial_internal_state=prev_internal_state,
         )
+
         # 2. another branch for current obs
-        curr_embed = self._get_shortcut_obs_embedding(obs)  # (1, B, dim)
+        curr_embed = self._get_shortcut_obs_embedding(obs)
 
         # 3. joint embed
         joint_embeds = torch.cat((hidden_state, curr_embed), dim=-1)  # (1, B, dim)
@@ -213,23 +208,7 @@ class Value_RNN(nn.Module):
             joint_embeds = joint_embeds.squeeze(0)  # (B, dim)
 
         # 4. q value
-        v = self.vf(joint_embeds)
+        v1 = self.vf1(joint_embeds)
+        v2 = self.vf2(joint_embeds)
 
-        return v, current_internal_state
-
-    @torch.no_grad()
-    def get_initial_info(self):
-        # here we assume batch_size = 1
-
-        ## here we set the ndim = 2 for action and reward for compatibility
-        # prev_action = ptu.zeros((1, self.action_dim)).float()
-        # reward = ptu.zeros((1, 1)).float()
-
-        hidden_state = ptu.zeros((self.num_layers, 1, self.rnn_hidden_size)).float()
-        if self.encoder == GRU_name:
-            internal_state = hidden_state
-        else:
-            cell_state = ptu.zeros((self.num_layers, 1, self.rnn_hidden_size)).float()
-            internal_state = (hidden_state, cell_state)
-
-        return internal_state
+        return v1, v2, current_internal_state
