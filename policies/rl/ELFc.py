@@ -32,6 +32,7 @@ class ELFc(RLAlgorithmBase):
         self.action_dim = action_dim
         self.imitation_policy, self.imitation_critic = utl.load_teacher(imitation_policy_dir, state_dim=obs_dim, act_dim=action_dim)
         self.min_v = min_v
+        self.alpha_entropy = 0.01
 
     @staticmethod
     def build_actor(input_size, action_dim, hidden_sizes, **kwargs):
@@ -72,7 +73,7 @@ class ELFc(RLAlgorithmBase):
 
     @torch.no_grad()
     def calculate_follower_values(self, markov_actor, markov_critic, actor, critic, observs, next_observs, actions, rewards, dones):
-        if markov_actor:
+        if "markovian" in str(type(self.imitation_critic["aux"])):
             curr_obs_v1, curr_obs_v2 = self.imitation_critic["aux"](observs)
             curr_obs_values = torch.min(curr_obs_v1, curr_obs_v2)
 
@@ -134,10 +135,13 @@ class ELFc(RLAlgorithmBase):
                                                                               actor=actor,
                                                                               critic=critic,
                                                                               observs=observs,
-                                                                              next_observs=next_observs,
+                                                                              next_observs=next_observs if markov_critic else observs,
                                                                               actions=actions,
                                                                               rewards=rewards,
                                                                               dones=dones)
+            if not markov_critic:
+                _, batch_size, _ = values_curr_obs.shape
+                values_curr_obs = torch.cat((ptu.zeros((1, batch_size, 1)).float(), values_curr_obs[1:]), dim=0)
             rewards_aug = rewards + gamma * values_next_obs - values_curr_obs
 
             # q_target: (T, B, 1)
@@ -208,29 +212,27 @@ class ELFc(RLAlgorithmBase):
         min_q_new_actions = torch.min(q1, q2)  # (T+1,B,1)
 
         env_loss = -min_q_new_actions
-        env_loss += log_probs
+        env_loss += self.alpha_entropy * log_probs
 
-        CE_loss = torch.norm(new_actions - teacher_log_probs, dim=1).unsqueeze(dim=1)  # (T+1,B,1)
+        # CE_loss = torch.norm(new_actions - teacher_log_probs, dim=1).unsqueeze(dim=1)  # (T+1,B,1)
 
-        values_curr_obs, values_next_obs = self.calculate_follower_values(markov_actor=markov_actor,
-                                                                          markov_critic=markov_critic,
-                                                                          actor=actor,
-                                                                          critic=critic,
-                                                                          observs=observs,
-                                                                          next_observs=next_observs,
-                                                                          actions=actions,
-                                                                          rewards=rewards,
-                                                                          dones=dones)
-        mask = torch.zeros_like(values_curr_obs)
-        mask[values_curr_obs > self.min_v] = 1.0
+        # values_curr_obs, values_next_obs = self.calculate_follower_values(markov_actor=markov_actor,
+        #                                                                   markov_critic=markov_critic,
+        #                                                                   actor=actor,
+        #                                                                   critic=critic,
+        #                                                                   observs=observs,
+        #                                                                   next_observs=next_observs,
+        #                                                                   actions=actions,
+        #                                                                   rewards=rewards,
+        #                                                                   dones=dones)
+        # mask = torch.zeros_like(values_curr_obs)
+        # mask[values_curr_obs > self.min_v] = 1.0
 
         if not markov_critic:
             env_loss = env_loss[:-1]  # (T,B,1) remove the last obs
-            CE_loss = CE_loss[:-1]  # (T,B,1) remove the last obs
+            # CE_loss = CE_loss[:-1]  # (T,B,1) remove the last obs
         policy_loss = env_loss #+ mask * CE_loss
 
-        if not markov_critic:
-            policy_loss = policy_loss[:-1]  # (T,B,1) remove the last obs
         if not markov_actor:
             assert 'masks' in kwargs
             masks = kwargs['masks']

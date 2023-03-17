@@ -67,7 +67,8 @@ class ModelFreeOffPolicy_Separate_RNN(nn.Module):
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              teacher_dir=teacher_dir,
                                              action_dim=action_dim,
-                                             state_dim=self.state_dim)
+                                             state_dim=self.state_dim,
+                                             obs_dim=self.obs_dim)
         self.critic = torch.nn.ModuleDict({key: Critic_RNN(
             obs_dim,
             action_dim,

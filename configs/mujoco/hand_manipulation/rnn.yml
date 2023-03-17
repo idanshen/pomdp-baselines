@@ -1,4 +1,4 @@
-seed: 3
+seed: 1
 cuda: 0 # use_gpu
 env:
   env_type: mujoco
@@ -31,7 +31,7 @@ eval:
 policy:
   separate: True
   seq_model: lstm # [lstm, gru]
-  algo_name: eaac # [td3, sac,eaacd]
+  algo_name: elfc # [td3, sac,eaacd]
 #  teacher_dir: /home/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-11:18-21:17.66/
   teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-13:23-24:22.62/
 
