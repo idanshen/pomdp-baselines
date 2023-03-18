@@ -14,6 +14,14 @@ if __name__ == "__main__":
 
   all_runs = []
 
+  cache_dir_path = ".cache/rebuttal_hand/HandManipulatePen_ContinuousTouchSensors-v1"
+  max_steps = 5000000
+  interval_size = 50000
+
+  # cache_dir_path = ".cache/rebuttal_tiger/MiniGrid-TigerDoorEnv-v0"
+  # max_steps = 30000
+  # interval_size = 1000
+
   # cache_dir_path = ".cache/new_res/Hopper-v3"
   # max_steps = 2000000
   # interval_size = 100000
@@ -28,9 +36,9 @@ if __name__ == "__main__":
   # max_steps = 4000000
   # interval_size = 50000
 
-  cache_dir_path = ".cache/hand_res/HandManipulatePen_ContinuousTouchSensors-v1"
-  max_steps = 16000000
-  interval_size = 50000
+  # cache_dir_path = ".cache/hand_res/HandManipulatePen_ContinuousTouchSensors-v1"
+  # max_steps = 16000000
+  # interval_size = 50000
 
   # cache_dir_path = ".cache/sac_ablation/AntGoal-v0"
   # max_steps = 5000000
@@ -86,4 +94,4 @@ if __name__ == "__main__":
       print(f"Invalid file: {file}")
 
   df = pd.concat(all_runs)
-  df.to_csv(os.path.join(cache_dir_path, "processed2.csv"))
+  df.to_csv(os.path.join(cache_dir_path, "processed.csv"))

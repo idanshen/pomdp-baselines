@@ -9,23 +9,24 @@ from tqdm import *
 api = wandb.Api(timeout=19)
 
 if __name__ == "__main__":
-    dir_name = "new_res"
+    dir_name = "rebuttal_hand"
 
     envs = [
         # "MiniGrid-TigerDoorEnv-v0",
         # "MiniGrid-MemoryS11-v0",
         # "MiniGrid-LavaCrossingS15N10-v0",
         # "AntGoal-v0"
-        # "HandManipulatePen_ContinuousTouchSensors-v1",
+        "HandManipulatePen_ContinuousTouchSensors-v1",
         # "HalfCheetah-v3",
         # "Walker2d-v3",
-        "Hopper-v3"
+        # "Hopper-v3"
     ]
     data_collection_methods = [
         # "only_student",
         # "all",
         # "start_beta_student_aux_than_teacher",
-        "start_student_than_teacher"
+        "start_student_than_teacher",
+        # "both"
     ]
     algo_names = [
         # "advisord",
@@ -59,7 +60,7 @@ if __name__ == "__main__":
                             "config.train.data_collection_method": method,
                             "config.policy.algo_name": algo,
                             # "config.policy.eaac.coefficient_tuning": tuning,
-                            # "config.policy.seq_model": 'mlp',
+                            "config.policy.seq_model": 'mlp',
                             # "config.policy.sac.entropy_alpha": 0.01,
                             "config.env.obseravibility": "partial",
                         })

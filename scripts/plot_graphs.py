@@ -250,7 +250,6 @@ def plot_main_res():
     plt.show()
     print("done")
 
-
 def plot_ablations():
     fig, axes = plt.subplots(2, 2, figsize=(30, 5))
     cache_dir_path_crossing = ".cache/robustness_ablation/MiniGrid-LavaCrossingS15N10-v0"
@@ -327,6 +326,52 @@ def plot_ablations():
     plt.show()
     print("done")
 
+def plot_rebuttal_tiger():
+    cache_dir_path_crossing = ".cache/rebuttal_tiger/MiniGrid-TigerDoorEnv-v0/"
+    hand_df = pd.read_csv(os.path.join(cache_dir_path_crossing, "processed.csv"))
+
+    fig, axes = plt.subplots(1, 1, figsize=(30, 5))
+
+    # axes.set_title("Tactile Sensing Pen Reorientation")
+    sns.lineplot(ax=axes, data=hand_df, x="env steps", y="success rate", hue="method", hue_order=["Ours"])
+    axes.axhline(0.8, ls='--', c="black", label="Teacher")
+    axes.axhline(0.5, ls='--', c="gray", label="IL")
+    axes.get_legend().remove()
+    box = axes.get_position()
+    # axes.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
+    axes.set_ylim(0.0, 1.01)
+    axes.ticklabel_format(axis='x', style='sci', scilimits=(4, 4))
+
+    handles, labels = axes.get_legend_handles_labels()
+    legend = axes.legend(handles, labels, loc='upper left', ncol=3)
+    legend.get_frame().set_facecolor('white')
+
+    plt.show()
+    print("done")
+
+def plot_rebuttal_hand():
+    cache_dir_path_crossing = ".cache/rebuttal_hand/HandManipulatePen_ContinuousTouchSensors-v1/"
+    hand_df = pd.read_csv(os.path.join(cache_dir_path_crossing, "processed.csv"))
+
+    fig, axes = plt.subplots(1, 1, figsize=(30, 5))
+
+    # axes.set_title("Tactile Sensing Pen Reorientation")
+    sns.lineplot(ax=axes, data=hand_df, x="env steps", y="success rate", hue="method", hue_order=["Ours", "IL", "SAC", "ADVISOR", "COSIL_avg", "COSIL_best"])
+    # axes.axhline(0.47, ls='--', c="gray", label="SAC, 16M steps")
+    axes.axhline(0.78, ls='--', c="black", label="Teacher")
+    axes.get_legend().remove()
+    box = axes.get_position()
+    # axes.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.7])
+    axes.set_ylim(0.0, 1.0)
+    axes.ticklabel_format(axis='x', style='sci', scilimits=(6, 6))
+
+    handles, labels = axes.get_legend_handles_labels()
+    legend = axes.legend(handles, labels, loc='upper left', ncol=3)
+    legend.get_frame().set_facecolor('white')
+
+    plt.show()
+    print("done")
+
 if __name__ == "__main__":
     # plot_hand_results()
     # plot_main_res()
@@ -336,4 +381,6 @@ if __name__ == "__main__":
     # plot_demo_ablation()
     # plot_fix_ablation2()
     # plot_new_res()
-    plot_ablations()
+    # plot_ablations()
+    # plot_rebuttal_tiger()
+    plot_rebuttal_hand()
