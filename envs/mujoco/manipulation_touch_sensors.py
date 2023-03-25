@@ -142,10 +142,11 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
         }
 
     def _reset_sim(self):
-        super()._reset_sim()
+        res = super()._reset_sim()
         if self.randomize_friction:
             self.current_friction = 0.8 + np.random.random()  # randomize friction between 0.8 and 1.6
             self.model.geom_friction[:, 0] = self.current_friction
+        return res
 
     def obscure_state(self, obs):
         robot_qpos_qvel = obs[:48]
