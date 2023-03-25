@@ -27,6 +27,18 @@ register(
     max_episode_steps=100,
 )
 
+register(
+    id=f"HandManipulatePen_ContinuousTouchSensors-v2",
+    entry_point="envs.mujoco.manipulation_touch_sensors:MujocoHandPenTouchSensorsEnv",
+    kwargs={
+            "target_position": "ignore",
+            "target_rotation": "xyz",
+            "touch_get_obs": "sensordata",
+            "reward_type": "Dense",
+            "randomize_friction": True,
+        },
+    max_episode_steps=100,
+)
 def register_robotics_envs():
     """Register all environment ID's to Gymnasium."""
 

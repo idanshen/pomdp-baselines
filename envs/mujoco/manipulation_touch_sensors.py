@@ -23,6 +23,7 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
         initial_qpos={},
         randomize_initial_position=True,
         randomize_initial_rotation=True,
+        randomize_friction=False,
         distance_threshold=0.01,
         rotation_threshold=0.1,
         n_substeps=20,
@@ -50,6 +51,8 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
         self._touch_sensor_id = []
         self.touch_color = [1, 0, 0, 0.5]
         self.notouch_color = [0, 0.5, 0, 0.2]
+        self.randomize_friction = randomize_friction
+        self.current_friction = 1.0
 
         super().__init__(
             target_position=target_position,
@@ -138,6 +141,12 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
             "desired_goal": desired_goal.copy(),
         }
 
+    def _reset_sim(self):
+        super()._reset_sim()
+        if self.randomize_friction:
+            self.current_friction = 0.8 + np.random.random()  # randomize friction between 0.8 and 1.6
+            self.model.geom_friction[:, 0] = self.current_friction
+
     def obscure_state(self, obs):
         robot_qpos_qvel = obs[:48]
         desired_goal = obs[-7:]
@@ -151,7 +160,7 @@ class MujocoManipulateTouchSensorsEnv(MujocoManipulateEnv):
             touch_values = np.log(self.data.sensordata[self._touch_sensor_id] + 1.0)
 
         observation = np.concatenate(
-            [robot_qpos_qvel, desired_goal, touch_values]
+            [robot_qpos_qvel, desired_goal, touch_values, np.array([self.current_friction])]
         )
         return observation
 
