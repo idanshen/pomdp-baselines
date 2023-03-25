@@ -2,10 +2,10 @@ seed: 2
 cuda: 0 # use_gpu
 env:
   env_type: mujoco
-  env_name: HandManipulatePen_ContinuousTouchSensors-v1
-  obseravibility: partial
+  env_name: HandManipulatePen_ContinuousTouchSensors-v2
+  obseravibility: full
   num_eval_tasks: 1000
-  num_train_envs: 60
+  num_train_envs: 120
 
 train:
   # sample complexity: BAMDP horizon * (num_init_rollouts_pool * num_train_tasks
@@ -19,11 +19,11 @@ train:
   num_rollouts_per_iter: 10  # 1 #
   buffer_size: 4e6 # or 1e6? old belief
 
-  num_updates_per_iter: 5000
+  num_updates_per_iter: 1000
   batch_size: 1024 # to tune based on sampled_seq_len
   data_collection_method: only_student
   epsilon: 0.1
-  HER: False
+  HER: True
 
 eval:
   log_interval: 30 # 10 num of iters
@@ -32,7 +32,7 @@ eval:
 
 policy:
   seq_model: mlp
-  algo_name: DAggerc # [td3, sac]
+  algo_name: sac # [td3, sac]
   teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.01/gamma-0.9/01-13:23-24:22.62/
 #  teacher_dir: /data/pulkitag/models/idanshen/pomdp-baselines/mujoco/HandManipulatePen_ContinuousTouchSensors-v1/Markovian_sac/alpha-0.1/gamma-0.9/01-10:12-01:15.62/ # Taken from Dagger experiment
 
