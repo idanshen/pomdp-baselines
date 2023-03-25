@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+
+from policies.rl import A2D
 from utils import helpers as utl
 from torchkit.constant import *
 import torchkit.pytorch_utils as ptu
@@ -19,16 +21,18 @@ class Actor_Markovian(nn.Module):
     ):
         super().__init__()
 
-        self.obs_dim = obs_dim
         self.action_dim = action_dim
         self.algo = algo
+        self.obs_dim = obs_dim
+        if type(algo) is A2D and policy_key == "aux":
+            self.obs_dim = kwargs['state_dim']
 
         ### Build Model
         ## 1. embed observations
 
         self.image_encoder = image_encoder
         if self.image_encoder is None:
-            observ_embedding_size = obs_dim
+            observ_embedding_size = self.obs_dim
         else:  # for pixel observation, use external encoder
             observ_embedding_size = self.image_encoder.embed_size  # reset it
 

@@ -9,6 +9,7 @@ from .ELFd import ELFd
 from .ELFc import ELFc
 from .daggerc import DAggerc
 from .eaac import EAAC
+from .A2D import A2D
 
 RL_ALGORITHMS = {
     TD3.name: TD3,
@@ -21,5 +22,6 @@ RL_ALGORITHMS = {
     ELFd.name: ELFd,
     ELFc.name: ELFc,
     DAggerc.name: DAggerc,
-    EAAC.name: EAAC
+    EAAC.name: EAAC,
+    A2D.name: A2D
 }

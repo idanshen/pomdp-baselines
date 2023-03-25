@@ -51,7 +51,7 @@ if FLAGS.data_collection_method is not None:
 seq_model, algo = v["policy"]["seq_model"], v["policy"]["algo_name"]
 data_collection_method = v["train"]["data_collection_method"]
 assert seq_model in ["mlp", "lstm", "gru", "lstm-mlp", "gru-mlp"]
-assert algo in ["td3", "sac", "sacd", "ppo", 'eaacd', 'eaac', 'DAgger', 'DAggerc', 'advisord', 'advisorc', 'elfd', 'elfc']
+assert algo in ["td3", "sac", "sacd", "ppo", 'eaacd', 'eaac', 'DAgger', 'DAggerc', 'advisord', 'advisorc', 'elfd', 'elfc', 'a2d']
 assert data_collection_method in ["only_student", "only_teacher", "based_on_coefficient_update",
                                         "beta_student_teacher", "beta_student_aux", "start_student_than_teacher",
                                         "start_beta_student_aux_than_teacher", "all", "both"]
@@ -169,8 +169,8 @@ os.makedirs(os.path.join(logger.get_dir(), "save"))
 
 yaml = YAML(typ='safe', pure=True)
 cfg = yaml.load(Path(f"{log_folder}/variant_{pid}.yml"))
-# wandb.init(project="test-project", entity="tsrl", config=cfg, mode="disabled")
-wandb.init(project="test-project", entity="tsrl", config=cfg)
+wandb.init(project="test-project", entity="tsrl", config=cfg, mode="disabled")
+# wandb.init(project="test-project", entity="tsrl", config=cfg)
 
 # start training
 learner = Learner(

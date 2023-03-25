@@ -53,7 +53,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
 
         self.algo = RL_ALGORITHMS[algo_name](**kwargs[algo_name],
                                              action_dim=action_dim,
-                                             obs_dim=self.obs_dim)
+                                             obs_dim=self.obs_dim,
+                                             state_dim=self.state_dim)
 
         # Markov q networks
         self.critic = torch.nn.ModuleDict({key: Critic_Markovian(
@@ -71,12 +72,17 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         # Markov Actor.
         self.policy = torch.nn.ModuleDict({key: Actor_Markovian(
             obs_dim=obs_dim,
+            state_dim=state_dim,
             action_dim=action_dim,
             policy_layers=policy_layers,
             algo=self.algo,
             policy_key=key,
             image_encoder=image_encoder_fn()
         ) for key in self.algo.model_keys["actor"]})
+        if self.algo.name == 'a2d':
+            self.policy["aux"].load_state_dict(self.algo.teacher_initial_policy['main'].state_dict())
+            for param in self.policy["aux"].parameters():
+                param.requires_grad = True
         self.policy_optim = Adam(self.policy.parameters(), lr=lr)
         # target network
         self.policy_target = copy.deepcopy(self.policy)
